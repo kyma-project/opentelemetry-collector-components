@@ -3,13 +3,13 @@ package dummymetricsreceiver
 import (
 	"context"
 	"time"
+	"os"
+	"fmt"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/pdata/pmetric"
-	"os"
-	"fmt"
 	"go.uber.org/zap"
 )
 
@@ -67,7 +67,7 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 	gauge := metric.SetEmptyGauge()
 	for i := range 5 {
 		dp := gauge.DataPoints().AppendEmpty()
-		dp.SetIntValue(i)
+		dp.SetIntValue(int64(i))
 		dp.Attributes().PutStr("host", host)
 	}
 

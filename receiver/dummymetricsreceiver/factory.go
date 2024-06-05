@@ -19,7 +19,7 @@ const (
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		Interval: string(defaultInterval),
+		Interval: defaultInterval.String(),
 	}
 }
 
