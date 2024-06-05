@@ -1,0 +1,9 @@
+type: dummymetricsreceiver
+
+status:
+  class: receiver
+  stability:
+    alpha: [metrics]
+  distributions: [kyma]
+  codeowners:
+    active: [kyma-project/observability]
