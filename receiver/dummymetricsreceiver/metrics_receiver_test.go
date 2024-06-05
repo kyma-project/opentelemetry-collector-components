@@ -15,7 +15,7 @@ func TestReceiveMetrics(t *testing.T) {
 	sink := new(consumertest.MetricsSink)
 
 	cfg := &Config{
-		Interval: (1 * time.Second).String(),
+		Interval: "1s",
 	}
 	mr, err := createMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sink)
 	require.NoError(t, err)
