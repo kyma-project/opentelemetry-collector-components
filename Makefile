@@ -166,15 +166,16 @@ generate: install-tools
 	$(MAKE) for-all CMD="$(GOCMD) generate ./..."
 	$(MAKE) gofmt
 
-# Verify existence of READMEs for components specified as default components in the collector.
-.PHONY: checkdoc
-checkdoc: $(CHECKFILE)
-	$(CHECKFILE) --project-path $(CURDIR) --component-rel-path $(COMP_REL_PATH) --module-name $(MOD_NAME) --file-name "README.md"
+.PHONY: genotelkymacol
+genotelkymacol: $(BUILDER)
+	$(BUILDER) --skip-compilation --config cmd/otelkymacol/builder-config.yaml --output-path cmd/otelkymacol
+	$(MAKE) --no-print-directory -C cmd/otelkymacol fmt
 
-# Verify existence of metadata.yaml for components specified as default components in the collector.
-.PHONY: checkmetadata
-checkmetadata: $(CHECKFILE)
-	$(CHECKFILE) --project-path $(CURDIR) --component-rel-path $(COMP_REL_PATH) --module-name $(MOD_NAME) --file-name "metadata.yaml"
+# Build the Collector executable.
+.PHONY: otelkymacol
+otelkymacol:
+	cd ./cmd/otelkymacol && GO111MODULE=on CGO_ENABLED=0 $(GOCMD) build -trimpath -o ../../bin/otelkymacol_$(GOOS)_$(GOARCH)$(EXTENSION) \
+		-tags $(GO_BUILD_TAGS) .
 
 
 # Function to execute a command. Note the empty line before endef to make sure each command
