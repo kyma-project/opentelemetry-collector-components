@@ -10,4 +10,5 @@ import (
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "go.opentelemetry.io/build-tools/crosslink"
 	_ "go.opentelemetry.io/collector/cmd/mdatagen"
+	_ "golang.org/x/tools/cmd/goimports"
 )

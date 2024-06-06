@@ -40,9 +40,10 @@ $(TOOLS_BIN_DIR):
 $(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
 	cd $(TOOLS_MOD_DIR) && $(GOCMD) build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
 
-LINT                := $(TOOLS_BIN_DIR)/golangci-lint
-CROSSLINK           := $(TOOLS_BIN_DIR)/crosslink
 BUILDER             := $(TOOLS_BIN_DIR)/builder
+CROSSLINK           := $(TOOLS_BIN_DIR)/crosslink
+GOIMPORTS           := $(TOOLS_BIN_DIR)/goimports
+LINT                := $(TOOLS_BIN_DIR)/golangci-lint
 
 # BUILD_TYPE should be one of (dev, release).
 BUILD_TYPE?=release
@@ -89,7 +90,7 @@ test-with-cover:
 .PHONY: fmt
 fmt: $(GOIMPORTS)
 	gofmt  -w -s ./
-	$(GOIMPORTS) -w  -local github.com/open-telemetry/opentelemetry-collector-contrib ./
+	$(GOIMPORTS) -w  -local github.com/kyma-project/opentelemetry-collector-components ./
 
 .PHONY: lint
 lint: $(LINT)
