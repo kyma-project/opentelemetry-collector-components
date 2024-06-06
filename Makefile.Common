@@ -14,11 +14,9 @@ SRC_PARENT_DIR :=  $(shell dirname $(SRC_ROOT))
 GO_BUILD_TAGS=""
 GOTEST_TIMEOUT?= 600s
 GOTEST_OPT?= -race -timeout $(GOTEST_TIMEOUT) -parallel 4 --tags=$(GO_BUILD_TAGS)
-GOTEST_INTEGRATION_OPT?= -race -timeout 360s -parallel 4
 GOTEST_OPT_WITH_COVERAGE = $(GOTEST_OPT) -coverprofile=coverage.txt -covermode=atomic
-GOTEST_OPT_WITH_INTEGRATION=$(GOTEST_INTEGRATION_OPT) -tags=integration,$(GO_BUILD_TAGS)
-GOTEST_OPT_WITH_INTEGRATION_COVERAGE=$(GOTEST_OPT_WITH_INTEGRATION) -coverprofile=integration-coverage.txt -covermode=atomic
 GOCMD?= go
+GOTEST=$(GOCMD) test
 GOOS=$(shell $(GOCMD) env GOOS)
 GOARCH=$(shell $(GOCMD) env GOARCH)
 
@@ -44,18 +42,23 @@ $(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
 
 LINT                := $(TOOLS_BIN_DIR)/golangci-lint
 CROSSLINK           := $(TOOLS_BIN_DIR)/crosslink
+BUILDER             := $(TOOLS_BIN_DIR)/builder
 
 # BUILD_TYPE should be one of (dev, release).
 BUILD_TYPE?=release
 
-ALL_PKG_DIRS := $(shell $(GOCMD) list -f '{{ .Dir }}' ./... | $(NORMALIZE_DIRS))
+ALL_PKG_DIRS := $(shell $(GOCMD) list -f '{{ .Dir }}' ./... | sort)
 
 ALL_SRC := $(shell find $(ALL_PKG_DIRS) -name '*.go' \
                                 -not -path '*/third_party/*' \
                                 -not -path '*/local/*' \
                                 -type f | sort)
 
+ALL_SRC_AND_SHELL := find . -type f  \( -iname '*.go' -o -iname "*.sh" \) ! -path '**/third_party/*' | sort
+
 ALL_PKGS := $(shell $(GOCMD) list $(sort $(dir $(ALL_SRC))))
+
+ADDLICENSE_CMD := $(ADDLICENSE) -s=only -y "" -c "The OpenTelemetry Authors"
 
 pwd:
 	@pwd
@@ -75,35 +78,13 @@ all-pkg-dirs:
 common: lint test
 
 .PHONY: test
-test: $(GOTESTSUM)
-	$(GOTESTSUM) $(GOTESTSUM_OPT) --packages="./..." -- $(GOTEST_OPT)
+test:
+	$(GOTEST) $(GOTEST_OPT) ./...
 
 .PHONY: test-with-cover
-test-with-cover: $(GOTESTSUM)
+test-with-cover:
 	mkdir -p $(PWD)/coverage/unit
-	$(GOTESTSUM) $(GOTESTSUM_OPT) --packages="./..." -- $(GOTEST_OPT) -cover -covermode=atomic -args -test.gocoverdir="$(PWD)/coverage/unit"
-
-.PHONY: do-unit-tests-with-cover
-do-unit-tests-with-cover: $(GOTESTSUM)
-	@echo "running $(GOCMD) unit test ./... + coverage in `pwd`"
-	$(GOTESTSUM) $(GOTESTSUM_OPT) --packages="./..." --  $(GOTEST_OPT_WITH_COVERAGE)
-	$(GOCMD) tool cover -html=coverage.txt -o coverage.html
-
-.PHONY: mod-integration-test
-mod-integration-test: $(GOTESTSUM)
-	@echo "running $(GOCMD) integration test ./... in `pwd`"
-	$(GOTESTSUM) $(GOTESTSUM_OPT) --packages="./..." -- $(GOTEST_OPT_WITH_INTEGRATION)
-	@if [ -e integration-coverage.txt ]; then \
-  		$(GOCMD) tool cover -html=integration-coverage.txt -o integration-coverage.html; \
-  	fi
-
-.PHONY: do-integration-tests-with-cover
-do-integration-tests-with-cover: $(GOTESTSUM)
-	@echo "running $(GOCMD) integration test ./... + coverage in `pwd`"
-	$(GOTESTSUM) $(GOTESTSUM_OPT) --packages="./..." --  $(GOTEST_OPT_WITH_INTEGRATION_COVERAGE)
-	@if [ -e integration-coverage.txt ]; then \
-  		$(GOCMD) tool cover -html=integration-coverage.txt -o integration-coverage.html; \
-  	fi
+	$(GOTEST) $(GOTEST_OPT) ./... -cover -covermode=atomic -args -test.gocoverdir="$(PWD)/coverage/unit"
 
 .PHONY: fmt
 fmt: $(GOIMPORTS)
@@ -112,7 +93,7 @@ fmt: $(GOIMPORTS)
 
 .PHONY: lint
 lint: $(LINT)
-	$(LINT) run --allow-parallel-runners --verbose --build-tags integration --timeout=30m --path-prefix $(shell basename "$(CURDIR)")
+	$(LINT) run --allow-parallel-runners --verbose --timeout=30m --path-prefix $(shell basename "$(CURDIR)")
 
 .PHONY: tidy
 tidy:
