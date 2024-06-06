@@ -7,7 +7,6 @@ OTEL_STABLE_VERSION=main
 
 VERSION=$(shell git describe --always --match "v[0-9]*" HEAD)
 
-COMP_REL_PATH=cmd/otelcontribcol/components.go
 MOD_NAME=github.com/kyma-project/opentelemetry-collector-components
 
 GROUP ?= all
@@ -158,7 +157,7 @@ all-pwd:
 
 .PHONY: run
 run:
-	cd ./cmd/otelcontribcol && GO111MODULE=on $(GOCMD) run --race . --config ../../${RUN_CONFIG} ${RUN_ARGS}
+	cd ./cmd/otelkymacol && GO111MODULE=on $(GOCMD) run --race . --config ../../${RUN_CONFIG} ${RUN_ARGS}
 
 .PHONY: generate
 generate: install-tools
@@ -174,8 +173,7 @@ genotelkymacol: $(BUILDER)
 # Build the Collector executable.
 .PHONY: otelkymacol
 otelkymacol:
-	cd ./cmd/otelkymacol && GO111MODULE=on CGO_ENABLED=0 $(GOCMD) build -trimpath -o ../../bin/otelkymacol_$(GOOS)_$(GOARCH)$(EXTENSION) \
-		-tags $(GO_BUILD_TAGS) .
+	cd ./cmd/otelkymacol && GO111MODULE=on CGO_ENABLED=0 $(GOCMD) build -trimpath -o ../../bin/otelkymacol_$(GOOS)_$(GOARCH)$(EXTENSION) -tags $(GO_BUILD_TAGS) .
 
 
 # Function to execute a command. Note the empty line before endef to make sure each command
