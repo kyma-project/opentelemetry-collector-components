@@ -1,0 +1,32 @@
+local/
+vendor/
+
+# GoLand IDEA
+/.idea/
+*.iml
+
+# VS Code
+.vscode
+*.code-workspace
+
+# Binaries for programs and plugins
+bin/
+dist/
+.tools/
+
+# Emacs
+*~
+\#*\#
+
+# Miscellaneous files
+*.sw[op]
+*.DS_Store
+
+# Coverage
+coverage/*
+*-coverage.txt
+integration-coverage.html
+
+go.work*
+
+/result
