@@ -55,7 +55,6 @@ ALL_SRC := $(shell find $(ALL_PKG_DIRS) -name '*.go' \
                                 -not -path '*/local/*' \
                                 -type f | sort)
 
-# ALL_PKGS is used with 'go cover'
 ALL_PKGS := $(shell $(GOCMD) list $(sort $(dir $(ALL_SRC))))
 
 pwd:
