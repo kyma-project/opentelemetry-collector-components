@@ -1,8 +1,8 @@
 package dummymetricsreceiver
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml

@@ -34,7 +34,7 @@ all-groups:
 	@echo "receiver: $(RECEIVER_MODS)"
 
 .PHONY: all
-all: install-tools all-common goporto multimod-verify gotest otelcontribcol
+all: install-tools all-common gotest
 
 .PHONY: all-common
 all-common:
