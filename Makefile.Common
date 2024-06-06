@@ -55,11 +55,7 @@ ALL_SRC := $(shell find $(ALL_PKG_DIRS) -name '*.go' \
                                 -not -path '*/local/*' \
                                 -type f | sort)
 
-ALL_SRC_AND_SHELL := find . -type f  \( -iname '*.go' -o -iname "*.sh" \) ! -path '**/third_party/*' | sort
-
 ALL_PKGS := $(shell $(GOCMD) list $(sort $(dir $(ALL_SRC))))
-
-ADDLICENSE_CMD := $(ADDLICENSE) -s=only -y "" -c "The OpenTelemetry Authors"
 
 pwd:
 	@pwd
