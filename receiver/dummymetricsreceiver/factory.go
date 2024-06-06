@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	typeStr = component.MustNewType("dummymetricreceiver")
+	typeStr = component.MustNewType("dummymetricsreceiver")
 )
 
 const (
@@ -31,7 +31,7 @@ func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, ba
 	}, nil
 }
 
-// NewFactory creates a factory for dummymetricreceiver receiver.
+// NewFactory creates a factory for dummymetricsreceiver receiver.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		typeStr,
