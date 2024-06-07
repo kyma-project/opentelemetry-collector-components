@@ -27,4 +27,6 @@ func TestReceiveMetrics(t *testing.T) {
 		allMetrics := sink.AllMetrics()
 		return len(allMetrics) > 0
 	}, 5*time.Second, 1*time.Second)
+	err = mr.Shutdown(context.Background())
+	require.NoError(t, err)
 }

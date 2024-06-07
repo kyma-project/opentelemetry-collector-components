@@ -22,7 +22,6 @@ type dummyMetricsReceiver struct {
 }
 
 func (r *dummyMetricsReceiver) Start(ctx context.Context, _ component.Host) error {
-	ctx = context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
 	interval, _ := time.ParseDuration(r.config.Interval)
@@ -38,6 +37,7 @@ func (r *dummyMetricsReceiver) Start(ctx context.Context, _ component.Host) erro
 					r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
 					continue
 				}
+				// nolint:errcheck //
 				r.nextConsumer.ConsumeMetrics(ctx, md)
 			case <-ctx.Done():
 				return
