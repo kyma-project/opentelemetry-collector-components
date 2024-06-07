@@ -1,0 +1,102 @@
+# In order to ensure make instructions fail if there is command that fails a pipe (ie: `go test ... | tee -a ./test_results.txt`)
+# the value `-o pipefail` (or `set -o pipefail`) is added to each shell command that make runs
+# otherwise in the example command pipe, only the exit code of `tee` is recorded instead of `go test` which can cause
+# test to pass in CI when they should not.
+SHELL = /bin/bash
+.SHELLFLAGS = -o pipefail -c
+
+# SRC_ROOT is the top of the source tree.
+SRC_ROOT := $(shell git rev-parse --show-toplevel)
+# SRC_PARENT_DIR is the absolute path of source tree's parent directory
+SRC_PARENT_DIR :=  $(shell dirname $(SRC_ROOT))
+
+# build tags required by any component should be defined as an independent variables and later added to GO_BUILD_TAGS below
+GO_BUILD_TAGS=""
+GOTEST_TIMEOUT?= 600s
+GOTEST_OPT?= -race -timeout $(GOTEST_TIMEOUT) -parallel 4 --tags=$(GO_BUILD_TAGS)
+GOTEST_OPT_WITH_COVERAGE = $(GOTEST_OPT) -coverprofile=coverage.txt -covermode=atomic
+GOCMD?= go
+GOTEST=$(GOCMD) test
+GOOS=$(shell $(GOCMD) env GOOS)
+GOARCH=$(shell $(GOCMD) env GOARCH)
+
+# In order to help reduce toil related to managing tooling for the open telemetry collector
+# this section of the makefile looks at only requiring command definitions to be defined
+# as part of $(TOOLS_MOD_DIR)/tools.go, following the existing practice.
+# Modifying the tools' `go.mod` file will trigger a rebuild of the tools to help
+# ensure that all contributors are using the most recent version to make builds repeatable everywhere.
+TOOLS_MOD_DIR    := $(SRC_ROOT)/internal/tools
+TOOLS_MOD_REGEX  := "\s+_\s+\".*\""
+TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.go | tr -d " _\"")
+TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
+TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES)))
+
+.PHONY: install-tools
+install-tools: $(TOOLS_BIN_NAMES)
+
+$(TOOLS_BIN_DIR):
+	mkdir -p $@
+
+$(TOOLS_BIN_NAMES): $(TOOLS_BIN_DIR) $(TOOLS_MOD_DIR)/go.mod
+	cd $(TOOLS_MOD_DIR) && $(GOCMD) build -o $@ -trimpath $(filter %/$(notdir $@),$(TOOLS_PKG_NAMES))
+
+BUILDER             := $(TOOLS_BIN_DIR)/builder
+CROSSLINK           := $(TOOLS_BIN_DIR)/crosslink
+GOIMPORTS           := $(TOOLS_BIN_DIR)/goimports
+LINT                := $(TOOLS_BIN_DIR)/golangci-lint
+
+# BUILD_TYPE should be one of (dev, release).
+BUILD_TYPE?=release
+
+ALL_PKG_DIRS := $(shell $(GOCMD) list -f '{{ .Dir }}' ./... | sort)
+
+ALL_SRC := $(shell find $(ALL_PKG_DIRS) -name '*.go' \
+                                -not -path '*/third_party/*' \
+                                -not -path '*/local/*' \
+                                -type f | sort)
+
+ALL_PKGS := $(shell $(GOCMD) list $(sort $(dir $(ALL_SRC))))
+
+pwd:
+	@pwd
+
+all-pkgs:
+	@echo $(ALL_PKGS) | tr ' ' '\n' | sort
+
+all-srcs:
+	@echo $(ALL_SRC) | tr ' ' '\n' | sort
+
+all-pkg-dirs:
+	@echo $(ALL_PKG_DIRS) | tr ' ' '\n' | sort
+
+.DEFAULT_GOAL := common
+
+.PHONY: common
+common: lint test
+
+.PHONY: test
+test:
+	$(GOTEST) $(GOTEST_OPT) ./...
+
+.PHONY: test-with-cover
+test-with-cover:
+	mkdir -p $(PWD)/coverage/unit
+	$(GOTEST) $(GOTEST_OPT) ./... -cover -covermode=atomic -args -test.gocoverdir="$(PWD)/coverage/unit"
+
+.PHONY: fmt
+fmt: $(GOIMPORTS)
+	gofmt  -w -s ./
+	$(GOIMPORTS) -w  -local github.com/kyma-project/opentelemetry-collector-components ./
+
+.PHONY: lint
+lint: $(LINT)
+	$(LINT) run --allow-parallel-runners --verbose --timeout=30m --path-prefix $(shell basename "$(CURDIR)")
+
+.PHONY: tidy
+tidy:
+	rm -fr go.sum
+	$(GOCMD) mod tidy -compat=1.21.0
+
+.PHONY: moddownload
+moddownload:
+	$(GOCMD) mod download

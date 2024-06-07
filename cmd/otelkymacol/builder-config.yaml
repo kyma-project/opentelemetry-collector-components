@@ -1,0 +1,18 @@
+dist:
+  module: github.com/kyma-project/opentelemetry-collector-components/cmd/otelkymacol
+  name: otelkymacol
+  description: Local OpenTelemetry Collector Contrib binary, testing only.
+  version: 0.0.1-dev
+  otelcol_version: 0.102.1
+
+receivers:
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.0.1
+
+processors:
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.102.1
+
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.102.1
+
+replaces:
+  github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../../receiver/dummymetricsreceiver
