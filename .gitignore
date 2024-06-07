@@ -2,7 +2,7 @@ local/
 vendor/
 
 # GoLand IDEA
-/.idea/
+.idea/
 *.iml
 
 # VS Code
