@@ -16,13 +16,15 @@ FIND_MOD_ARGS=-type f -name "go.mod"
 TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
 EX_COMPONENTS=-not -path "./receiver/*" -not -path "./processor/*" -not -path "./exporter/*" -not -path "./extension/*" -not -path "./connector/*"
 EX_INTERNAL=-not -path "./internal/*"
-EX_PKG=-not -path "./pkg/*"
 EX_CMD=-not -path "./cmd/*"
 
 # NONROOT_MODS includes ./* dirs (excludes . dir)
 NONROOT_MODS := $(shell find . $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
 
-RECEIVER_MODS := $(shell find ./receiver/[a-z]* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+RECEIVER_MODS := $(shell find ./receiver/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+INTERNAL_MODS := $(shell find ./internal/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+CMD_MODS := $(shell find ./cmd/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+OTHER_MODS := $(shell find . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
 
 .DEFAULT_GOAL := all
 
@@ -87,68 +89,14 @@ for-all-target: $(ALL_MODS)
 .PHONY: for-receiver-target
 for-receiver-target: $(RECEIVER_MODS)
 
-.PHONY: for-receiver-0-target
-for-receiver-0-target: $(RECEIVER_MODS_0)
-
-.PHONY: for-receiver-1-target
-for-receiver-1-target: $(RECEIVER_MODS_1)
-
-.PHONY: for-receiver-2-target
-for-receiver-2-target: $(RECEIVER_MODS_2)
-
-.PHONY: for-receiver-3-target
-for-receiver-3-target: $(RECEIVER_MODS_3)
-
-.PHONY: for-processor-target
-for-processor-target: $(PROCESSOR_MODS)
-
-.PHONY: for-processor-0-target
-for-processor-0-target: $(PROCESSOR_MODS_0)
-
-.PHONY: for-processor-1-target
-for-processor-1-target: $(PROCESSOR_MODS_1)
-
-.PHONY: for-exporter-target
-for-exporter-target: $(EXPORTER_MODS)
-
-.PHONY: for-exporter-0-target
-for-exporter-0-target: $(EXPORTER_MODS_0)
-
-.PHONY: for-exporter-1-target
-for-exporter-1-target: $(EXPORTER_MODS_1)
-
-.PHONY: for-exporter-2-target
-for-exporter-2-target: $(EXPORTER_MODS_2)
-
-.PHONY: for-exporter-3-target
-for-exporter-3-target: $(EXPORTER_MODS_3)
-
-.PHONY: for-extension-target
-for-extension-target: $(EXTENSION_MODS)
-
-.PHONY: for-connector-target
-for-connector-target: $(CONNECTOR_MODS)
-
 .PHONY: for-internal-target
 for-internal-target: $(INTERNAL_MODS)
-
-.PHONY: for-pkg-target
-for-pkg-target: $(PKG_MODS)
 
 .PHONY: for-cmd-target
 for-cmd-target: $(CMD_MODS)
 
-.PHONY: for-cmd-0-target
-for-cmd-0-target: $(CMD_MODS_0)
-
-.PHONY: for-cmd-1-target
-for-cmd-1-target: $(CMD_MODS_1)
-
 .PHONY: for-other-target
 for-other-target: $(OTHER_MODS)
-
-.PHONY: for-integration-target
-for-integration-target: $(INTEGRATION_MODS)
 
 # Debugging target, which helps to quickly determine whether for-all-target is working or not.
 .PHONY: all-pwd
@@ -175,15 +123,6 @@ genotelkymacol: $(BUILDER)
 otelkymacol:
 	cd ./cmd/otelkymacol && GO111MODULE=on CGO_ENABLED=0 $(GOCMD) build -trimpath -o ../../bin/otelkymacol_$(GOOS)_$(GOARCH)$(EXTENSION) -tags $(GO_BUILD_TAGS) .
 
-
-# Function to execute a command. Note the empty line before endef to make sure each command
-# gets executed separately instead of concatenated with previous one.
-# Accepts command to execute as first parameter.
-define exec-command
-$(1)
-
-endef
-
 .PHONY: crosslink
 crosslink: $(CROSSLINK)
 	@echo "Executing crosslink"
@@ -195,13 +134,9 @@ clean:
 	find . -type f -name 'coverage.txt' -delete
 	find . -type f -name 'coverage.html' -delete
 	find . -type f -name 'coverage.out' -delete
-	find . -type f -name 'integration-coverage.txt' -delete
-	find . -type f -name 'integration-coverage.html' -delete
 
 .PHONY: checks
 checks:
-	$(MAKE) checkdoc
-	$(MAKE) checkmetadata
 	$(MAKE) crosslink
 	$(MAKE) -j4 gotidy
 	git diff --exit-code || (echo 'Some files need committing' &&  git status && exit 1)
