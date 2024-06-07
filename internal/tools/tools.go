@@ -1,6 +1,6 @@
 //go:build tools
 
-package tools // import "github.com/kyma-project/opentelemetry-collector-components/internal/tools"
+package tools
 
 // This file follows the recommendation at
 // https://go.dev/wiki/Modules#how-can-i-track-tool-dependencies-for-a-module
