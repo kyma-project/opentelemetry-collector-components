@@ -22,10 +22,9 @@ EX_CMD=-not -path "./cmd/*"
 NONROOT_MODS := $(shell find . $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
 
 RECEIVER_MODS := $(shell find ./receiver/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
-INTERNAL_MODS := $(shell find ./internal/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
 CMD_MODS := $(shell find ./cmd/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
 OTHER_MODS := $(shell find . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
-ALL_MODS := $(RECEIVER_MODS) $(INTERNAL_MODS) $(CMD_MODS) $(OTHER_MODS)
+ALL_MODS := $(RECEIVER_MODS) $(CMD_MODS) $(OTHER_MODS)
 
 .DEFAULT_GOAL := all
 
@@ -34,7 +33,6 @@ all-modules:
 
 all-groups:
 	@echo "receiver: $(RECEIVER_MODS)"
-	@echo "internal: $(INTERNAL_MODS)"
 	@echo "cmd: $(CMD_MODS)"
 	@echo "other: $(OTHER_MODS)"
 
@@ -92,9 +90,6 @@ for-all-target: $(ALL_MODS)
 
 .PHONY: for-receiver-target
 for-receiver-target: $(RECEIVER_MODS)
-
-.PHONY: for-internal-target
-for-internal-target: $(INTERNAL_MODS)
 
 .PHONY: for-cmd-target
 for-cmd-target: $(CMD_MODS)
