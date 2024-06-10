@@ -142,7 +142,7 @@ jobs:
   unittest-matrix:
     strategy:
       matrix:
-        go-version-file: "go.mod"
+        go-version-file: ["go.mod"]
         group:
           - receiver
 #          - processor
@@ -185,7 +185,7 @@ jobs:
     if: ${{ always() }}
     strategy:
       matrix:
-        go-version-file: "go.mod"
+        go-version-file: ["go.mod"]
     runs-on: ubuntu-latest
     needs: [setup-environment, unittest-matrix]
     steps:
