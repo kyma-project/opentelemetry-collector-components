@@ -2,7 +2,7 @@ ARG GOLANG_VERSION
 
 FROM golang:${GOLANG_VERSION}-alpine as build
 ARG  OTEL_VERSION
-RUN echo ${OTEL_VERSION}
+ARG KYMA_OCC_VERSION=0.0.1
 ARG  OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
 ARG BUILD_MODE="PR"
@@ -17,6 +17,7 @@ ENV OTEL_VERSION ${OTEL_VERSION}
 ENV OTEL_CONTRIB_VERSION ${OTEL_CONTRIB_VERSION}
 RUN sed -i s/OTEL_VERSION/${OTEL_VERSION}/g builder-config.yaml
 RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
+RUN sed -i s/KYMA_OCC_VERSION/${KYMA_OCC_VERSION}/g builder-config.yaml
 
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
