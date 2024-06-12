@@ -1,0 +1,30 @@
+name: Build Image
+
+on:
+  pull_request
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v2
+
+          - name: Parse env-file
+            id: parse-env
+            run: |
+              cat otel-collector/envs | while read line || [[ -n $line ]];
+              do
+                [[ ${line//[[:space:]]/} =~ ^#.* || -z "$line" ]] && continue
+                echo $line | tr "=" "\n" | while read -r key; do
+                  read -r value
+                  if [[ ! -z "${key}" && ! -z "${value}" ]]; then
+                    echo "${key}=${value}" >> $GITHUB_ENV
+                  fi
+                done
+              done
+
+          - name: print env context
+            run: echo "${{ toJson(env) }}
+
+
