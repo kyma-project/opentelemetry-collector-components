@@ -4,31 +4,32 @@ on:
   pull_request
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v2
+  envs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-          - name: Parse env-file
-            id: parse-env
-            run: |
-              {
-              echo 'build-args<<BUILD_ARGS'
-              cat envs
-              echo BUILD_ARGS 
-              } >> "$GITHUB_OUTPUT"
+      - name: Parse env-file
+        id: parse-env
+        run: |
+          {
+          echo 'build-args<<BUILD_ARGS'
+          cat envs
+          echo BUILD_ARGS 
+          } >> "$GITHUB_OUTPUT"
 
-          - name: print env context
-            run: echo "${{ steps.parse-env.outputs.build-args }}"
+      - name: print env context
+        run: echo "${{ steps.parse-env.outputs.build-args }}"
 
-          - build-image:
-            uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-            with:
-              name: kyma-otel-collector
-              dockerfile: otel-collector/Dockerfile
-              context: .
-              build-args: ${{ steps.parse-env.outputs.build-args }}
-              tags: bla
+  build-image:
+    needs: envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: kyma-otel-collector
+      dockerfile: otel-collector/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+      tags: bla
 
 
