@@ -6,11 +6,21 @@ on:
   push:
     branches:
       - "main"
-      - "release-*"
+      - "*.*.*"
+  pull_request: {}
+
 
 jobs:
   envs:
     runs-on: ubuntu-latest
+    outputs:
+      build-args: ${{ steps.prepare-envs.outputs.build-args }}
+      tags: ${{ steps.create-tags.outputs.tags }}
+      otel-version: ${{ steps.load-envs.outputs.OTEL_VERSION }}
+      otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
+      pr-tag: ${{ steps.create-tags.outputs.PR_TAG }}
+      push-tag: ${{ steps.create-tags.outputs.PUSH_TAG }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,8 +29,8 @@ jobs:
 
       - name: Set build mode
         run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
-          if [[ $GITHUB_EVENT_NAME == 'push' && $BRANCH == release* ]]; then
+          echo $GITHUB_REF_NAME
+          if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_REF_NAME == release* ]]; then
             echo "BUILD_MODE=release" >> "$GITHUB_ENV"
           else
             echo "BUILD_MODE=PR" >> "$GITHUB_ENV"
@@ -33,11 +43,33 @@ jobs:
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
+          
+          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+            echo KYMA_OCC_VERSION="${{ github.ref_name }}"
+          fi
+          
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
+      - name: load envs into output
+        id: load-envs
+        run: |
+          cat otel-collector/envs >> "$GITHUB_OUTPUT"
+
       - name: print env context
         run: echo "${{ steps.prepare-envs.outputs.build-args }}"
+
+      - name: create tags
+        id: create-tags
+        run: |
+          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+            echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          else
+            echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
+          fi
+          
+          echo 'PUSH_TAG="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
@@ -47,6 +79,19 @@ jobs:
       dockerfile: otel-collector/Dockerfile
       context: .
       build-args: ${{ needs.envs.outputs.build-args }}
-      tags: bla
+      tags: ${{ needs.envs.outputs.tags }}
+
+  debug:
+    needs: envs
+    runs-on: ubuntu-latest
+    steps:
+      - name: print variables
+        run: |
+          echo "${{ needs.envs.outputs.build-args }}"
+          echo "${{ needs.envs.outputs.tags }}"
+          echo "${{ needs.envs.outputs.otel-version }}"
+          echo "${{ needs.envs.outputs.otel-contrib-version }}"
+          echo "${{ needs.envs.outputs.pr-tag }}"
+          echo "${{ needs.envs.outputs.push-tag }}"
 
 
