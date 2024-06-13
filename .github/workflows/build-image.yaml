@@ -16,8 +16,8 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       tags: ${{ steps.create-tags.outputs.tags }}
-      otel-version: ${{ steps.prepare-envs.outputs.OTEL_VERSION }}
-      otel-contrib-version: ${{ steps.prepare-envs.outputs.OTEL_CONTRIB_VERSION }}
+      otel-version: ${{ steps.load-envs.outputs.OTEL_VERSION }}
+      otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
 
     steps:
       - name: Checkout code
