@@ -64,11 +64,12 @@ jobs:
         run: |
           if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
             echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
-            echo 'PUSH_TAG="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           else
             echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
-            echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
           fi
+          
+          echo 'PUSH_TAG="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
