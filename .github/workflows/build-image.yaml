@@ -13,18 +13,23 @@ jobs:
           - name: Parse env-file
             id: parse-env
             run: |
-              cat otel-collector/envs | while read line || [[ -n $line ]];
-              do
-                [[ ${line//[[:space:]]/} =~ ^#.* || -z "$line" ]] && continue
-                echo $line | tr "=" "\n" | while read -r key; do
-                  read -r value
-                  if [[ ! -z "${key}" && ! -z "${value}" ]]; then
-                    echo "${key}=${value}" >> $GITHUB_ENV
-                  fi
-                done
-              done
+              {
+              echo 'build-args<<BUILD_ARGS'
+              cat envs
+              echo BUILD_ARGS 
+              } >> "$GITHUB_OUTPUT"
 
           - name: print env context
-            run: echo "${{ toJson(env) }}"
+            run: echo "${{ steps.parse-env.outputs.build-args }}"
+
+          - build-image:
+              needs: compute-tag
+              uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+              with:
+                name: test-infra/ginkgo
+                dockerfile: otel-collector/Dockerfile
+                context: .
+                build-args: ${{ steps.parse-env.outputs.build-args }}
+                tags: bla
 
 
