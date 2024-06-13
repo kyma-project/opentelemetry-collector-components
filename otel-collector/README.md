@@ -6,7 +6,7 @@ This custom image has a minimal set of required receivers, processors, and expor
 
 In addition to OSS components, it contains custom receivers, processors etc., contained in the [OCC repository](https://github.com/kyma-project/opentelemetry-collector-components).
 
-The build is configured for two different mode:
+The build is configured for two different modes:
 
 PR build: 
 This mode depends on the local version the OTel Collector components and can be used during development to create an image without actually releasing a new version of the OCC repository.
