@@ -6,11 +6,16 @@ on:
   push:
     branches:
       - "main"
-      - "release-*"
+      - "*.*.*"
+  pull_request: {}
+
 
 jobs:
   envs:
     runs-on: ubuntu-latest
+    outputs:
+      build-args: ${{ steps.prepare-envs.outputs.build-args }}
+      tags: ${{ steps.create-tags.outputs.tags }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,8 +24,8 @@ jobs:
 
       - name: Set build mode
         run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
-          if [[ $GITHUB_EVENT_NAME == 'push' && $BRANCH == release* ]]; then
+          echo $GITHUB_REF_NAME
+          if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_REF_NAME == release* ]]; then
             echo "BUILD_MODE=release" >> "$GITHUB_ENV"
           else
             echo "BUILD_MODE=PR" >> "$GITHUB_ENV"
@@ -39,6 +44,16 @@ jobs:
       - name: print env context
         run: echo "${{ steps.prepare-envs.outputs.build-args }}"
 
+      - name: create tags
+        run: |
+          TAGS=""
+          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+            TAGS="${{ github.ref_name }}"
+          else
+            TAGS="pr-${{ github.event.pull_request.number }}"
+          fi
+          echo "TAGS=$TAGS" >> "$GITHUB_OUTPUT"
+
   build-image:
     needs: envs
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -47,6 +62,15 @@ jobs:
       dockerfile: otel-collector/Dockerfile
       context: .
       build-args: ${{ needs.envs.outputs.build-args }}
-      tags: bla
+      tags: ${{ needs.envs.outputs.tags }}
+
+  debug:
+    needs: envs
+    runs-on: ubuntu-latest
+    steps:
+      - name: print variables
+        run: |
+          echo "${{ needs.envs.outputs.build-args }}"
+          echo "${{ needs.envs.outputs.tags }}"
 
 
