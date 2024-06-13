@@ -28,6 +28,6 @@ This mode relies on a released version of the OCC repository.
 
        docker build -f otel-collector/Dockerfile --build-arg BUILD_MODE=release --build-arg GOLANG_VERSION={XXX} --build-arg OTEL_VERSION={XXX} --build-arg OTEL_CONTRIB_VERSION={XXX} .
 
-3. If your build was successful, the docker command will update its status to:
+3. If your build was successful, the docker command will update its status output to:
 
        Building {X}s (18/18) FINISHED
