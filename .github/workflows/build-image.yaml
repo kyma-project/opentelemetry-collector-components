@@ -25,6 +25,6 @@ jobs:
               done
 
           - name: print env context
-            run: echo "${{ toJson(env) }}
+            run: echo "${{ toJson(env) }}"
 
 
