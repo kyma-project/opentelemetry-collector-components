@@ -1,7 +1,12 @@
 name: Build Image
 
 on:
-  pull_request
+  pull_request_target:
+    types: [ opened, edited, synchronize, reopened, ready_for_review ]
+  push:
+    branches:
+      - "main"
+      - "release-*"
 
 jobs:
   envs:
