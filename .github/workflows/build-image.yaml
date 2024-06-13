@@ -45,14 +45,13 @@ jobs:
         run: echo "${{ steps.prepare-envs.outputs.build-args }}"
 
       - name: create tags
+        id: create-tags
         run: |
-          TAGS=""
           if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            TAGS="${{ github.ref_name }}"
+            echo 'TAGS="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           else
-            TAGS="pr-${{ github.event.pull_request.number }}"
+            echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
           fi
-          echo "TAGS=$TAGS" >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
