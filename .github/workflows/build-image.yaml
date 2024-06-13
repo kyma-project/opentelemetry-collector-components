@@ -15,7 +15,7 @@ jobs:
         run: |
           {
           echo 'build-args<<BUILD_ARGS'
-          cat envs
+          cat otel-collector/envs
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
