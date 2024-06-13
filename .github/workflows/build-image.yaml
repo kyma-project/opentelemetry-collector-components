@@ -16,7 +16,6 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       tags: ${{ steps.create-tags.outputs.tags }}
-      envs: ${{ steps.prepare-envs.outputs }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
