@@ -16,6 +16,7 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       tags: ${{ steps.create-tags.outputs.tags }}
+      envs: ${{ steps.prepare-envs.outputs }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,6 +42,11 @@ jobs:
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
+      - name: load envs into output
+        id: load-envs
+        run: |
+          cat otel-collector/envs >> "$GITHUB_OUTPUT"
+
       - name: print env context
         run: echo "${{ steps.prepare-envs.outputs.build-args }}"
 
@@ -48,7 +54,7 @@ jobs:
         id: create-tags
         run: |
           if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            echo 'TAGS="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+            echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           else
             echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
           fi
