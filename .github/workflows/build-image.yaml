@@ -16,7 +16,9 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       tags: ${{ steps.create-tags.outputs.tags }}
-      envs: ${{ steps.prepare-envs.outputs.* }}
+      otel-version: ${{ steps.prepare-envs.outputs.OTEL_VERSION }}
+      otel-contrib-version: ${{ steps.prepare-envs.outputs.OTEL_CONTRIB_VERSION }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,6 +41,11 @@ jobs:
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
+          
+          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
+            echo KYMA_OCC_VERSION="${{ github.ref_name }}"
+          fi
+          
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
@@ -77,6 +84,7 @@ jobs:
         run: |
           echo "${{ needs.envs.outputs.build-args }}"
           echo "${{ needs.envs.outputs.tags }}"
-          echo "${{ needs.envs.outputs.envs }}"
+          echo "${{ needs.envs.outputs.otel-version }}"
+          echo "${{ needs.envs.outputs.otel-contrib-version }}"
 
 
