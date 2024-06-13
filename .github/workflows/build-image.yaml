@@ -10,17 +10,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Parse env-file
-        id: parse-env
+      - name: Set build mode
+        run: |
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          if [[ $GITHUB_EVENT_NAME == 'push' && $BRANCH == release* ]]; then
+            echo "BUILD_MODE=release" >> "$GITHUB_ENV"
+          else
+            echo "BUILD_MODE=PR" >> "$GITHUB_ENV"
+          fi
+
+      - name: prepare envs
+        id: prepare-envs
         run: |
           {
           echo 'build-args<<BUILD_ARGS'
+          echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
       - name: print env context
-        run: echo "${{ steps.parse-env.outputs.build-args }}"
+        run: echo "${{ steps.prepare-envs.outputs.build-args }}"
 
   build-image:
     needs: envs
