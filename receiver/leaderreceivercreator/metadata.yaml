@@ -1,0 +1,10 @@
+type: leader_receiver_creator
+scope_name: otelcol/leaderreceivercreator
+
+status:
+  class: receiver
+  stability:
+    alpha: [metrics]
+  distributions: [contrib]
+  codeowners:
+    active: [skhalash]
