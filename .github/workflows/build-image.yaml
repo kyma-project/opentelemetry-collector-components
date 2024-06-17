@@ -7,8 +7,6 @@ on:
     branches:
       - "main"
       - "*.*.*"
-  pull_request: {}
-
 
 jobs:
   envs:
@@ -93,5 +91,13 @@ jobs:
           echo "${{ needs.envs.outputs.otel-contrib-version }}"
           echo "${{ needs.envs.outputs.pr-tag }}"
           echo "${{ needs.envs.outputs.push-tag }}"
+
+  list-images:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: List images
+        run: |
+          echo "${{ needs.build-image.outputs.images }}"
 
 
