@@ -79,19 +79,6 @@ jobs:
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
 
-  debug:
-    needs: envs
-    runs-on: ubuntu-latest
-    steps:
-      - name: print variables
-        run: |
-          echo "${{ needs.envs.outputs.build-args }}"
-          echo "${{ needs.envs.outputs.tags }}"
-          echo "${{ needs.envs.outputs.otel-version }}"
-          echo "${{ needs.envs.outputs.otel-contrib-version }}"
-          echo "${{ needs.envs.outputs.pr-tag }}"
-          echo "${{ needs.envs.outputs.push-tag }}"
-
   list-images:
     needs: build-image
     runs-on: ubuntu-latest
