@@ -43,43 +43,43 @@ func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) compo
 }
 
 // Start leader receiver creator.
-func (ler *leaderReceiverCreator) Start(ctx context.Context, host component.Host) error {
-	ler.host = host
-	//ctx := context.Background()
-	ctx, ler.cancel = context.WithCancel(ctx)
+func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) error {
+	c.host = host
+	// Create a new context as specified in the interface documentation
+	ctx := context.Background()
+	ctx, c.cancel = context.WithCancel(ctx)
 
-	ler.params.TelemetrySettings.Logger.Info("Starting leader election receiver...1")
-	ler.params.TelemetrySettings.Logger.Info(fmt.Sprintf("printing: %s\n", "config"))
-	ler.params.TelemetrySettings.Logger.Info(fmt.Sprintf("config is: %+v\n", ler.cfg))
+	c.params.TelemetrySettings.Logger.Info("Starting leader election receiver...")
 
-	client, err := ler.makeClient()
+	client, err := c.makeClient()
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
 
-	ler.params.TelemetrySettings.Logger.Info("Creating leader elector...")
+	c.params.TelemetrySettings.Logger.Info("Creating leader elector...")
+	c.subReceiverRunner = newReceiverRunner(c.params, c.host)
 
 	leaderElector, err := newLeaderElector(
 		client,
 		func(ctx context.Context) {
-			ler.params.TelemetrySettings.Logger.Info("Elected as leader")
-			if err := ler.startSubReceiver(); err != nil {
-				ler.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
+			c.params.TelemetrySettings.Logger.Info("Elected as leader")
+			if err := c.startSubReceiver(); err != nil {
+				c.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
 			}
 		},
 		func() {
-			ler.params.TelemetrySettings.Logger.Info("Lost leadership")
-			if err := ler.stopSubReceiver(); err != nil {
-				ler.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
+			c.params.TelemetrySettings.Logger.Info("Lost leadership")
+			if err := c.stopSubReceiver(); err != nil {
+				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
-		ler.cfg.leaderElectionConfig,
+		c.cfg.leaderElectionConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)
 	}
 
-	leaderElector.Run(ctx)
+	go leaderElector.Run(ctx)
 	return nil
 }
 
@@ -105,32 +105,35 @@ func makeK8sClient() (kubernetes.Interface, error) {
 	return client, nil
 }
 
-func (ler *leaderReceiverCreator) startSubReceiver() error {
-	ler.params.TelemetrySettings.Logger.Info("Starting subreceiver",
-		zap.String("name", ler.cfg.subreceiverConfig.id.String()))
-
-	ler.subReceiverRunner = newReceiverRunner(ler.params, ler.host)
-	if err := ler.subReceiverRunner.start(
+func (c *leaderReceiverCreator) startSubReceiver() error {
+	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",
+		zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	if err := c.subReceiverRunner.start(
 		receiverConfig{
-			id:     ler.cfg.subreceiverConfig.id,
-			config: ler.cfg.subreceiverConfig.config,
+			id:     c.cfg.subreceiverConfig.id,
+			config: c.cfg.subreceiverConfig.config,
 		},
-		ler.nextMetricsConsumer,
+		c.nextMetricsConsumer,
 	); err != nil {
-		return fmt.Errorf("failed to start subreceiver %s: %w", ler.cfg.subreceiverConfig.id.String(), err)
+		return fmt.Errorf("failed to start subreceiver %s: %w", c.cfg.subreceiverConfig.id.String(), err)
 	}
 	return nil
 }
 
-func (ler *leaderReceiverCreator) stopSubReceiver() error {
-	ler.params.TelemetrySettings.Logger.Info("Stopping subreceiver",
-		zap.String("name", ler.cfg.subreceiverConfig.id.String()))
-
-	return ler.subReceiverRunner.shutdown(context.Background())
+func (c *leaderReceiverCreator) stopSubReceiver() error {
+	c.params.TelemetrySettings.Logger.Info("Stopping subreceiver",
+		zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	// if we dont get the lease then the subreceiver is not set
+	if c.subReceiverRunner != nil {
+		return c.subReceiverRunner.shutdown(context.Background())
+	}
+	return nil
 }
 
 // Shutdown stops the leader receiver creater and all its receivers started at runtime.
-func (ler *leaderReceiverCreator) Shutdown(context.Context) error {
-	ler.cancel()
+func (c *leaderReceiverCreator) Shutdown(context.Context) error {
+	if c.cancel != nil {
+		c.cancel()
+	}
 	return nil
 }

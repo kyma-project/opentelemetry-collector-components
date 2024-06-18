@@ -100,7 +100,6 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 		return err
 	}
 
-	fmt.Printf("config1111111: %v\n", cfg)
 	subreceiverConfig, err := componentParser.Sub(subreceiverConfigKey)
 	if err != nil {
 		return fmt.Errorf("unable to extract key %v: %w", subreceiverConfigKey, err)
@@ -110,8 +109,6 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 	if err != nil {
 		return fmt.Errorf("unable to extract key %v: %w", leaderElectionConfigKey, err)
 	}
-
-	fmt.Printf("lec1111: %v\n", lec.ToStringMap())
 
 	cfg.leaderElectionConfig, err = newLeaderElectionConfig(cfg.leaderElectionConfig, lec.ToStringMap())
 	if err != nil {
