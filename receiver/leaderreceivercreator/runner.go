@@ -37,11 +37,11 @@ func newReceiverRunner(params rcvr.CreateSettings, host component.Host) *receive
 	}
 }
 
-func (run *receiverRunner) start(
+func (r *receiverRunner) start(
 	receiver receiverConfig,
 	metricsConsumer consumer.Metrics,
 ) error {
-	factory := run.host.GetFactory(component.KindReceiver, receiver.id.Type())
+	factory := r.host.GetFactory(component.KindReceiver, receiver.id.Type())
 
 	if factory == nil {
 		return fmt.Errorf("unable to lookup factory for receiver %q", receiver.id.String())
@@ -49,20 +49,20 @@ func (run *receiverRunner) start(
 
 	receiverFactory := factory.(rcvr.Factory)
 
-	cfg, _, err := run.loadReceiverConfig(receiverFactory, receiver)
+	cfg, _, err := r.loadReceiverConfig(receiverFactory, receiver)
 	if err != nil {
 		return err
 	}
 
 	// Sets dynamically created receiver to something like receiver_creator/1/redis.
-	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", receiver.id.Name(), run.idNamespace))
+	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", receiver.id.Name(), r.idNamespace))
 
 	wr := &wrappedReceiver{}
 	var createError error
 
-	if wr.metrics, err = run.createMetricsRuntimeReceiver(receiverFactory, id, cfg, metricsConsumer); err != nil {
+	if wr.metrics, err = r.createMetricsRuntimeReceiver(receiverFactory, id, cfg, metricsConsumer); err != nil {
 		if errors.Is(err, component.ErrDataTypeIsNotSupported) {
-			run.logger.Info("instantiated receiver doesn't support metrics", zap.String("receiver", receiver.id.String()), zap.Error(err))
+			r.logger.Info("instantiated receiver doesn't support metrics", zap.String("receiver", receiver.id.String()), zap.Error(err))
 			wr.metrics = nil
 		} else {
 			createError = multierr.Combine(createError, err)
@@ -73,72 +73,73 @@ func (run *receiverRunner) start(
 		return fmt.Errorf("failed creating endpoint-derived receiver: %w", createError)
 	}
 
-	run.params.Logger.Info("Starting subreceiver",
+	r.params.Logger.Info("Starting subreceiver",
 		zap.String("receiver", receiver.id.String()),
 		zap.Any("config", cfg))
 
-	if err = wr.Start(context.Background(), run.host); err != nil {
+	if err = wr.Start(context.Background(), r.host); err != nil {
 		return fmt.Errorf("failed starting endpoint-derived receiver: %w", err)
 	}
 
-	run.receiver = wr
+	r.receiver = wr
 
 	return nil
 }
 
 // shutdown the given receiver.
-func (run *receiverRunner) shutdown(ctx context.Context) error {
-	if run.receiver != nil {
-		return run.receiver.Shutdown(ctx)
+func (r *receiverRunner) shutdown(ctx context.Context) error {
+	if r.receiver != nil {
+		return r.receiver.Shutdown(ctx)
 	}
 	return nil
 }
 
-func (run *receiverRunner) loadReceiverConfig(
+func (r *receiverRunner) loadReceiverConfig(
 	factory rcvr.Factory,
 	receiver receiverConfig,
 ) (component.Config, string, error) {
 	receiverCfg := factory.CreateDefaultConfig()
-	if err := component.UnmarshalConfig(confmap.NewFromStringMap(receiver.config), receiverCfg); err != nil {
+	config := confmap.NewFromStringMap(receiver.config)
+	if err := config.Unmarshal(receiverCfg); err != nil {
 		return nil, "", fmt.Errorf("failed to load %q subreceiver config: %w", receiver.id.String(), err)
 	}
 	return receiverCfg, "", nil
 }
 
 // createLogsRuntimeReceiver creates a receiver that is discovered at runtime.
-func (run *receiverRunner) createLogsRuntimeReceiver(
+func (r *receiverRunner) createLogsRuntimeReceiver(
 	factory rcvr.Factory,
 	id component.ID,
 	cfg component.Config,
 	nextConsumer consumer.Logs,
 ) (rcvr.Logs, error) {
-	runParams := run.params
+	runParams := r.params
 	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
 	runParams.ID = id
 	return factory.CreateLogsReceiver(context.Background(), runParams, cfg, nextConsumer)
 }
 
 // createMetricsRuntimeReceiver creates a receiver that is discovered at runtime.
-func (run *receiverRunner) createMetricsRuntimeReceiver(
+func (r *receiverRunner) createMetricsRuntimeReceiver(
 	factory rcvr.Factory,
 	id component.ID,
 	cfg component.Config,
 	nextConsumer consumer.Metrics,
 ) (rcvr.Metrics, error) {
-	runParams := run.params
+	runParams := r.params
 	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
 	runParams.ID = id
 	return factory.CreateMetricsReceiver(context.Background(), runParams, cfg, nextConsumer)
 }
 
 // createTracesRuntimeReceiver creates a receiver that is discovered at runtime.
-func (run *receiverRunner) createTracesRuntimeReceiver(
+func (r *receiverRunner) createTracesRuntimeReceiver(
 	factory rcvr.Factory,
 	id component.ID,
 	cfg component.Config,
 	nextConsumer consumer.Traces,
 ) (rcvr.Traces, error) {
-	runParams := run.params
+	runParams := r.params
 	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
 	runParams.ID = id
 	return factory.CreateTracesReceiver(context.Background(), runParams, cfg, nextConsumer)
