@@ -3,12 +3,29 @@ name: Build Image
 on:
   pull_request_target:
     types: [ opened, edited, synchronize, reopened, ready_for_review ]
+    branches:
+      - "main"
+      - "release-*"
   push:
     branches:
       - "main"
-      - "*.*.*"
+      - "release-*"
+
+  # while PR is open: build image with custom-components from current branch, tag: PR-XX
+      # PR gets merged to main: build image with custom components from main, tag: OTELVERSION-main
+      # PR gets merged to release-XX: build image with custom components from release-XX: tag: OTEL_VERSION-release-XX
+
+
+env:
+  # Build mode can be either PR or release. PR uses the code from the current branch using `replace` directive in the builder-config.yaml
+  # Release uses the code from the specified tag
+
+  # BUILD_MODE is used to select the correct builder-config-{BUILD_MODE}.yaml in the dockerfile
+
+  BUILD_MODE: PR
 
 jobs:
+
   envs:
     runs-on: ubuntu-latest
     outputs:
@@ -21,18 +38,14 @@ jobs:
 
     steps:
       - name: Checkout code
+        if: github.event_name == 'pull_request_target'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Set build mode
-        run: |
-          echo $GITHUB_REF_NAME
-          if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_REF_NAME == release* ]]; then
-            echo "BUILD_MODE=release" >> "$GITHUB_ENV"
-          else
-            echo "BUILD_MODE=PR" >> "$GITHUB_ENV"
-          fi
+      - name: Checkout code
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
 
       - name: prepare envs
         id: prepare-envs
@@ -41,11 +54,6 @@ jobs:
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
-          
-          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            echo KYMA_OCC_VERSION="${{ github.ref_name }}"
-          fi
-          
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
@@ -60,7 +68,7 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
-          if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_REF_NAME != 'main' ]]; then
+          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
             echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           else
             echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
