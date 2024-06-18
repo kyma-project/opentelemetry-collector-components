@@ -23,7 +23,6 @@ type leaderElectionConfig struct {
 	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
 	renewDeadlineSeconds time.Duration `mapstructure:"renew_deadline"`
 	retryPeriodSeconds   time.Duration `mapstructure:"retry_period"`
-	//config map[string]any
 }
 
 // receiverConfig describes a receiver instance with a default config.

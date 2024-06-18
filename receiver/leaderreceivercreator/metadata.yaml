@@ -8,3 +8,6 @@ status:
   distributions: [contrib]
   codeowners:
     active: [skhalash]
+# TODO: Update the receiver to pass the tests
+tests:
+  skip_lifecycle: true

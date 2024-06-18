@@ -2,9 +2,10 @@ package leaderreceivercreator
 
 import (
 	"context"
-	"k8s.io/utils/ptr"
 	"testing"
 	"time"
+
+	"k8s.io/utils/ptr"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
