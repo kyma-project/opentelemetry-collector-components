@@ -22,11 +22,10 @@ This release process covers the steps to release new major and minor versions fo
 5. Bump the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch with the new versions for the dependent images.
    Create a PR to `opentelemetry-collector-components/{RELEASE_BRANCH}` with the following changes:
    - `sec-scanners-config.yaml`:  
-     For the images listed in the `protecode` field:
-      - Update the tag of the `opentelemetry-collector-components` image with the new module version following the `x.y.z` pattern. For example, `europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:1.0.0`.
+     Update the tag of the `kyma-otel-collector` image with the new module version following the `x.y.z` pattern. For example, `europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:1.0.0`.
 
 6. Merge the PR.
-   
+
 7. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
    ```bash
@@ -42,7 +41,7 @@ This release process covers the steps to release new major and minor versions fo
 
    Replace {RELEASE_VERSION} with the new module version, for example, `1.0.0`, and replace {RELEASE_DEV_VERSION} with the new development module version, for example, `1.0.0-dev`.
 
-9.  Push the tags to the upstream repository.
+9. Push the tags to the upstream repository.
 
    ```bash
    git push upstream {RELEASE_VERSION}
@@ -52,13 +51,13 @@ This release process covers the steps to release new major and minor versions fo
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`). 
 
 10. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
-   - Once the GitHub action succeed, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
-   - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
+    - Once the GitHub action succeed, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
+    - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
-     ```bash
-     git push --delete upstream {RELEASE_VERSION}
-     git push upstream {RELEASE_VERSION}
-     ```
+      ```bash
+      git push --delete upstream {RELEASE_VERSION}
+      git push upstream {RELEASE_VERSION}
+      ```
 
 11. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
