@@ -47,6 +47,7 @@ BUILDER             := $(TOOLS_BIN_DIR)/builder
 CROSSLINK           := $(TOOLS_BIN_DIR)/crosslink
 GOIMPORTS           := $(TOOLS_BIN_DIR)/goimports
 LINT                := $(TOOLS_BIN_DIR)/golangci-lint
+GO_TEST_COVERAGE    := $(TOOLS_BIN_DIR)/go-test-coverage
 
 # BUILD_TYPE should be one of (dev, release).
 BUILD_TYPE?=release

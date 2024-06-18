@@ -139,3 +139,7 @@ checks:
 	$(MAKE) crosslink
 	$(MAKE) -j4 gotidy
 	git diff --exit-code || (echo 'Some files need committing' &&  git status && exit 1)
+
+.PHONY: check-coverage
+check-coverage: $(GO_TEST_COVERAGE) test-with-cover
+	$(GO_TEST_COVERAGE) --config=./.testcoverage.yml

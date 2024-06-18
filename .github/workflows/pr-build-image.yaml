@@ -11,11 +11,6 @@ on:
       - "main"
       - "release-*"
 
-  # while PR is open: build image with custom-components from current branch, tag: PR-XX
-      # PR gets merged to main: build image with custom components from main, tag: OTELVERSION-main
-      # PR gets merged to release-XX: build image with custom components from release-XX: tag: OTEL_VERSION-release-XX
-
-
 env:
   # Build mode can be either PR or release. PR uses the code from the current branch using `replace` directive in the builder-config.yaml
   # Release uses the code from the specified tag

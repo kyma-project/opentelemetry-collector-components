@@ -1,4 +1,4 @@
-name: Code checks
+name: PR Code checks
 
 on:
   pull_request:
@@ -138,6 +138,21 @@ jobs:
       - name: Run Unit Tests
         run: make gotest
 
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+
+      - name: Run coverage check
+        run: make check-coverage
+
+
   build:
     runs-on: ubuntu-latest
     needs: [unit-tests, lint]
@@ -164,7 +179,7 @@ jobs:
         run: make install-tools
       - name: Build Collector
         run: make otelkymacol
-          
+
   gitleaks:
     runs-on: ubuntu-latest
     steps:
@@ -176,7 +191,7 @@ jobs:
       - name: Run gitleaks
         # Scan commits between base and head of the pull request
         run: ./gitleaks detect --log-opts=${PULL_BASE_SHA}...${PULL_HEAD_SHA} --verbose --redact
-        env: 
+        env:
           PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PULL_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 

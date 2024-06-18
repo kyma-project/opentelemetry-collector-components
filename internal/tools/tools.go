@@ -12,4 +12,5 @@ import (
 	_ "go.opentelemetry.io/collector/cmd/builder"
 	_ "go.opentelemetry.io/collector/cmd/mdatagen"
 	_ "golang.org/x/tools/cmd/goimports"
+    _ "github.com/vladopajic/go-test-coverage/v2"
 )
