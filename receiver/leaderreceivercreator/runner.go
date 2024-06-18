@@ -106,19 +106,6 @@ func (r *receiverRunner) loadReceiverConfig(
 	return receiverCfg, "", nil
 }
 
-// createLogsRuntimeReceiver creates a receiver that is discovered at runtime.
-func (r *receiverRunner) createLogsRuntimeReceiver(
-	factory rcvr.Factory,
-	id component.ID,
-	cfg component.Config,
-	nextConsumer consumer.Logs,
-) (rcvr.Logs, error) {
-	runParams := r.params
-	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
-	runParams.ID = id
-	return factory.CreateLogsReceiver(context.Background(), runParams, cfg, nextConsumer)
-}
-
 // createMetricsRuntimeReceiver creates a receiver that is discovered at runtime.
 func (r *receiverRunner) createMetricsRuntimeReceiver(
 	factory rcvr.Factory,
@@ -132,30 +119,15 @@ func (r *receiverRunner) createMetricsRuntimeReceiver(
 	return factory.CreateMetricsReceiver(context.Background(), runParams, cfg, nextConsumer)
 }
 
-// createTracesRuntimeReceiver creates a receiver that is discovered at runtime.
-func (r *receiverRunner) createTracesRuntimeReceiver(
-	factory rcvr.Factory,
-	id component.ID,
-	cfg component.Config,
-	nextConsumer consumer.Traces,
-) (rcvr.Traces, error) {
-	runParams := r.params
-	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
-	runParams.ID = id
-	return factory.CreateTracesReceiver(context.Background(), runParams, cfg, nextConsumer)
-}
-
 var _ component.Component = (*wrappedReceiver)(nil)
 
 type wrappedReceiver struct {
-	logs    rcvr.Logs
 	metrics rcvr.Metrics
-	traces  rcvr.Traces
 }
 
 func (w *wrappedReceiver) Start(ctx context.Context, host component.Host) error {
 	var err error
-	for _, r := range []component.Component{w.logs, w.metrics, w.traces} {
+	for _, r := range []component.Component{w.metrics} {
 		if r != nil {
 			if e := r.Start(ctx, host); e != nil {
 				err = multierr.Combine(err, e)
@@ -167,7 +139,7 @@ func (w *wrappedReceiver) Start(ctx context.Context, host component.Host) error 
 
 func (w *wrappedReceiver) Shutdown(ctx context.Context) error {
 	var err error
-	for _, r := range []component.Component{w.logs, w.metrics, w.traces} {
+	for _, r := range []component.Component{w.metrics} {
 		if r != nil {
 			if e := r.Shutdown(ctx); e != nil {
 				err = multierr.Combine(err, e)

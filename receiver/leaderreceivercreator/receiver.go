@@ -24,21 +24,20 @@ var _ receiver.Metrics = (*leaderReceiverCreator)(nil)
 // leaderReceiverCreator implements consumer.Metrics.
 type leaderReceiverCreator struct {
 	params              receiver.CreateSettings
-	client              kubernetes.Interface
 	cfg                 *Config
 	nextMetricsConsumer consumer.Metrics
 
 	host              component.Host
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
-	makeClient        func() (kubernetes.Interface, error)
+	getK8sClient      func() (kubernetes.Interface, error)
 }
 
 func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
 	return &leaderReceiverCreator{
-		params:     params,
-		cfg:        cfg,
-		makeClient: makeK8sClient,
+		params:       params,
+		cfg:          cfg,
+		getK8sClient: getK8sClient,
 	}
 }
 
@@ -51,7 +50,7 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 
 	c.params.TelemetrySettings.Logger.Info("Starting leader election receiver...")
 
-	client, err := c.makeClient()
+	client, err := c.getK8sClient()
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
@@ -83,23 +82,19 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	return nil
 }
 
-func makeK8sClient() (kubernetes.Interface, error) {
+func getK8sClient() (kubernetes.Interface, error) {
 	kubeConfigPath := filepath.Join(os.Getenv("HOME"), ".kube/config")
 
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
 		if err != nil {
-			//ler.params.TelemetrySettings.Logger.Error("Cannot build ClientConfig", zap.Error(err))
-			//fmt.Printf("failed to build clientConfig \n")
 			return nil, err
 		}
 	}
 
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		//ler.params.TelemetrySettings.Logger.Error("Cannot create Kubernetes client", zap.Error(err))
-		//fmt.Printf("Unable to create k8s client\n")
 		return nil, err
 	}
 	return client, nil

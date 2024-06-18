@@ -29,12 +29,13 @@ func TestMockReceiverCreator(t *testing.T) {
 	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
 	lr := r.(*leaderReceiverCreator)
 	fakeClient := fake.NewSimpleClientset()
-	lr.makeClient = func() (kubernetes.Interface, error) {
+	lr.getK8sClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
 	ctx := context.TODO()
-	lr.Start(ctx, componenttest.NewNopHost())
+	err := lr.Start(ctx, componenttest.NewNopHost())
+	require.NoError(t, err)
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
 		require.NoError(t, err)
