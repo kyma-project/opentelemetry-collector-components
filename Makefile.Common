@@ -31,8 +31,6 @@ TOOLS_PKG_NAMES  := $(shell grep -E $(TOOLS_MOD_REGEX) < $(TOOLS_MOD_DIR)/tools.
 TOOLS_BIN_DIR    := $(SRC_ROOT)/.tools
 TOOLS_PKG_NAMES_CLEAN := $(TOOLS_PKG_NAMES:/v2=)
 TOOLS_BIN_NAMES  := $(addprefix $(TOOLS_BIN_DIR)/, $(notdir $(TOOLS_PKG_NAMES_CLEAN)))
-$(info    TOOLS_PKG_NAMES is $(TOOLS_PKG_NAMES))
-$(info    FILTERED is $(filter %/$(notdir bla/go-test-coverage)%,$(TOOLS_PKG_NAMES)))
 
 .PHONY: install-tools
 install-tools: $(TOOLS_BIN_NAMES)
