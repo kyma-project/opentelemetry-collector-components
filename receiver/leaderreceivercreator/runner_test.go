@@ -44,14 +44,25 @@ func createMockMetricsReceiver(_ context.Context, params receiver.CreateSettings
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
-func NewMockHost() (component.Host, error) {
+func NewMockHost(withSupportedDataTybe bool) (component.Host, error) {
 
-	factories, err := receiver.MakeFactoryMap([]receiver.Factory{
-		receiver.NewFactory(component.MustNewType("foo"), func() component.Config { return &defaultCfg }, receiver.WithMetrics(createMockMetricsReceiver, metadata.MetricsStability)),
-	}...)
+	var factories map[component.Type]receiver.Factory
+	var err error
+	if withSupportedDataTybe {
+		factories, err = receiver.MakeFactoryMap([]receiver.Factory{
+			receiver.NewFactory(component.MustNewType("foo"), func() component.Config { return &defaultCfg }, receiver.WithMetrics(createMockMetricsReceiver, metadata.MetricsStability)),
+		}...)
+
+	} else {
+		factories, err = receiver.MakeFactoryMap([]receiver.Factory{
+			receiver.NewFactory(component.MustNewType("foo"), func() component.Config { return &defaultCfg }),
+		}...)
+	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	cfg := map[component.ID]component.Config{component.MustNewID("foo"): struct{}{}}
 	return &mockHost{
 		receivers: receiver.NewBuilder(cfg, factories),
@@ -71,7 +82,7 @@ func (nh *mockHost) GetExporters() map[component.DataType]map[component.ID]compo
 }
 
 func TestRunnerStart(t *testing.T) {
-	mh, err := NewMockHost()
+	mh, err := NewMockHost(true)
 	require.NoError(t, err)
 	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
 
@@ -80,7 +91,7 @@ func TestRunnerStart(t *testing.T) {
 }
 
 func TestLoadReceiverConfig(t *testing.T) {
-	mh, err := NewMockHost()
+	mh, err := NewMockHost(true)
 	require.NoError(t, err)
 	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
 	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("foo"))
@@ -91,4 +102,11 @@ func TestLoadReceiverConfig(t *testing.T) {
 	require.NotNil(t, cfg)
 	rcvrCfg := cfg.(**Config)
 	require.NotNil(t, mockReceiverConfig, (*rcvrCfg).subreceiverConfig.config)
+}
+
+func TestLoadReceiverConfigError(t *testing.T) {
+	mh, err := NewMockHost(false)
+	require.NoError(t, err)
+	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
+	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 }

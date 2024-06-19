@@ -8,6 +8,7 @@ data:
   config.yaml: |
     receivers:
       leader_receiver_creator:
+        auth_type: serviceAccount
         leader_election:
           lease_name: foo
           lease_namespace: default
@@ -46,7 +47,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: docker.io/rakeshgarimella944/leader-elec:03
+    - image: europe-docker.pkg.dev/kyma-project/dev/kyma-otel-collector:PR-17
       imagePullPolicy: Always
       name: collector
       volumeMounts:
@@ -67,7 +68,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: docker.io/rakeshgarimella944/leader-elec:03
+    - image: europe-docker.pkg.dev/kyma-project/dev/kyma-otel-collector:PR-17
       imagePullPolicy: Always
       name: collector
       volumeMounts:
