@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
 )
@@ -19,8 +17,30 @@ const (
 	leaderElectionConfigKey = "leader_election"
 )
 
+// AuthType describes the type of authentication to use for the K8s API
+type AuthType string
+
+const (
+	AuthTypeServiceAccount AuthType = "serviceAccount"
+)
+
+// APIConfig contains options relevant to connecting to the K8s API
+type APIConfig struct {
+	// How to authenticate to the K8s API server.  This can be one of
+	// `serviceAccount` (to use the standard service account
+	// token provided to the agent pod), or `kubeConfig` to use credentials
+	// from `~/.kube/config`.
+	AuthType AuthType `mapstructure:"auth_type"`
+}
+
+// Config defines configuration for leader receiver creator.
+type Config struct {
+	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
+	subreceiverConfig    receiverConfig
+}
+
 type leaderElectionConfig struct {
-	k8sconfig.APIConfig
+	authType             AuthType      `mapstructure:"auth_type"`
 	leaseName            string        `mapstructure:"lease_name"`
 	leaseNamespace       string        `mapstructure:"lease_namespace"`
 	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
@@ -52,7 +72,7 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 
 func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
 	if authType, ok := cfg["auth_type"].(string); ok {
-		lecConfig.AuthType = k8sconfig.AuthType(authType)
+		lecConfig.authType = AuthType(authType)
 	}
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lecConfig.leaseName = leaseName
@@ -87,12 +107,6 @@ func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any)
 }
 
 var _ confmap.Unmarshaler = (*Config)(nil)
-
-// Config defines configuration for receiver_creator.
-type Config struct {
-	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
-	subreceiverConfig    receiverConfig
-}
 
 func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 	if componentParser == nil {
