@@ -47,7 +47,7 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 
 	c.params.TelemetrySettings.Logger.Debug("Starting leader election receiver...")
 
-	client, err := c.getK8sClient(c.cfg.leaderElectionConfig.authType)
+	client, err := c.getK8sClient(c.cfg.authType)
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}

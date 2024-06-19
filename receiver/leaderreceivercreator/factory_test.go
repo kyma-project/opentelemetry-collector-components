@@ -2,9 +2,8 @@ package leaderreceivercreator
 
 import (
 	"context"
-	"testing"
-
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
+	"testing"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -42,8 +41,8 @@ func TestNewFactory(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				factory := NewFactory()
 				expectedCfg := &Config{
+					authType: k8sconfig.AuthTypeServiceAccount,
 					leaderElectionConfig: leaderElectionConfig{
-						authType:             k8sconfig.AuthTypeServiceAccount,
 						leaseName:            "my-lease",
 						leaseNamespace:       "default",
 						leaseDurationSeconds: defaultLeaseDuration,

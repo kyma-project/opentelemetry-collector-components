@@ -10,6 +10,7 @@ Below is an example of the configuration:
 ```yaml
 receivers:
   leader_receiver_creator:
+    auth_type: serviceAccount
     leader_election:
       lease_name: foo
       lease_namespace: bar

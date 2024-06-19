@@ -52,8 +52,8 @@ func TestMockReceiverCreator(t *testing.T) {
 
 func TestUnsupportedAuthType(t *testing.T) {
 	config := &Config{
+		authType: k8sconfig.AuthType("foo"),
 		leaderElectionConfig: leaderElectionConfig{
-			authType:             k8sconfig.AuthType("foo"),
 			leaseName:            "my-foo-lease-1",
 			leaseNamespace:       "default",
 			leaseDurationSeconds: 10 * time.Second,

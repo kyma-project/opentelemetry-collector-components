@@ -4,8 +4,27 @@ leader_receiver_creator/check-default-values:
       protocols:
         grpc:
 leader_receiver_creator/check-all-values:
+  auth_type: serviceAccount
   leader_election:
-    auth_type: serviceAccount
+    lease_name: foo
+    lease_namespace: bar
+    lease_duration: 15s
+    renew_deadline: 10s
+    retry_period: 2s
+  receiver:
+    k8s_cluster:
+      auth_type: serviceAccount
+      node_conditions_to_report: [ Ready, MemoryPressure ]
+      allocatable_types_to_report: [ cpu, memory ]
+      metrics:
+        k8s.container.cpu_limit:
+          enabled: false
+      resource_attributes:
+        container.id:
+          enabled: false
+leader_receiver_creator/check-kubeconfig-authtype:
+  auth_type: kubeconfig
+  leader_election:
     lease_name: foo
     lease_namespace: bar
     lease_duration: 15s

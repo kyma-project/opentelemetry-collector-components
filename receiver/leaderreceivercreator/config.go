@@ -21,17 +21,17 @@ const (
 
 // Config defines configuration for leader receiver creator.
 type Config struct {
+	authType             k8sconfig.AuthType   `mapstructure:"auth_type"`
 	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
 	subreceiverConfig    receiverConfig
 }
 
 type leaderElectionConfig struct {
-	authType             k8sconfig.AuthType `mapstructure:"auth_type"`
-	leaseName            string             `mapstructure:"lease_name"`
-	leaseNamespace       string             `mapstructure:"lease_namespace"`
-	leaseDurationSeconds time.Duration      `mapstructure:"lease_duration"`
-	renewDeadlineSeconds time.Duration      `mapstructure:"renew_deadline"`
-	retryPeriodSeconds   time.Duration      `mapstructure:"retry_period"`
+	leaseName            string        `mapstructure:"lease_name"`
+	leaseNamespace       string        `mapstructure:"lease_namespace"`
+	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
+	renewDeadlineSeconds time.Duration `mapstructure:"renew_deadline"`
+	retryPeriodSeconds   time.Duration `mapstructure:"retry_period"`
 }
 
 // receiverConfig describes a receiver instance with a default config.
@@ -57,9 +57,6 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 }
 
 func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
-	if authType, ok := cfg["auth_type"].(string); ok {
-		lecConfig.authType = k8sconfig.AuthType(authType)
-	}
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lecConfig.leaseName = leaseName
 	}
@@ -102,6 +99,10 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 
 	if err := componentParser.Unmarshal(cfg, confmap.WithIgnoreUnused()); err != nil {
 		return err
+	}
+	if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
+		authType := k8sconfig.AuthType(authTypeString)
+		cfg.authType = authType
 	}
 
 	subreceiverConfig, err := componentParser.Sub(subreceiverConfigKey)

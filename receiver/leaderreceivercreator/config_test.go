@@ -28,8 +28,8 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "check-default-values"),
 			expected: &Config{
+				authType: k8sconfig.AuthTypeServiceAccount,
 				leaderElectionConfig: leaderElectionConfig{
-					authType:             k8sconfig.AuthTypeServiceAccount,
 					leaseName:            "my-lease",
 					leaseNamespace:       "default",
 					leaseDurationSeconds: defaultLeaseDuration,
@@ -49,8 +49,39 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "check-all-values"),
 			expected: &Config{
+				authType: k8sconfig.AuthType("serviceAccount"),
 				leaderElectionConfig: leaderElectionConfig{
-					authType:             k8sconfig.AuthTypeServiceAccount,
+					leaseName:            "foo",
+					leaseNamespace:       "bar",
+					leaseDurationSeconds: 15 * time.Second,
+					renewDeadlineSeconds: 10 * time.Second,
+					retryPeriodSeconds:   2 * time.Second,
+				},
+				subreceiverConfig: receiverConfig{
+					id: component.MustNewID("k8s_cluster"),
+					config: map[string]any{
+						"auth_type":                   "serviceAccount",
+						"node_conditions_to_report":   []interface{}{"Ready", "MemoryPressure"},
+						"allocatable_types_to_report": []interface{}{"cpu", "memory"},
+						"metrics": map[string]any{
+							"k8s.container.cpu_limit": map[string]any{
+								"enabled": false,
+							},
+						},
+						"resource_attributes": map[string]any{
+							"container.id": map[string]any{
+								"enabled": false,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "check-kubeconfig-authtype"),
+			expected: &Config{
+				authType: k8sconfig.AuthType("kubeconfig"),
+				leaderElectionConfig: leaderElectionConfig{
 					leaseName:            "foo",
 					leaseNamespace:       "bar",
 					leaseDurationSeconds: 15 * time.Second,
