@@ -5,6 +5,7 @@ leader_receiver_creator/check-default-values:
         grpc:
 leader_receiver_creator/check-all-values:
   leader_election:
+    auth_type: kubeConfig
     lease_name: foo
     lease_namespace: bar
     lease_duration: 15s

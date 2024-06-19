@@ -5,6 +5,7 @@ package leaderreceivercreator
 
 import (
 	"context"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -27,6 +28,9 @@ func NewFactory() receiver.Factory {
 func createDefaultConfig() component.Config {
 	return &Config{
 		leaderElectionConfig: leaderElectionConfig{
+			APIConfig: k8sconfig.APIConfig{
+				AuthType: k8sconfig.AuthTypeServiceAccount,
+			},
 			leaseName:            "my-lease",
 			leaseNamespace:       "default",
 			leaseDurationSeconds: defaultLeaseDuration,

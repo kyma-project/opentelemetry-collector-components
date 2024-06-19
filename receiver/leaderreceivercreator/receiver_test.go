@@ -2,6 +2,7 @@ package leaderreceivercreator
 
 import (
 	"context"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"testing"
 	"time"
 
@@ -30,7 +31,7 @@ func TestMockReceiverCreator(t *testing.T) {
 	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
 	lr := r.(*leaderReceiverCreator)
 	fakeClient := fake.NewSimpleClientset()
-	lr.getK8sClient = func() (kubernetes.Interface, error) {
+	lr.getK8sClient = func(apiConf k8sconfig.APIConfig) (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 

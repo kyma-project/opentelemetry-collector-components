@@ -5,6 +5,7 @@ package leaderreceivercreator
 
 import (
 	"fmt"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -18,6 +19,7 @@ const (
 )
 
 type leaderElectionConfig struct {
+	k8sconfig.APIConfig
 	leaseName            string        `mapstructure:"lease_name"`
 	leaseNamespace       string        `mapstructure:"lease_namespace"`
 	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
@@ -48,6 +50,9 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 }
 
 func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
+	if authType, ok := cfg["auth_type"].(string); ok {
+		lecConfig.AuthType = k8sconfig.AuthType(authType)
+	}
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lecConfig.leaseName = leaseName
 	}

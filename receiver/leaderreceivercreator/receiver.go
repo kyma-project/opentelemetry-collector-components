@@ -6,17 +6,12 @@ package leaderreceivercreator
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
-
-	"k8s.io/client-go/rest"
-
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 var _ receiver.Metrics = (*leaderReceiverCreator)(nil)
@@ -30,14 +25,14 @@ type leaderReceiverCreator struct {
 	host              component.Host
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
-	getK8sClient      func() (kubernetes.Interface, error)
+	getK8sClient      func(apiConf k8sconfig.APIConfig) (kubernetes.Interface, error)
 }
 
 func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
 	return &leaderReceiverCreator{
 		params:       params,
 		cfg:          cfg,
-		getK8sClient: getK8sClient,
+		getK8sClient: k8sconfig.MakeClient,
 	}
 }
 
@@ -50,7 +45,7 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 
 	c.params.TelemetrySettings.Logger.Info("Starting leader election receiver...")
 
-	client, err := c.getK8sClient()
+	client, err := c.getK8sClient(c.cfg.leaderElectionConfig.APIConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
@@ -82,23 +77,23 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	return nil
 }
 
-func getK8sClient() (kubernetes.Interface, error) {
-	kubeConfigPath := filepath.Join(os.Getenv("HOME"), ".kube/config")
-
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	client, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
-}
+//func getK8sClient() (kubernetes.Interface, error) {
+//	kubeConfigPath := filepath.Join(os.Getenv("HOME"), ".kube/config")
+//
+//	config, err := rest.InClusterConfig()
+//	if err != nil {
+//		config, err = clientcmd.BuildConfigFromFlags("", kubeConfigPath)
+//		if err != nil {
+//			return nil, err
+//		}
+//	}
+//
+//	client, err := kubernetes.NewForConfig(config)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return client, nil
+//}
 
 func (c *leaderReceiverCreator) startSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",
