@@ -5,8 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
@@ -29,9 +27,7 @@ func TestLoadConfig(t *testing.T) {
 			id: component.NewIDWithName(metadata.Type, "check-default-values"),
 			expected: &Config{
 				leaderElectionConfig: leaderElectionConfig{
-					APIConfig: k8sconfig.APIConfig{
-						AuthType: k8sconfig.AuthTypeServiceAccount,
-					},
+					authType:             AuthTypeServiceAccount,
 					leaseName:            "my-lease",
 					leaseNamespace:       "default",
 					leaseDurationSeconds: defaultLeaseDuration,
@@ -52,9 +48,7 @@ func TestLoadConfig(t *testing.T) {
 			id: component.NewIDWithName(metadata.Type, "check-all-values"),
 			expected: &Config{
 				leaderElectionConfig: leaderElectionConfig{
-					APIConfig: k8sconfig.APIConfig{
-						AuthType: k8sconfig.AuthTypeKubeConfig,
-					},
+					authType:             AuthTypeServiceAccount,
 					leaseName:            "foo",
 					leaseNamespace:       "bar",
 					leaseDurationSeconds: 15 * time.Second,
