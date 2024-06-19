@@ -2,10 +2,11 @@ package k8sconfig
 
 import (
 	"fmt"
+	"net/http"
+
 	k8s "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"net/http"
 )
 
 // AuthType describes the type of authentication to use for the K8s API

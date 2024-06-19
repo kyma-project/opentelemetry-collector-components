@@ -5,6 +5,7 @@ package leaderreceivercreator
 
 import (
 	"context"
+
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"

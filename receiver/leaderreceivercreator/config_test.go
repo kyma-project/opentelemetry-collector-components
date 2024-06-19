@@ -1,10 +1,11 @@
 package leaderreceivercreator
 
 import (
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
