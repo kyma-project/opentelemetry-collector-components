@@ -141,5 +141,5 @@ checks:
 	git diff --exit-code || (echo 'Some files need committing' &&  git status && exit 1)
 
 .PHONY: check-coverage
-check-coverage: $(GO_TEST_COVERAGE) test-with-cover
+check-coverage: $(GO_TEST_COVERAGE) gotest-with-cover
 	$(GO_TEST_COVERAGE) --config=./.testcoverage.yml
