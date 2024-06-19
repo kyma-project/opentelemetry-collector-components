@@ -8,6 +8,7 @@ package tools
 // This ensures that all systems use the same version of tools in addition to regular dependencies.
 import (
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
+	_ "github.com/vladopajic/go-test-coverage/v2"
 	_ "go.opentelemetry.io/build-tools/crosslink"
 	_ "go.opentelemetry.io/collector/cmd/builder"
 	_ "go.opentelemetry.io/collector/cmd/mdatagen"

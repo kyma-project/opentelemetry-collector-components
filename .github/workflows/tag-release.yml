@@ -1,0 +1,90 @@
+name: Tag Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+env:
+
+  # BUILD_MODE can be either `PR` or `release`. `PR` uses the code from the current branch using `replace` directive in the builder-config.yaml
+  # `release` uses the code from the specified tag
+  # BUILD_MODE is used to select the correct builder-config-{BUILD_MODE}.yaml in the dockerfile
+
+  BUILD_MODE: release
+
+jobs:
+
+  envs:
+    runs-on: ubuntu-latest
+    outputs:
+      build-args: ${{ steps.prepare-envs.outputs.build-args }}
+      tags: ${{ steps.create-tags.outputs.tags }}
+      otel-version: ${{ steps.load-envs.outputs.OTEL_VERSION }}
+      otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
+      pr-tag: ${{ steps.create-tags.outputs.PR_TAG }}
+      push-tag: ${{ steps.create-tags.outputs.PUSH_TAG }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: prepare envs
+        id: prepare-envs
+        run: |
+          {
+          echo 'build-args<<BUILD_ARGS'
+          echo "BUILD_MODE=${{ env.BUILD_MODE }}"
+          echo "KYMA_OCC_VERSION=${{ github.ref_name }}"
+          cat otel-collector/envs
+          echo BUILD_ARGS 
+          } >> "$GITHUB_OUTPUT"
+
+      - name: load envs into output
+        id: load-envs
+        run: |
+          cat otel-collector/envs >> "$GITHUB_OUTPUT"
+
+      - name: print env context
+        run: echo "${{ steps.prepare-envs.outputs.build-args }}"
+
+      - name: create tags
+        id: create-tags
+        run: |
+          echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+
+  build-image:
+    needs: envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: kyma-otel-collector
+      dockerfile: otel-collector/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+      tags: ${{ needs.envs.outputs.tags }}
+
+  list-images:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: List images
+        run: |
+          echo "${{ needs.build-image.outputs.images }}"
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [ build-image ]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
