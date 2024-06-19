@@ -1,4 +1,4 @@
-name: 'Manage Stale Issues and Pull Requests'
+name: 'Periodic Github Checks'
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
-  stale:
+  stale-issues:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v9
@@ -15,8 +15,8 @@ jobs:
           days-before-close: 7
           stale-issue-label: 'lifecycle/stale'
           stale-pr-label: 'lifecycle/stale'
-          exempt-issue-labels: 'lifecycle/frozen,lifecycle/active'
-          exempt-pr-labels: 'lifecycle/frozen,lifecycle/active'
+          exempt-issue-labels: 'lifecycle/frozen'
+          exempt-pr-labels: 'lifecycle/frozen'
           stale-issue-message: |
             This issue has been automatically marked as stale due to the lack of recent activity. It will soon be closed if no further activity occurs.
             Thank you for your contributions.

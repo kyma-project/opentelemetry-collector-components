@@ -3,14 +3,24 @@ name: Build Image
 on:
   pull_request_target:
     types: [ opened, edited, synchronize, reopened, ready_for_review ]
+    branches:
+      - "main"
+      - "release-*"
   push:
     branches:
       - "main"
-      - "*.*.*"
-  pull_request: {}
+      - "release-*"
 
+env:
+  # Build mode can be either PR or release. PR uses the code from the current branch using `replace` directive in the builder-config.yaml
+  # Release uses the code from the specified tag
+
+  # BUILD_MODE is used to select the correct builder-config-{BUILD_MODE}.yaml in the dockerfile
+
+  BUILD_MODE: PR
 
 jobs:
+
   envs:
     runs-on: ubuntu-latest
     outputs:
@@ -23,18 +33,14 @@ jobs:
 
     steps:
       - name: Checkout code
+        if: github.event_name == 'pull_request_target'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Set build mode
-        run: |
-          echo $GITHUB_REF_NAME
-          if [[ $GITHUB_EVENT_NAME == 'push' && $GITHUB_REF_NAME == release* ]]; then
-            echo "BUILD_MODE=release" >> "$GITHUB_ENV"
-          else
-            echo "BUILD_MODE=PR" >> "$GITHUB_ENV"
-          fi
+      - name: Checkout code
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
 
       - name: prepare envs
         id: prepare-envs
@@ -43,11 +49,6 @@ jobs:
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
-          
-          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            echo KYMA_OCC_VERSION="${{ github.ref_name }}"
-          fi
-          
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
 
@@ -81,17 +82,12 @@ jobs:
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
 
-  debug:
-    needs: envs
+  list-images:
+    needs: build-image
     runs-on: ubuntu-latest
     steps:
-      - name: print variables
+      - name: List images
         run: |
-          echo "${{ needs.envs.outputs.build-args }}"
-          echo "${{ needs.envs.outputs.tags }}"
-          echo "${{ needs.envs.outputs.otel-version }}"
-          echo "${{ needs.envs.outputs.otel-contrib-version }}"
-          echo "${{ needs.envs.outputs.pr-tag }}"
-          echo "${{ needs.envs.outputs.push-tag }}"
+          echo "${{ needs.build-image.outputs.images }}"
 
 
