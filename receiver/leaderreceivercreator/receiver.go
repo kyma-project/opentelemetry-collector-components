@@ -6,12 +6,14 @@ package leaderreceivercreator
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 )
 
 var _ receiver.Metrics = (*leaderReceiverCreator)(nil)
@@ -43,14 +45,14 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	ctx := context.Background()
 	ctx, c.cancel = context.WithCancel(ctx)
 
-	c.params.TelemetrySettings.Logger.Info("Starting leader election receiver...")
+	c.params.TelemetrySettings.Logger.Debug("Starting leader election receiver...")
 
 	client, err := c.getK8sClient(c.cfg.leaderElectionConfig.authType)
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
 
-	c.params.TelemetrySettings.Logger.Info("Creating leader elector...")
+	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
 	c.subReceiverRunner = newReceiverRunner(c.params, c.host)
 
 	leaderElector, err := newLeaderElector(
@@ -76,24 +78,6 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	go leaderElector.Run(ctx)
 	return nil
 }
-
-//
-//func getK8sClient(authType AuthType) (kubernetes.Interface, error) {
-//	if authType != AuthTypeServiceAccount {
-//		return nil, fmt.Errorf("authentication type: %s not supported", string(authType))
-//	}
-//
-//	config, err := rest.InClusterConfig()
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	client, err := kubernetes.NewForConfig(config)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return client, nil
-//}
 
 func (c *leaderReceiverCreator) startSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",
