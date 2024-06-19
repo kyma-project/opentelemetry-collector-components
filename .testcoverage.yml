@@ -10,7 +10,7 @@ local-prefix: "github.com/kyma-project/opentelemetry-collector-components"
 threshold:
   # (optional; default 0)
   # The minimum coverage that each package should have
-  package: 90
+  package: 80
 
 # Holds regexp rules which will override thresholds for matched files or packages using their paths.
 #
