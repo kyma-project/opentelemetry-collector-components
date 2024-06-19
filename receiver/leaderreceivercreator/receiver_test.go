@@ -2,6 +2,7 @@ package leaderreceivercreator
 
 import (
 	"context"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"testing"
 	"time"
 
@@ -30,7 +31,7 @@ func TestMockReceiverCreator(t *testing.T) {
 	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
 	lr := r.(*leaderReceiverCreator)
 	fakeClient := fake.NewSimpleClientset()
-	lr.getK8sClient = func(authType AuthType) (kubernetes.Interface, error) {
+	lr.getK8sClient = func(authType k8sconfig.AuthType) (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
@@ -46,4 +47,23 @@ func TestMockReceiverCreator(t *testing.T) {
 	}, 5*time.Second, 100*time.Millisecond)
 
 	require.NoError(t, lr.Shutdown(ctx))
+}
+
+func TestUnsupportedAuthType(t *testing.T) {
+	config := &Config{
+		leaderElectionConfig: leaderElectionConfig{
+			authType:             k8sconfig.AuthType("foo"),
+			leaseName:            "my-foo-lease-1",
+			leaseNamespace:       "default",
+			leaseDurationSeconds: 10 * time.Second,
+			renewDeadlineSeconds: 5 * time.Second,
+			retryPeriodSeconds:   2 * time.Second,
+		},
+		subreceiverConfig: receiverConfig{},
+	}
+	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
+	lr := r.(*leaderReceiverCreator)
+	err := lr.Start(context.TODO(), componenttest.NewNopHost())
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "failed to create Kubernetes client: authentication type: foo not supported")
 }

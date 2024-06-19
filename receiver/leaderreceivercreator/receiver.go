@@ -6,12 +6,12 @@ package leaderreceivercreator
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 var _ receiver.Metrics = (*leaderReceiverCreator)(nil)
@@ -25,14 +25,14 @@ type leaderReceiverCreator struct {
 	host              component.Host
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
-	getK8sClient      func(authType AuthType) (kubernetes.Interface, error)
+	getK8sClient      func(authType k8sconfig.AuthType) (kubernetes.Interface, error)
 }
 
 func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
 	return &leaderReceiverCreator{
 		params:       params,
 		cfg:          cfg,
-		getK8sClient: getK8sClient,
+		getK8sClient: k8sconfig.GetK8sClient,
 	}
 }
 
@@ -77,22 +77,23 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	return nil
 }
 
-func getK8sClient(authType AuthType) (kubernetes.Interface, error) {
-	if authType != AuthTypeServiceAccount {
-		return nil, fmt.Errorf("authentication type not supported")
-	}
-
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
-}
+//
+//func getK8sClient(authType AuthType) (kubernetes.Interface, error) {
+//	if authType != AuthTypeServiceAccount {
+//		return nil, fmt.Errorf("authentication type: %s not supported", string(authType))
+//	}
+//
+//	config, err := rest.InClusterConfig()
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	client, err := kubernetes.NewForConfig(config)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return client, nil
+//}
 
 func (c *leaderReceiverCreator) startSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",

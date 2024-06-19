@@ -1,6 +1,7 @@
 package leaderreceivercreator
 
 import (
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"path/filepath"
 	"testing"
 	"time"
@@ -27,7 +28,7 @@ func TestLoadConfig(t *testing.T) {
 			id: component.NewIDWithName(metadata.Type, "check-default-values"),
 			expected: &Config{
 				leaderElectionConfig: leaderElectionConfig{
-					authType:             AuthTypeServiceAccount,
+					authType:             k8sconfig.AuthTypeServiceAccount,
 					leaseName:            "my-lease",
 					leaseNamespace:       "default",
 					leaseDurationSeconds: defaultLeaseDuration,
@@ -48,7 +49,7 @@ func TestLoadConfig(t *testing.T) {
 			id: component.NewIDWithName(metadata.Type, "check-all-values"),
 			expected: &Config{
 				leaderElectionConfig: leaderElectionConfig{
-					authType:             AuthTypeServiceAccount,
+					authType:             k8sconfig.AuthTypeServiceAccount,
 					leaseName:            "foo",
 					leaseNamespace:       "bar",
 					leaseDurationSeconds: 15 * time.Second,

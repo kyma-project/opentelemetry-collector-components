@@ -5,6 +5,7 @@ package leaderreceivercreator
 
 import (
 	"fmt"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -17,22 +18,6 @@ const (
 	leaderElectionConfigKey = "leader_election"
 )
 
-// AuthType describes the type of authentication to use for the K8s API
-type AuthType string
-
-const (
-	AuthTypeServiceAccount AuthType = "serviceAccount"
-)
-
-// APIConfig contains options relevant to connecting to the K8s API
-type APIConfig struct {
-	// How to authenticate to the K8s API server.  This can be one of
-	// `serviceAccount` (to use the standard service account
-	// token provided to the agent pod), or `kubeConfig` to use credentials
-	// from `~/.kube/config`.
-	AuthType AuthType `mapstructure:"auth_type"`
-}
-
 // Config defines configuration for leader receiver creator.
 type Config struct {
 	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
@@ -40,12 +25,12 @@ type Config struct {
 }
 
 type leaderElectionConfig struct {
-	authType             AuthType      `mapstructure:"auth_type"`
-	leaseName            string        `mapstructure:"lease_name"`
-	leaseNamespace       string        `mapstructure:"lease_namespace"`
-	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
-	renewDeadlineSeconds time.Duration `mapstructure:"renew_deadline"`
-	retryPeriodSeconds   time.Duration `mapstructure:"retry_period"`
+	authType             k8sconfig.AuthType `mapstructure:"auth_type"`
+	leaseName            string             `mapstructure:"lease_name"`
+	leaseNamespace       string             `mapstructure:"lease_namespace"`
+	leaseDurationSeconds time.Duration      `mapstructure:"lease_duration"`
+	renewDeadlineSeconds time.Duration      `mapstructure:"renew_deadline"`
+	retryPeriodSeconds   time.Duration      `mapstructure:"retry_period"`
 }
 
 // receiverConfig describes a receiver instance with a default config.
@@ -72,7 +57,7 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 
 func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
 	if authType, ok := cfg["auth_type"].(string); ok {
-		lecConfig.authType = AuthType(authType)
+		lecConfig.authType = k8sconfig.AuthType(authType)
 	}
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lecConfig.leaseName = leaseName
