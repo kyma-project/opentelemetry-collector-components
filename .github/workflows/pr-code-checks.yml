@@ -165,7 +165,7 @@ jobs:
         if: steps.go-cache.outputs.cache-hit != 'true'
         run: make install-tools
 
-      - name: Cache Lint Build
+      - name: Cache Coverage Build
         uses: actions/cache@v4
         with:
           path: ~/.cache/go-build
