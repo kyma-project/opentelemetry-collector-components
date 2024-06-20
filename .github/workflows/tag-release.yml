@@ -3,7 +3,7 @@ name: Tag Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 env:
 
   # BUILD_MODE can be either `PR` or `release`. `PR` uses the code from the current branch using `replace` directive in the builder-config.yaml
@@ -34,10 +34,7 @@ jobs:
           {
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
-          
-          # cut leading v from the github.ref_name
-          echo KYMA_OCC_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-          
+          echo "KYMA_OCC_VERSION=${{ github.ref_name }}"
           cat otel-collector/envs
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
