@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// receiverRunner handles starting/stopping of a concrete subreceiver instance.
+// receiverRunner handles starting/stopping of a concrete wrapped receiver instance.
 type receiverRunner struct {
 	logger      *zap.Logger
 	params      rcvr.CreateSettings
@@ -41,7 +41,7 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 	factory := r.host.GetFactory(component.KindReceiver, receiver.id.Type())
 
 	if factory == nil {
-		return fmt.Errorf("unable to lookup factory for receiver %q", receiver.id.String())
+		return fmt.Errorf("unable to lookup factory for wrapped receiver %q", receiver.id.String())
 	}
 
 	receiverFactory := factory.(rcvr.Factory)
@@ -51,7 +51,7 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 		return err
 	}
 
-	// Sets dynamically created receiver to something like receiver_creator/1/redis.
+	// Sets dynamically created wrapped receiver to something like receiver_creator/1/redis.
 	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", receiver.id.Name(), r.idNamespace))
 
 	wr := &wrappedReceiver{}
@@ -67,15 +67,13 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 	}
 
 	if createError != nil {
-		return fmt.Errorf("failed creating endpoint-derived receiver: %w", createError)
+		return fmt.Errorf("failed creating wrapped receiver: %w", createError)
 	}
 
-	r.params.Logger.Debug("Starting subreceiver with config",
-		zap.String("receiver", receiver.id.String()),
-		zap.Any("config", cfg))
+	r.params.Logger.Debug("Starting wrapped receiver with config", zap.String("receiver", receiver.id.String()), zap.Any("config", cfg))
 
 	if err = wr.Start(context.Background(), r.host); err != nil {
-		return fmt.Errorf("failed starting endpoint-derived receiver: %w", err)
+		return fmt.Errorf("failed starting wrapped receiver: %w", err)
 	}
 
 	r.receiver = wr

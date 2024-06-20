@@ -23,7 +23,7 @@ override: []
 exclude:
   # Exclude files or packages matching their paths
   paths:
-    - ^receiver/leaderreceivercreator/internal/k8sconfig # its not possible to test all methods in the package
+    - ^receiver/singletonreceivercreator/internal/k8sconfig # its not possible to test all methods in the package
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
