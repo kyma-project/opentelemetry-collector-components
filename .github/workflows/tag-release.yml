@@ -3,7 +3,7 @@ name: Tag Release
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 env:
 
   # BUILD_MODE can be either `PR` or `release`. `PR` uses the code from the current branch using `replace` directive in the builder-config.yaml
