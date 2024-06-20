@@ -1,19 +1,24 @@
-<!--   Thank you for your contribution. Before you submit the pull request:
-1. Follow contributing guidelines, templates, the recommended Git workflow, and any related documentation.
-2. Read and submit the required Contributor Licence Agreements (https://github.com/kyma-project/community/blob/main/CONTRIBUTING.md#agreements-and-licenses).
-3. Test your changes and attach their results to the pull request.
-4. Update the relevant documentation.
+## Description
 
-If the pull request requires a decision, follow the [decision-making process](https://github.com/kyma-project/community/blob/main/governance.md) and replace the PR template with the [decision record template](https://github.com/kyma-project/community/blob/main/.github/ISSUE_TEMPLATE/decision-record.md).
--->
+Changes proposed in this pull request (what was done and why):
 
-**Description**
+- 
 
-Changes proposed in this pull request:
+Changes refer to particular issues, PRs or documents:
 
-- ...
-- ...
-- ...
+- 
 
-**Related issue(s)**
-<!-- If you refer to a particular issue, provide its number. For example, `Resolves #123`, `Fixes #43`, or `See also #33`. -->
+## Traceability
+- [ ] The PR is linked to a GitHub issue.
+- [ ] The PR has a milestone set.
+- [ ] The PR has a respective `area` and `kind` label.
+- [ ] The follow-up issues (if any) are linked in the `Related Issues` section.
+- [ ] If the change is user-facing, the documentation has been adjusted.
+- [ ] The feature is unit-tested.
+- [ ] The feature is e2e-tested.
+
+<!--  
+Thank you for your contribution!
+
+Before submitting your pull request, adhere to contributing guidelines, templates, the recommended Git workflow, and related documentation, see also https://github.com/kyma-project/community/blob/main/docs/contributing/02-contributing.md
+ -->
