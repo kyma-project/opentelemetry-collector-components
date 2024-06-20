@@ -7,7 +7,7 @@ metadata:
 data:
   config.yaml: |
     receivers:
-      leader_receiver_creator:
+      singleton_receiver_creator:
         auth_type: serviceAccount
         leader_election:
           lease_name: foo
@@ -28,7 +28,7 @@ data:
     service:
       pipelines:
         metrics:
-          receivers: [leader_receiver_creator]
+          receivers: [singleton_receiver_creator]
           processors: [batch]
           exporters: [debug]
       telemetry:
