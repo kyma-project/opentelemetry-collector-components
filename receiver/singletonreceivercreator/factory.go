@@ -1,18 +1,18 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package leaderreceivercreator
+package singletonreceivercreator
 
 import (
 	"context"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/metadata"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/sharedcomponent"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/sharedcomponent"
 )
 
 var receivers = sharedcomponent.NewSharedComponents()

@@ -3,4 +3,4 @@
 
 //go:generate mdatagen metadata.yaml
 
-package leaderreceivercreator
+package singletonreceivercreator

@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package leaderreceivercreator
+package singletonreceivercreator
 
 import (
 	"context"
@@ -73,7 +73,7 @@ func (r *receiverRunner) start(
 		return fmt.Errorf("failed creating endpoint-derived receiver: %w", createError)
 	}
 
-	r.params.Logger.Info("Starting subreceiver",
+	r.params.Logger.Debug("Starting subreceiver with config",
 		zap.String("receiver", receiver.id.String()),
 		zap.Any("config", cfg))
 

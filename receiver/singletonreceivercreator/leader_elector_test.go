@@ -1,4 +1,4 @@
-package leaderreceivercreator
+package singletonreceivercreator
 
 import (
 	"context"

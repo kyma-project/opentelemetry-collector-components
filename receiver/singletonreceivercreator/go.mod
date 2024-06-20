@@ -1,4 +1,4 @@
-module github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator
+module github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator
 
 go 1.22.0
 

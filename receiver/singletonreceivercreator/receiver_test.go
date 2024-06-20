@@ -1,11 +1,11 @@
-package leaderreceivercreator
+package singletonreceivercreator
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/leaderreceivercreator/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 
 	"k8s.io/utils/ptr"
 
