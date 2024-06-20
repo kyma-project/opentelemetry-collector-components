@@ -22,30 +22,41 @@ This release process covers the steps to release new major and minor versions fo
 5. Bump the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch with the new versions for the dependent images.
    Create a PR to `opentelemetry-collector-components/{RELEASE_BRANCH}` with the following changes:
    - `sec-scanners-config.yaml`:  
-     Update the tag of the `kyma-otel-collector` image with the new module version following the `x.y.z` pattern. For example, `europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:1.0.0`.
+     Update the tag of the `kyma-otel-collector` image with the new module version following the `OTEL_VERSION-OCC_VERSION` pattern. For example, `europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.102.1-0.0.1`.
 
 6. Merge the PR.
+
 
 7. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
    ```bash
    git rebase upstream/{RELEASE_BRANCH} {RELEASE_BRANCH}
    ```
+   
+7. Create tags for every go module in this repository.
+   For every module in receiver, processor, exporter, and extension directories, create a tag with the new version.
+
+   ```bash
+   git tag {RELATIVE_MODULE_PATH}/v{RELEASE_VERSION}
+   # eg. git tag receiver/dummymetricsreceiver/v1.0.0
+   ```
+
+   The create-and-push-tags target in the Makefile helps to create and push tags for all modules.
+   ```bash
+   OCC_VERSION={RELEASE_VERSION} REMOTE={REPOSITORY_REMOTE} make create-and-push-tags
+   # eg. OCC_VERSION=1.0.0 REMOTE=upstream make create-and-push-tags
+   ```
 
 8. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
 
    ```bash
    git tag {RELEASE_VERSION}
-   git tag {RELEASE_DEV_VERSION}
    ```
 
-   Replace {RELEASE_VERSION} with the new module version, for example, `1.0.0`, and replace {RELEASE_DEV_VERSION} with the new development module version, for example, `1.0.0-dev`.
-
-9. Push the tags to the upstream repository.
+9. Push the tag to the upstream repository.
 
    ```bash
-   git push upstream {RELEASE_VERSION}
-   git push upstream {RELEASE_DEV_VERSION}
+   git push {REPOSITORY_REMOTE} {RELEASE_VERSION}
    ```
 
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`). 
