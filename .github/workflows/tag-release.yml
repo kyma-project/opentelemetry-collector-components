@@ -12,9 +12,6 @@ env:
 
   BUILD_MODE: release
 
-permissions:
-  contents: write
-
 jobs:
 
   envs:
