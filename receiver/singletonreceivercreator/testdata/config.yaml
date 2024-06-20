@@ -1,9 +1,9 @@
-leader_receiver_creator/check-default-values:
+singleton_receiver_creator/check-default-values:
   receiver:
     otlp:
       protocols:
         grpc:
-leader_receiver_creator/check-all-values:
+singleton_receiver_creator/check-all-values:
   auth_type: serviceAccount
   leader_election:
     lease_name: foo
@@ -22,7 +22,7 @@ leader_receiver_creator/check-all-values:
       resource_attributes:
         container.id:
           enabled: false
-leader_receiver_creator/check-kubeconfig-authtype:
+singleton_receiver_creator/check-kubeconfig-authtype:
   auth_type: kubeconfig
   leader_election:
     lease_name: foo

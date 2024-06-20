@@ -1,5 +1,5 @@
-type: leader_receiver_creator
-scope_name: otelcol/leaderreceivercreator
+type: singleton_receiver_creator
+scope_name: otelcol/singletonreceivercreator
 
 status:
   class: receiver

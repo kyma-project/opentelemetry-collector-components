@@ -5,6 +5,7 @@ package singletonreceivercreator
 
 import (
 	"context"
+
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
@@ -41,8 +42,8 @@ func createDefaultConfig() component.Config {
 
 func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	r := receivers.GetOrAdd(cfg, func() component.Component {
-		return newLeaderReceiverCreator(params, cfg.(*Config))
+		return newSingletonReceiverCreator(params, cfg.(*Config))
 	})
-	r.Component.(*leaderReceiverCreator).nextMetricsConsumer = consumer
+	r.Component.(*singletonReceiverCreator).nextMetricsConsumer = consumer
 	return r, nil
 }

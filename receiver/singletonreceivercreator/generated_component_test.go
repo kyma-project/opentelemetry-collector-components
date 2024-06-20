@@ -16,7 +16,7 @@ import (
 )
 
 func TestComponentFactoryType(t *testing.T) {
-	require.Equal(t, "leader_receiver_creator", NewFactory().Type().String())
+	require.Equal(t, "singleton_receiver_creator", NewFactory().Type().String())
 }
 
 func TestComponentConfigStruct(t *testing.T) {

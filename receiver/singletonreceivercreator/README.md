@@ -1,7 +1,10 @@
-# Leader Receiver Creator
+# Singleton Receiver Creator
 
-Leader Receiver Creator is a OTel Collector receiver that instantiates another receiver based on the leader election status. It is useful when one wants to have a single instance of a receiver running in a cluster. The receiver which gets the lease is created and executed.
+Singleton Receiver Creator is a OTel Collector receiver that instantiates another receiver based on the leader election status. It is useful when one wants to have a single instance of a receiver running in a cluster. The receiver which gets the lease is created and executed.
 
+## How it works
+
+It utilizes leader election to determine which instance should be the leader. The instance which wins the lease, becomes the leader and starts the underlying sub-receiver. When the leader loses the lease, it will stop the receiver and wait until it acquires the lease again.
 
 ## Configuration
 
@@ -9,7 +12,7 @@ Below is an example of the configuration:
 
 ```yaml
 receivers:
-  leader_receiver_creator:
+  singleton_receiver_creator:
     auth_type: serviceAccount
     leader_election:
       lease_name: foo

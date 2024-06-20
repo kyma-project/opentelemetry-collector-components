@@ -16,10 +16,10 @@ import (
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 )
 
-var _ receiver.Metrics = (*leaderReceiverCreator)(nil)
+var _ receiver.Metrics = (*singletonReceiverCreator)(nil)
 
-// leaderReceiverCreator implements consumer.Metrics.
-type leaderReceiverCreator struct {
+// singletonreceivercreator implements consumer.Metrics.
+type singletonReceiverCreator struct {
 	params              receiver.CreateSettings
 	cfg                 *Config
 	nextMetricsConsumer consumer.Metrics
@@ -30,8 +30,8 @@ type leaderReceiverCreator struct {
 	getK8sClient      func(authType k8sconfig.AuthType) (kubernetes.Interface, error)
 }
 
-func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
-	return &leaderReceiverCreator{
+func newSingletonReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
+	return &singletonReceiverCreator{
 		params:       params,
 		cfg:          cfg,
 		getK8sClient: k8sconfig.GetK8sClient,
@@ -39,7 +39,7 @@ func newLeaderReceiverCreator(params receiver.CreateSettings, cfg *Config) compo
 }
 
 // Start leader receiver creator.
-func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) error {
+func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host) error {
 	c.host = host
 	// Create a new context as specified in the interface documentation
 	ctx := context.Background()
@@ -79,7 +79,7 @@ func (c *leaderReceiverCreator) Start(_ context.Context, host component.Host) er
 	return nil
 }
 
-func (c *leaderReceiverCreator) startSubReceiver() error {
+func (c *singletonReceiverCreator) startSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",
 		zap.String("name", c.cfg.subreceiverConfig.id.String()))
 	if err := c.subReceiverRunner.start(
@@ -94,7 +94,7 @@ func (c *leaderReceiverCreator) startSubReceiver() error {
 	return nil
 }
 
-func (c *leaderReceiverCreator) stopSubReceiver() error {
+func (c *singletonReceiverCreator) stopSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Stopping subreceiver",
 		zap.String("name", c.cfg.subreceiverConfig.id.String()))
 	// if we dont get the lease then the subreceiver is not set
@@ -105,7 +105,7 @@ func (c *leaderReceiverCreator) stopSubReceiver() error {
 }
 
 // Shutdown stops the leader receiver creater and all its receivers started at runtime.
-func (c *leaderReceiverCreator) Shutdown(context.Context) error {
+func (c *singletonReceiverCreator) Shutdown(context.Context) error {
 	if c.cancel != nil {
 		c.cancel()
 	}

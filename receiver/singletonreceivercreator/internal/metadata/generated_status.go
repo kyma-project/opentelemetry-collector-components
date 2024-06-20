@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Type = component.MustNewType("leader_receiver_creator")
+	Type = component.MustNewType("singleton_receiver_creator")
 )
 
 const (

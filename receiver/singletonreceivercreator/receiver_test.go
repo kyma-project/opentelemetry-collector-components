@@ -29,8 +29,8 @@ func TestMockReceiverCreator(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
-	lr := r.(*leaderReceiverCreator)
+	r := newSingletonReceiverCreator(receivertest.NewNopCreateSettings(), config)
+	lr := r.(*singletonReceiverCreator)
 	fakeClient := fake.NewSimpleClientset()
 	lr.getK8sClient = func(authType k8sconfig.AuthType) (kubernetes.Interface, error) {
 		return fakeClient, nil
@@ -62,8 +62,8 @@ func TestUnsupportedAuthType(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newLeaderReceiverCreator(receivertest.NewNopCreateSettings(), config)
-	lr := r.(*leaderReceiverCreator)
+	r := newSingletonReceiverCreator(receivertest.NewNopCreateSettings(), config)
+	lr := r.(*singletonReceiverCreator)
 	err := lr.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: authentication type: foo not supported")
