@@ -9,7 +9,7 @@
 
 ## Overview
 
-Contains a custom distribution of the [Otel Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) bundle with additional [Otel Collector](https://github.com/open-telemetry/opentelemetry-collector) components used by the [Kyma Telemetry module](https://github.com/kyma-project/telemetry-manager/tree/main). The additional components are either general and planned to be contributed to the upstream contrib repo, or Kyma-specific.
+Contains a custom distribution of the [OTel Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) bundle with additional [OTel Collector](https://github.com/open-telemetry/opentelemetry-collector) components used by the [Kyma Telemetry module](https://github.com/kyma-project/telemetry-manager/tree/main). The additional components are either general and planned to be contributed to the upstream contrib repo, or Kyma-specific.
 
 For actual distribution configuration, see [OTel Collector Docker Image](./otel-collector/).
 
