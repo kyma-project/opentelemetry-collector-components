@@ -34,7 +34,10 @@ jobs:
           {
           echo 'build-args<<BUILD_ARGS'
           echo "BUILD_MODE=${{ env.BUILD_MODE }}"
-          echo "KYMA_OCC_VERSION=${{ github.ref_name }}"
+          
+          # cut leading v from the github.ref_name
+          echo KYMA_OCC_VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          
           cat otel-collector/envs
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"
