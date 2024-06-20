@@ -1,6 +1,7 @@
 # Singleton Receiver Creator
 
 Singleton Receiver Creator is a OTel Collector receiver that instantiates another receiver based on the leader election status. It is useful when one wants to have a single instance of a receiver running in a cluster. The receiver which gets the lease is created and executed.
+The problem this implementation solves has been mentioned in following [issue](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32994). In future this implementation can be used as solution to the aforementioned issue.
 
 ## How it works
 

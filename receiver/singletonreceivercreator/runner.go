@@ -37,10 +37,7 @@ func newReceiverRunner(params rcvr.CreateSettings, host component.Host) *receive
 	}
 }
 
-func (r *receiverRunner) start(
-	receiver receiverConfig,
-	metricsConsumer consumer.Metrics,
-) error {
+func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer.Metrics) error {
 	factory := r.host.GetFactory(component.KindReceiver, receiver.id.Type())
 
 	if factory == nil {
@@ -94,10 +91,7 @@ func (r *receiverRunner) shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (r *receiverRunner) loadReceiverConfig(
-	factory rcvr.Factory,
-	receiver receiverConfig,
-) (component.Config, string, error) {
+func (r *receiverRunner) loadReceiverConfig(factory rcvr.Factory, receiver receiverConfig) (component.Config, string, error) {
 	receiverCfg := factory.CreateDefaultConfig()
 	config := confmap.NewFromStringMap(receiver.config)
 	if err := config.Unmarshal(receiverCfg); err != nil {
