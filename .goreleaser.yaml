@@ -12,6 +12,7 @@ version: 2
 changelog:
   use: github
   sort: asc
+  mode: replace
   groups:
     - title: Bug fixes
       regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
