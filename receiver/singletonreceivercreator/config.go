@@ -56,12 +56,12 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 	}, nil
 }
 
-func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
+func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
 	if leaseName, ok := cfg["lease_name"].(string); ok {
-		lecConfig.leaseName = leaseName
+		lec.leaseName = leaseName
 	}
 	if leaseNamespace, ok := cfg["lease_namespace"].(string); ok {
-		lecConfig.leaseNamespace = leaseNamespace
+		lec.leaseNamespace = leaseNamespace
 	}
 
 	if leaseDuration, ok := cfg["lease_duration"].(string); ok {
@@ -69,24 +69,24 @@ func newLeaderElectionConfig(lecConfig leaderElectionConfig, cfg map[string]any)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse lease duration: %w", err)
 		}
-		lecConfig.leaseDurationSeconds = leasedurationSec
+		lec.leaseDurationSeconds = leasedurationSec
 	}
 	if renewDeadline, ok := cfg["renew_deadline"].(string); ok {
 		renewDeadlineSec, err := time.ParseDuration(renewDeadline)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse renew deadline: %w", err)
 		}
-		lecConfig.renewDeadlineSeconds = renewDeadlineSec
+		lec.renewDeadlineSeconds = renewDeadlineSec
 	}
 	if retryPeriod, ok := cfg["retry_period"].(string); ok {
 		retryPeriodSec, err := time.ParseDuration(retryPeriod)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse retry period: %w", err)
 		}
-		lecConfig.retryPeriodSeconds = retryPeriodSec
+		lec.retryPeriodSeconds = retryPeriodSec
 	}
 
-	return lecConfig, nil
+	return lec, nil
 }
 
 var _ confmap.Unmarshaler = (*Config)(nil)

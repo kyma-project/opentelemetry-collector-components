@@ -53,6 +53,7 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 
 	// Sets dynamically created wrapped receiver to something like receiver_creator/1/redis.
 	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", receiver.id.Name(), r.idNamespace))
+	r.logger.Debug("Creating wrapped receiver", zap.String("receiver", id.String()))
 
 	wr := &wrappedReceiver{}
 	var createError error
