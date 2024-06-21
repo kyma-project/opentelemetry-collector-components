@@ -1,6 +1,3 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
-
 package singletonreceivercreator
 
 import (
@@ -103,7 +100,7 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 	if err := componentParser.Unmarshal(cfg, confmap.WithIgnoreUnused()); err != nil {
 		return err
 	}
-	
+
 	if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
 		authType := k8sconfig.AuthType(authTypeString)
 		cfg.authType = authType

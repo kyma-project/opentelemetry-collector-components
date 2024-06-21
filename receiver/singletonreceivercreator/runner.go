@@ -3,6 +3,8 @@
 
 package singletonreceivercreator
 
+// This code has been copied fron: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/receivercreator/runner.go
+// Some modifications have been made to the original code to better suit the needs of this project.
 import (
 	"context"
 	"errors"
