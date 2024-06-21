@@ -30,7 +30,7 @@ var mockReceiverConfig = receiverConfig{
 
 var defaultCfg = &Config{
 	leaderElectionConfig: leaderElectionConfig{
-		leaseName:            "my-lease",
+		leaseName:            "singleton-receiver",
 		leaseNamespace:       "default",
 		leaseDurationSeconds: defaultLeaseDuration,
 		renewDeadlineSeconds: defaultRenewDeadline,
