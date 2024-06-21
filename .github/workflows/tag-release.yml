@@ -57,18 +57,18 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
-          # the final tag will look like 0.102.1-0.1.1
-          echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}"' >> "$GITHUB_OUTPUT"
-          echo 'CURRENT_TAG="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}' >> "$GITHUB_OUTPUT"
+          echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
+          PREFIX=v
           previous_version=$((git for-each-ref --sort=creatordate --format '%(refname)' refs/tags && echo refs/tags/v${{ steps.prepare-envs.outputs.SEMVER }}) \
           | grep -E "^refs/tags/${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" \
           | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
           | sort -t "." -k1,1n -k2,2n -k3,3n \
           | grep -B 1 ${{ steps.prepare-envs.outputs.SEMVER }} | head -1)
           
-          echo 'PREVIOUS_TAG="v${previous_version}"' >> "$GITHUB_OUTPUT"
+          echo "PREVIOUS_TAG=v${previous_version}" >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
