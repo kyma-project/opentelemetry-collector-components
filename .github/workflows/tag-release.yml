@@ -36,7 +36,7 @@ jobs:
         id: prepare-envs
         run: |
           # just stripping the leading `v` from the tag
-          SEMVER=${ echo ${{ github.ref_name }} | sed 's/^v//' }
+          SEMVER=$( echo ${{ github.ref_name }} | sed 's/^v//' )
           {
           # this creates a multiline string with the envs. 
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
