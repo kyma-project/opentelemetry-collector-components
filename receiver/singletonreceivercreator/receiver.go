@@ -45,7 +45,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 	ctx := context.Background()
 	ctx, c.cancel = context.WithCancel(ctx)
 
-	c.params.TelemetrySettings.Logger.Debug("Starting leader election receiver...")
+	c.params.TelemetrySettings.Logger.Info("Starting singleton election receiver...")
 
 	client, err := c.getK8sClient(c.cfg.authType)
 	if err != nil {
@@ -80,8 +80,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 }
 
 func (c *singletonReceiverCreator) startSubReceiver() error {
-	c.params.TelemetrySettings.Logger.Info("Starting sub-receiver",
-		zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	c.params.TelemetrySettings.Logger.Info("Starting wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
 	if err := c.subReceiverRunner.start(
 		receiverConfig{
 			id:     c.cfg.subreceiverConfig.id,
@@ -89,15 +88,14 @@ func (c *singletonReceiverCreator) startSubReceiver() error {
 		},
 		c.nextMetricsConsumer,
 	); err != nil {
-		return fmt.Errorf("failed to start subreceiver %s: %w", c.cfg.subreceiverConfig.id.String(), err)
+		return fmt.Errorf("failed to start wrapped reciever %s: %w", c.cfg.subreceiverConfig.id.String(), err)
 	}
 	return nil
 }
 
 func (c *singletonReceiverCreator) stopSubReceiver() error {
-	c.params.TelemetrySettings.Logger.Info("Stopping subreceiver",
-		zap.String("name", c.cfg.subreceiverConfig.id.String()))
-	// if we dont get the lease then the subreceiver is not set
+	c.params.TelemetrySettings.Logger.Info("Stopping wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	// if we dont get the lease then the wrapped reciever is not set
 	if c.subReceiverRunner != nil {
 		return c.subReceiverRunner.shutdown(context.Background())
 	}

@@ -3,7 +3,9 @@
 
 // Package sharedcomponent exposes util functionality for receivers and exporters
 // that need to share state between different signal types instances such as net.Listener or os.File.
-package sharedcomponent // import "github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent"
+// The package has been copied from "github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent"
+// as golang doesn't support importing internal packages from other modules.
+package sharedcomponent
 
 import (
 	"context"
