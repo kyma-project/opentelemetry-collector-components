@@ -61,6 +61,7 @@ jobs:
           echo 'CURRENT_TAG="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
+          PREFIX=v
           previous_version=$((git for-each-ref --sort=creatordate --format '%(refname)' refs/tags && echo refs/tags/v${{ steps.prepare-envs.outputs.SEMVER }}) \
           | grep -E "^refs/tags/${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" \
           | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
