@@ -67,7 +67,7 @@ jobs:
           | sort -t "." -k1,1n -k2,2n -k3,3n \
           | grep -B 1 ${{ steps.prepare-envs.outputs.SEMVER }} | head -1)
           
-          echo 'PREVIOUS_TAG="v${previous_version}"' >> "$GITHUB_OUTPUT"
+          echo "PREVIOUS_TAG=v${previous_version}" >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
@@ -89,7 +89,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [ build-image, envs ]
+    needs: [ envs ]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
