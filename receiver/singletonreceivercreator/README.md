@@ -49,13 +49,18 @@ The configuration consists of two parts:
 ### Receiver Configuration
 The `name` field specifies the name of the receiver that needs to created when the instance becomes the leader, followed by the configuration of the receiver that needs to be created.
 
+
+### Multiple receiver with Singleton Receiver Creator
+For leveraging singleton receiver creator with multiple sub receiver, one needs to have to repeat the leader election configuration for each receiver. This is a conscious design decision, where each receiver would have to create and acquire its own lease resource. The main motivation for the decision is that we can divide the load of the pod where the receiver is running as running multiple receivers on same pod would increase the load on the pod.
+
+
 ## How to test
 
 1. Run the following command to deploy the application:
 
 ```bash
 kubectl apply -f deploy/kube/rbac.yaml
-kubectl apply -f deploy/kube/collectors
+kubectl apply -f deploy/kube/collectors-with-leader.yaml
 ```
 
 2. Run the following command to check the status of the deployment:
