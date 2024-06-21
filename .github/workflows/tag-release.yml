@@ -36,7 +36,7 @@ jobs:
         id: prepare-envs
         run: |
           # just stripping the leading `v` from the tag
-          SEMVER=${ echo ${{ github.ref_name }} | sed 's/^v//' }
+          SEMVER=$( echo ${{ github.ref_name }} | sed 's/^v//' )
           {
           # this creates a multiline string with the envs. 
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
@@ -57,6 +57,7 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
+          # the final tag will look like 0.102.1-0.1.1
           echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}"' >> "$GITHUB_OUTPUT"
           echo 'CURRENT_TAG="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           
