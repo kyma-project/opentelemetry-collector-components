@@ -27,7 +27,6 @@ receivers:
       renew_deadline: 10s
       retry_period: 2s
     receiver:
-      name: "otlp"
       otlp:
         protocols:
           grpc:

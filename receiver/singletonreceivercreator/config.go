@@ -60,6 +60,7 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lec.leaseName = leaseName
 	}
+
 	if leaseNamespace, ok := cfg["lease_namespace"].(string); ok {
 		lec.leaseNamespace = leaseNamespace
 	}
@@ -71,6 +72,7 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 		}
 		lec.leaseDurationSeconds = leasedurationSec
 	}
+
 	if renewDeadline, ok := cfg["renew_deadline"].(string); ok {
 		renewDeadlineSec, err := time.ParseDuration(renewDeadline)
 		if err != nil {
@@ -78,6 +80,7 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 		}
 		lec.renewDeadlineSeconds = renewDeadlineSec
 	}
+
 	if retryPeriod, ok := cfg["retry_period"].(string); ok {
 		retryPeriodSec, err := time.ParseDuration(retryPeriod)
 		if err != nil {
@@ -100,6 +103,7 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 	if err := componentParser.Unmarshal(cfg, confmap.WithIgnoreUnused()); err != nil {
 		return err
 	}
+	
 	if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
 		authType := k8sconfig.AuthType(authTypeString)
 		cfg.authType = authType

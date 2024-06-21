@@ -17,7 +17,7 @@ import (
 	"k8s.io/client-go/kubernetes/fake"
 )
 
-func TestMockReceiverCreator(t *testing.T) {
+func TestSingletonReceiverCreator(t *testing.T) {
 	var expectedLeaseDurationSeconds = ptr.To(int32(10))
 	config := &Config{
 		leaderElectionConfig: leaderElectionConfig{

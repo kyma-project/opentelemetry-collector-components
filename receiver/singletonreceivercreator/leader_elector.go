@@ -12,10 +12,9 @@ import (
 )
 
 const (
-	inClusterNamespacePath = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
-	defaultLeaseDuration   = 15 * time.Second
-	defaultRenewDeadline   = 10 * time.Second
-	defaultRetryPeriod     = 2 * time.Second
+	defaultLeaseDuration = 15 * time.Second
+	defaultRenewDeadline = 10 * time.Second
+	defaultRetryPeriod   = 2 * time.Second
 )
 
 // NewResourceLock creates a new leases resource lock for use in a leader election loop
