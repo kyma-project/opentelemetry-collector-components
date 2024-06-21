@@ -50,13 +50,13 @@ This release process covers the steps to release new major and minor versions fo
 8. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
 
    ```bash
-   git tag {RELEASE_VERSION}
+   git tag v{RELEASE_VERSION}
    ```
 
 9. Push the tag to the upstream repository.
 
    ```bash
-   git push {REPOSITORY_REMOTE} {RELEASE_VERSION}
+   git push {REPOSITORY_REMOTE} v{RELEASE_VERSION}
    ```
 
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`). 
@@ -66,8 +66,8 @@ This release process covers the steps to release new major and minor versions fo
     - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
       ```bash
-      git push --delete upstream {RELEASE_VERSION}
-      git push upstream {RELEASE_VERSION}
+      git push --delete upstream v{RELEASE_VERSION}
+      git push upstream v{RELEASE_VERSION}
       ```
 
 11. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
