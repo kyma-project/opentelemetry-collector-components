@@ -57,8 +57,8 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
-          echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}"' >> "$GITHUB_OUTPUT"
-          echo 'CURRENT_TAG="${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}' >> "$GITHUB_OUTPUT"
+          echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
           PREFIX=v
