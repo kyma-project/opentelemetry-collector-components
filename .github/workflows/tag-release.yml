@@ -57,6 +57,7 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
+          # the tag will look similar to: 0.102.1-0.1.0
           echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}' >> "$GITHUB_OUTPUT"
           echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           
