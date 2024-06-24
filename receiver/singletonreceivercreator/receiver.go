@@ -27,7 +27,7 @@ type singletonReceiverCreator struct {
 	getK8sClient      func(authType k8sconfig.AuthType) (kubernetes.Interface, error)
 }
 
-func newSingletonReceiverCreator(params receiver.CreateSettings, cfg *Config) component.Component {
+func newSingletonReceiverCreator(params receiver.CreateSettings, cfg *Config) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
 		params:       params,
 		cfg:          cfg,
