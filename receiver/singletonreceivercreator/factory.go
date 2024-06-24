@@ -10,10 +10,7 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/sharedcomponent"
 )
-
-var receivers = sharedcomponent.NewSharedComponents()
 
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(

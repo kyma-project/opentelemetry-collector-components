@@ -2,9 +2,10 @@ package k8sconfig
 
 import (
 	"fmt"
-	"k8s.io/client-go/tools/clientcmd"
 	"os"
 	"path/filepath"
+
+	"k8s.io/client-go/tools/clientcmd"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
