@@ -4,10 +4,11 @@ go 1.22.3
 
 require (
 	github.com/golangci/golangci-lint v1.59.0
+	github.com/vladopajic/go-test-coverage/v2 v2.10.1
 	go.opentelemetry.io/build-tools/crosslink v0.13.0
 	go.opentelemetry.io/collector/cmd/builder v0.102.1
 	go.opentelemetry.io/collector/cmd/mdatagen v0.102.1
-	golang.org/x/tools v0.21.0
+	golang.org/x/tools v0.22.0
 )
 
 require (
@@ -185,7 +186,6 @@ require (
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.1.1 // indirect
 	github.com/uudashr/gocognit v1.1.2 // indirect
-	github.com/vladopajic/go-test-coverage/v2 v2.10.1 // indirect
 	github.com/xen0n/gosmopolitan v1.2.2 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.3.0 // indirect
@@ -209,11 +209,11 @@ require (
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
 	golang.org/x/image v0.10.0 // indirect
-	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/mod v0.18.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240520151616-dc85e6b867a5 // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
