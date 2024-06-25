@@ -17,7 +17,7 @@ updates:
     commit-message:
       prefix: "chore(dependabot)"
     groups:
-      otel: # used by e2e and integration tests to push dummy otlp data
+      otel:
         patterns:
           - "go.opentelemetry.io/otel/*"
     labels:
@@ -30,7 +30,7 @@ updates:
     commit-message:
       prefix: "chore(dependabot)"
     groups:
-      otel: # used by e2e and integration tests to push dummy otlp data
+      otel:
         patterns:
           - "go.opentelemetry.io/otel/*"
     labels:
