@@ -2,7 +2,7 @@
 
 ## Release Process
 
-This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with kyma specific customizations.
+This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with Kyma-specific customizations.
 
 1. Verify that all issues in the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the version are closed.
 
@@ -33,7 +33,7 @@ This release process covers the steps to release new major and minor versions fo
    git rebase upstream/{RELEASE_BRANCH} {RELEASE_BRANCH}
    ```
    
-7. Create tags for every go module in this repository.
+7. Create tags for every Go module in this repository.
    For every module in receiver, processor, exporter, and extension directories, create a tag with the new version.
 
    ```bash
@@ -62,7 +62,7 @@ This release process covers the steps to release new major and minor versions fo
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`). 
 
 10. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
-    - Once the GitHub action succeed, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
+    - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
     - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
       ```bash
@@ -78,20 +78,20 @@ Every PR's title must adhere to the [Conventional Commits](https://www.conventio
 
 ### Pull Request Title
 
-Due to the Squash merge GitHub Workflow, each PR results in a single commit after merging into the main development branch. The PR's title becomes the commit message and must adhere to the template:
+Because of the squash-and-merge GitHub workflow, each PR results in a single commit after merging into the main development branch. The PR's title becomes the commit message and must adhere to the template:
 
 `type(scope?): subject`
 
 #### Type
 
-- **feat**. A new feature or functionality change.
-- **fix**. A bug or regression fix.
-- **docs**. Changes regarding the documentation.
-- **test**. The test suite alternations.
-- **deps**. The changes in the external dependencies.
-- **chore**. Anything not covered by the above categories (e.g., refactoring or artefacts building alternations).
+- **feat**: A new feature or functionality change.
+- **fix**: A bug or regression fix.
+- **docs**: Changes regarding the documentation.
+- **test**: The test suite alternations.
+- **deps**: The changes in the external dependencies.
+- **chore**: Anything not covered by the above categories (such as refactoring or artefacts building alternations).
 
-Beware that PRs of type `chore` do not appear in the Changelog for the release. Therefore, exclude maintenance changes that are not interesting to consumers of the project by marking them with chore type:
+Note that PRs of type `chore` do not appear in the change log for the release. Therefore, exclude maintenance changes that are not interesting to consumers of the project by marking them as "chore", for example:
 
 - Dotfile changes (.gitignore, .github, and so forth).
 - Changes to development-only dependencies.
