@@ -2,8 +2,9 @@ package singletonreceivercreator
 
 import (
 	"fmt"
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"time"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
