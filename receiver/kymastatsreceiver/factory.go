@@ -2,10 +2,12 @@ package kymastatsreceiver
 
 import (
 	"context"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/k8sconfig"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/k8sconfig"
 )
 
 var (

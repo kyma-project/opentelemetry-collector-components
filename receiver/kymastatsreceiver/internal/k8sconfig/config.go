@@ -2,11 +2,12 @@ package k8sconfig
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"net/http"
-	"os"
 )
 
 type AuthType string

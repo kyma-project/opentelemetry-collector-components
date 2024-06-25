@@ -2,11 +2,12 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
-	"testing"
 )
 
 func TestReceiveMetrics(t *testing.T) {
