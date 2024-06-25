@@ -16,6 +16,10 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "chore(dependabot)"
+    groups:
+      otel: # used by e2e and integration tests to push dummy otlp data
+        patterns:
+          - "go.opentelemetry.io/otel/*"
     labels:
       - "area/dependency"
 
@@ -25,6 +29,10 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "chore(dependabot)"
+    groups:
+      otel: # used by e2e and integration tests to push dummy otlp data
+        patterns:
+          - "go.opentelemetry.io/otel/*"
     labels:
       - "area/dependency"
 
