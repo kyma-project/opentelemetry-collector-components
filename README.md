@@ -29,7 +29,13 @@ TBD: Explain how to use the project. You can create multiple subsections (H3). I
 
 ## Development
 
-TBD: Add instructions on how to develop the project or example. It must be clear what to do and, for example, how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
+### Running the receiver locally
+Following are the steps to run the receiver locally:
+- update the [builder-config.yaml](./cmd/otelkymacol/builder-config.yaml) with the desired receiver.
+- run make target `make genotelkymacol`
+- create a valid `config.yaml` for the receiver and place it as `./local/config.yaml`
+- run the receiver by calling make target `make run`
+
 
 ## Contributing
 

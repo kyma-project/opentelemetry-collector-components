@@ -23,7 +23,7 @@ const (
 	// K8s automatically provisions for each pod.
 	AuthTypeServiceAccount AuthType = "serviceAccount"
 	// AuthTypeKubeConfig uses local credentials like those used by kubectl.
-	AuthTypeKubeConfig AuthType = "kubeConfig"
+	AuthTypeKubeConfig AuthType = "kubeconfig"
 )
 
 var authTypes = map[AuthType]bool{
