@@ -29,12 +29,11 @@ TBD: Explain how to use the project. You can create multiple subsections (H3). I
 
 ## Development
 
-### Running the receiver locally
-Following are the steps to run the receiver locally:
-- update the [builder-config.yaml](./cmd/otelkymacol/builder-config.yaml) with the desired receiver.
-- run make target `make genotelkymacol`
-- create a valid `config.yaml` for the receiver and place it as `./local/config.yaml`
-- run the receiver by calling make target `make run`
+### Running the Receiver Locally
+1. Update the [builder-config.yaml](./cmd/otelkymacol/builder-config.yaml) with the desired receiver.
+2. Run make target `make genotelkymacol`.
+3. Create a valid `config.yaml` for the receiver and place it as `./local/config.yaml`.
+4. To run the receiver, call make target `make run`.
 
 
 ## Contributing
