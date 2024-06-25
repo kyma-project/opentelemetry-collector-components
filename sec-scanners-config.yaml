@@ -1,0 +1,7 @@
+module-name: opentelemetry-collector-components
+whitesource:
+  language: golang-mod
+  subprojects: false
+  exclude:
+    - "**/test/**"
+    - "**/*_test.go"
