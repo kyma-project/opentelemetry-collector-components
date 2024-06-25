@@ -1,11 +1,10 @@
 package singletonreceivercreator
 
 import (
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"path/filepath"
 	"testing"
 	"time"
-
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
