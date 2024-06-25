@@ -7,7 +7,7 @@ go 1.22.3
 toolchain go1.22.4
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.1.15
+	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.1.16
 	github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
 	go.opentelemetry.io/collector/component v0.102.1
 	go.opentelemetry.io/collector/confmap v0.102.1
@@ -56,7 +56,7 @@ require (
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/knadh/koanf/providers/confmap v0.1.0 // indirect
 	github.com/knadh/koanf/v2 v2.1.1 // indirect
-	github.com/kyma-project/opentelemetry-collector-components v0.0.1 // indirect
+	github.com/kyma-project/opentelemetry-collector-components v0.1.16 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect

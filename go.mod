@@ -12,7 +12,7 @@ require (
 )
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.1.15
+	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.1.16
 	github.com/stretchr/testify v1.9.0
 	k8s.io/client-go v0.30.2
 )
