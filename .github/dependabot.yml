@@ -1,0 +1,49 @@
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/otel-collector"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/dependency"
+
+  - package-ecosystem: "gomod"
+    directory: "/receiver/dummymetricsreceiver"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/dependency"
+
+  - package-ecosystem: "gomod"
+    directory: "/receiver/singletonreceivercreator"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/dependency"
+
+  - package-ecosystem: "gomod"
+    directory: "/internal/tools"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/tools"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/ci"
+
+  
