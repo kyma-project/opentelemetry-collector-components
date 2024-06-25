@@ -92,3 +92,5 @@ retract (
 )
 
 replace github.com/kyma-project/opentelemetry-collector-components => ../../
+
+replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../dummymetricsreceiver
