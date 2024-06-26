@@ -24,7 +24,7 @@ type kymaStatsReceiver struct {
 func (r *kymaStatsReceiver) Start(ctx context.Context, _ component.Host) error {
 	ctx, r.cancel = context.WithCancel(ctx)
 
-	interval, _ := time.ParseDuration(r.config.Interval)
+	interval := r.config.CollectionInterval
 	go func() {
 		ticker := time.NewTicker(interval)
 		defer ticker.Stop()

@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"time"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -14,11 +15,11 @@ var (
 	typeStr = component.MustNewType("kymastatsreceiver")
 )
 
-const defaultInterval = "30s"
+const defaultInterval = 30 * time.Second
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		Interval: defaultInterval,
+		CollectionInterval: defaultInterval,
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},

@@ -1,17 +1,17 @@
 package kymastatsreceiver
 
 import (
-	k8s "k8s.io/client-go/kubernetes"
-
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	k8s "k8s.io/client-go/kubernetes"
+	"time"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
 type Config struct {
-	Interval            string `mapstructure:"collection_interval"`
+	CollectionInterval  time.Duration `mapstructure:"collection_interval"`
 	k8sconfig.APIConfig `mapstructure:",squash"`
 
-	makeClient func(apiConf k8sconfig.APIConfig) (k8s.Interface, error)
+	makeClient func() (k8s.Interface, error)
 }
 
 func (cfg *Config) Validate() error {
@@ -19,8 +19,8 @@ func (cfg *Config) Validate() error {
 }
 
 func (cfg *Config) getK8sClient() (k8s.Interface, error) {
-	if cfg.makeClient == nil {
-		cfg.makeClient = k8sconfig.MakeClient
+	if cfg.makeClient != nil {
+		return cfg.makeClient()
 	}
-	return cfg.makeClient(cfg.APIConfig)
+	return k8sconfig.MakeClient(cfg.APIConfig)
 }

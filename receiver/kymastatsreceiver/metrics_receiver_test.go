@@ -3,6 +3,7 @@ package kymastatsreceiver
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
@@ -14,7 +15,7 @@ func TestReceiveMetrics(t *testing.T) {
 	sink := new(consumertest.MetricsSink)
 
 	cfg := &Config{
-		Interval: "1s",
+		CollectionInterval: 1 * time.Second,
 	}
 	mr, err := createMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sink)
 	require.NoError(t, err)
