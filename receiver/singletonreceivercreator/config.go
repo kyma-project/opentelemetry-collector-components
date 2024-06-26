@@ -132,7 +132,10 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 
 		return nil
 	}
-
+	//if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
+	//	authType := k8sconfig.AuthType(authTypeString)
+	//	cfg.AuthType = authType
+	//}
 	return nil
 }
 
@@ -144,5 +147,6 @@ func (cfg *Config) getK8sClient() (k8s.Interface, error) {
 	if cfg.makeClient != nil {
 		return cfg.makeClient()
 	}
+	fmt.Printf("cfg.APIConfig: %v\n", cfg.APIConfig.AuthType)
 	return k8sconfig.MakeClient(cfg.APIConfig)
 }

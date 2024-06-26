@@ -18,3 +18,4 @@ exporters:
 replaces:
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../../receiver/dummymetricsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
+  - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig
