@@ -7,7 +7,7 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 var (

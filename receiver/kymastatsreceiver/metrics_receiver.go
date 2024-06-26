@@ -100,12 +100,16 @@ func (r *kymaStatsReceiver) pullMetrics(ctx context.Context) (pmetric.Metrics, e
 func (r *kymaStatsReceiver) getTelemetryResources(ctx context.Context) operatorv1alpha1.TelemetryList {
 	result := operatorv1alpha1.TelemetryList{}
 	c, err := r.config.getK8sClient()
-	if err == nil {
-		r.settings.Logger.Error("Failed to get telemetry resource", zap.Error(err))
+	if err != nil {
+		r.settings.Logger.Error("Failed to get k8s client resource", zap.Error(err))
 		return result
 	}
 
-	c.Discovery().RESTClient().Get().Resource("telemetries").Namespace("kyma-system").Do(ctx).Into(&result)
+	err = c.Discovery().RESTClient().Get().Resource("telemetries").Namespace("kyma-system").Do(ctx).Into(&result)
+	if err != nil {
+		r.settings.Logger.Error("Failed to get telemetry resource", zap.Error(err))
+		return result
+	}
 
 	return result
 }

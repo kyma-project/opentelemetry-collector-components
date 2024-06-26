@@ -3,7 +3,7 @@ package kymastatsreceiver
 import (
 	k8s "k8s.io/client-go/kubernetes"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
@@ -20,7 +20,7 @@ func (cfg *Config) Validate() error {
 
 func (cfg *Config) getK8sClient() (k8s.Interface, error) {
 	if cfg.makeClient == nil {
-		cfg.makeClient = k8sconfig.GetK8sClient
+		cfg.makeClient = k8sconfig.MakeClient
 	}
 	return cfg.makeClient(cfg.APIConfig)
 }

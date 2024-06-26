@@ -2,6 +2,7 @@ package k8sconfig
 
 import (
 	"fmt"
+	"k8s.io/client-go/dynamic"
 	"net/http"
 	"os"
 
@@ -87,7 +88,7 @@ func CreateRestConfig(apiConf APIConfig) (*rest.Config, error) {
 	return authConf, nil
 }
 
-func GetK8sClient(apiConf APIConfig) (kubernetes.Interface, error) {
+func MakeClient(apiConf APIConfig) (kubernetes.Interface, error) {
 	if err := apiConf.Validate(); err != nil {
 		return nil, err
 	}
@@ -96,7 +97,26 @@ func GetK8sClient(apiConf APIConfig) (kubernetes.Interface, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	client, err := kubernetes.NewForConfig(authConf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func MakeDynamicClient(apiConf APIConfig) (dynamic.Interface, error) {
+	if err := apiConf.Validate(); err != nil {
+		return nil, err
+	}
+
+	authConf, err := CreateRestConfig(apiConf)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := dynamic.NewForConfig(authConf)
 	if err != nil {
 		return nil, err
 	}
