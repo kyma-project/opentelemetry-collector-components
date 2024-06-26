@@ -15,7 +15,6 @@ updates:
       - /cmd/otelkymacol/
       - /
       - /receiver/*
-    exclude 
     schedule:
       interval: "daily"
     commit-message:
