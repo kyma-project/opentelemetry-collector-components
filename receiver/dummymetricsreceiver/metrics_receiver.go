@@ -16,7 +16,7 @@ import (
 type dummyMetricsReceiver struct {
 	config       *Config
 	nextConsumer consumer.Metrics
-	settings     *receiver.CreateSettings
+	settings     *receiver.Settings
 
 	cancel context.CancelFunc
 }
