@@ -2,8 +2,7 @@ package singletonreceivercreator
 
 import (
 	"context"
-
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -22,7 +21,9 @@ func NewFactory() receiver.Factory {
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		authType: k8sconfig.AuthTypeServiceAccount,
+		APIConfig: k8sconfig.APIConfig{
+			AuthType: k8sconfig.AuthTypeServiceAccount,
+		},
 		leaderElectionConfig: leaderElectionConfig{
 			leaseName:            "singleton-receiver",
 			leaseNamespace:       "default",
