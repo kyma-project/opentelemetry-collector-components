@@ -128,7 +128,6 @@ require (
 )
 
 replace (
-
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../../receiver/dummymetricsreceiver
 	github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
 )
