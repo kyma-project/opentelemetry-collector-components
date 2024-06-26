@@ -1,0 +1,6 @@
+kymastatsreceiver:
+kymastatsreceiver/custom:
+  collection_interval: 10s
+kymastatsreceiver/k8s:
+  collection_interval: 30s
+  auth_type: "kubeConfig"
