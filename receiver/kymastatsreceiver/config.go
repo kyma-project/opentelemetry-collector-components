@@ -1,9 +1,11 @@
 package kymastatsreceiver
 
 import (
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	k8s "k8s.io/client-go/kubernetes"
 	"time"
+
+	k8s "k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
