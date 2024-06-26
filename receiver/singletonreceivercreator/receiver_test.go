@@ -30,7 +30,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopCreateSettings(), config)
+	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
 	fakeClient := fake.NewSimpleClientset()
 	config.makeClient = func() (k8s.Interface, error) {
 		return fakeClient, nil
@@ -63,8 +63,7 @@ func TestUnsupportedAuthType(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopCreateSettings(), config)
-
+	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
 	err := r.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")

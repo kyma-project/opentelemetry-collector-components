@@ -10,11 +10,9 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ receiver.Metrics = (*singletonReceiverCreator)(nil)
-
 // singletonreceivercreator implements consumer.Metrics.
 type singletonReceiverCreator struct {
-	params              receiver.CreateSettings
+	params              receiver.Settings
 	cfg                 *Config
 	nextMetricsConsumer consumer.Metrics
 
@@ -23,7 +21,7 @@ type singletonReceiverCreator struct {
 	cancel            context.CancelFunc
 }
 
-func newSingletonReceiverCreator(params receiver.CreateSettings, cfg *Config) *singletonReceiverCreator {
+func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
 		params: params,
 		cfg:    cfg,
