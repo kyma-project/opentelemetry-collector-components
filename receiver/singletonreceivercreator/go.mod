@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/receiver/singl
 go 1.22.4
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.1.16
+	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.102.1
 	go.opentelemetry.io/collector/confmap v0.102.1
