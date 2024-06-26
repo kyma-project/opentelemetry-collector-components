@@ -22,14 +22,14 @@ import (
 // receiverRunner handles starting/stopping of a concrete wrapped receiver instance.
 type receiverRunner struct {
 	logger      *zap.Logger
-	params      rcvr.CreateSettings
+	params      rcvr.Settings
 	idNamespace component.ID
 	host        component.Host
 	receiver    component.Component
 	lock        *sync.Mutex
 }
 
-func newReceiverRunner(params rcvr.CreateSettings, host component.Host) *receiverRunner {
+func newReceiverRunner(params rcvr.Settings, host component.Host) *receiverRunner {
 	return &receiverRunner{
 		logger:      params.Logger,
 		params:      params,

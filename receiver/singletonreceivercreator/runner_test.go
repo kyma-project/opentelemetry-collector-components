@@ -39,7 +39,7 @@ var defaultCfg = &Config{
 	subreceiverConfig: mockReceiverConfig,
 }
 
-func createMockMetricsReceiver(_ context.Context, params receiver.CreateSettings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
+func createMockMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	return nil, nil
 }
 
@@ -84,7 +84,7 @@ func (nh *mockHost) GetExporters() map[component.DataType]map[component.ID]compo
 func TestRunnerStart(t *testing.T) {
 	mh, err := NewMockHost(true)
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
+	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
 
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 	require.NoError(t, r.shutdown(context.Background()))
@@ -93,7 +93,7 @@ func TestRunnerStart(t *testing.T) {
 func TestLoadReceiverConfig(t *testing.T) {
 	mh, err := NewMockHost(true)
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
+	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
 	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("foo"))
 	recvrFact := factory.(receiver.Factory)
 
@@ -107,6 +107,6 @@ func TestLoadReceiverConfig(t *testing.T) {
 func TestLoadReceiverConfigError(t *testing.T) {
 	mh, err := NewMockHost(false)
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopCreateSettings(), mh)
+	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 }
