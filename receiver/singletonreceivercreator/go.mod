@@ -3,7 +3,6 @@ module github.com/kyma-project/opentelemetry-collector-components/receiver/singl
 go 1.22.3
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components v0.1.16
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.102.1
 	go.opentelemetry.io/collector/confmap v0.102.1
@@ -34,7 +33,6 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/imdario/mergo v0.3.6 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
@@ -55,7 +53,6 @@ require (
 	github.com/prometheus/common v0.53.0 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.102.1 // indirect
 	go.opentelemetry.io/collector/pdata v1.9.0 // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect
@@ -90,7 +87,3 @@ retract (
 	v0.76.1
 	v0.65.0
 )
-
-replace github.com/kyma-project/opentelemetry-collector-components => ../../
-
-replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../dummymetricsreceiver
