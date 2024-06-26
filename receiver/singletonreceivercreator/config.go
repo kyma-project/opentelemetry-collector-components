@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	k8s "k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
