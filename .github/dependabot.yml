@@ -11,21 +11,11 @@ updates:
       - "area/dependency"
 
   - package-ecosystem: "gomod"
-    directory: "/receiver/dummymetricsreceiver"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore(dependabot)"
-    groups:
-      otel:
-        patterns:
-          - "go.opentelemetry.io/otel/*"
-          - "go.opentelemetry.io/collector/*"
-    labels:
-      - "area/dependency"
-
-  - package-ecosystem: "gomod"
-    directory: "/receiver/singletonreceivercreator"
+    directories: 
+      - /cmd/otelkymacol/
+      - /
+      - /receiver/*
+    exclude 
     schedule:
       interval: "daily"
     commit-message:
