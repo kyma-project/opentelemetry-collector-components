@@ -43,3 +43,4 @@ replaces:
   - github.com/go-resty/resty/v2 => github.com/go-resty/resty/v2 v2.12.0
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../receiver/dummymetricsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../receiver/singletonreceivercreator
+  - github.com/kyma-project/opentelemetry-collector-components => ../../
