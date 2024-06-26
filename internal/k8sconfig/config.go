@@ -2,6 +2,7 @@ package k8sconfig
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
@@ -13,6 +14,8 @@ import (
 type AuthType string
 
 const (
+	// AuthTypeNone means no auth is required
+	AuthTypeNone AuthType = "none"
 	// AuthTypeServiceAccount means to use the built-in service account that
 	// K8s automatically provisions for each pod.
 	AuthTypeServiceAccount AuthType = "serviceAccount"
@@ -21,6 +24,7 @@ const (
 )
 
 var authTypes = map[AuthType]bool{
+	AuthTypeNone:           true,
 	AuthTypeServiceAccount: true,
 	AuthTypeKubeConfig:     true,
 }
@@ -52,12 +56,13 @@ func CreateRestConfig(apiConf APIConfig) (*rest.Config, error) {
 	var err error
 
 	authType := apiConf.AuthType
-
+	var k8sHost string
 	if authType != AuthTypeKubeConfig {
 		host, port := os.Getenv("KUBERNETES_SERVICE_HOST"), os.Getenv("KUBERNETES_SERVICE_PORT")
 		if len(host) == 0 || len(port) == 0 {
 			return nil, fmt.Errorf("unable to load k8s config, KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT must be defined")
 		}
+		k8sHost = "https://" + net.JoinHostPort(host, port)
 	}
 
 	switch authType {
@@ -72,6 +77,17 @@ func CreateRestConfig(apiConf APIConfig) (*rest.Config, error) {
 
 		if err != nil {
 			return nil, fmt.Errorf("error connecting to k8s with auth_type=%s: %w", AuthTypeKubeConfig, err)
+		}
+	case AuthTypeNone:
+		authConf = &rest.Config{
+			Host: k8sHost,
+		}
+		authConf.Insecure = true
+	case AuthTypeServiceAccount:
+		// This should work for most clusters but other auth types can be added
+		authConf, err = rest.InClusterConfig()
+		if err != nil {
+			return nil, err
 		}
 	}
 

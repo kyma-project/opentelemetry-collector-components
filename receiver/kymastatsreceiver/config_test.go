@@ -1,15 +1,17 @@
 package kymastatsreceiver
 
 import (
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"path/filepath"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
-	"path/filepath"
-	"testing"
-	"time"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 func TestLoadConfig(t *testing.T) {

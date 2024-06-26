@@ -71,7 +71,7 @@ func (r *kymaStatsReceiver) pullMetrics(ctx context.Context) (pmetric.Metrics, e
 			Metrics().
 			AppendEmpty()
 
-		metric.SetName("kyma_status_telemetry_state")
+		metric.SetName("kyma.telemetry.status.state")
 		gauge := metric.SetEmptyGauge()
 		dp := gauge.DataPoints().AppendEmpty()
 		dp.SetIntValue(int64(1))
@@ -87,7 +87,7 @@ func (r *kymaStatsReceiver) pullMetrics(ctx context.Context) (pmetric.Metrics, e
 				Metrics().
 				AppendEmpty()
 
-			condMetric.SetName("kyma_telemetry_status_conditions")
+			condMetric.SetName("kyma.telemetry.status.conditions")
 			condGauge := metric.SetEmptyGauge()
 			cdp := condGauge.DataPoints().AppendEmpty()
 			cdp.SetIntValue(int64(1))

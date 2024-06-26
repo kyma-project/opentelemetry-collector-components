@@ -27,3 +27,7 @@ Disclaimer: The code in this project may include calls to APIs (“API Calls”)
 Files: *
 Copyright: 2024 SAP SE or an SAP affiliate company and Kyma contributors
 License: Apache-2.0
+
+Files: internal/k8sconfig/config.go
+Copyright The OpenTelemetry Authors
+SPDX-License-Identifier: Apache-2.0
