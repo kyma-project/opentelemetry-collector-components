@@ -133,10 +133,7 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 
 		return nil
 	}
-	//if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
-	//	authType := k8sconfig.AuthType(authTypeString)
-	//	cfg.AuthType = authType
-	//}
+
 	return nil
 }
 
