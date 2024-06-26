@@ -11,10 +11,7 @@ updates:
       - "area/dependency"
 
   - package-ecosystem: "gomod"
-    directories: 
-      - /cmd/otelkymacol/
-      - /
-      - /receiver/*
+    directory: "/"
     schedule:
       interval: "daily"
     commit-message:
@@ -26,15 +23,6 @@ updates:
           - "go.opentelemetry.io/collector/*"
     labels:
       - "area/dependency"
-
-  - package-ecosystem: "gomod"
-    directory: "/internal/tools"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore(dependabot)"
-    labels:
-      - "area/tools"
 
   - package-ecosystem: "github-actions"
     directory: "/"
