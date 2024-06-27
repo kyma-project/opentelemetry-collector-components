@@ -21,14 +21,21 @@ type dummyMetricsReceiver struct {
 	cancel context.CancelFunc
 }
 
-func (r *dummyMetricsReceiver) Start(ctx context.Context, _ component.Host) error {
+func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error {
+	// Create a new context as specified in the interface documentation
+	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
-	interval, _ := time.ParseDuration(r.config.Interval)
-	go func() {
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
+	interval, err := time.ParseDuration(r.config.Interval)
+	if err != nil {
+		return fmt.Errorf("failed to parse interval: %w", err)
 
+	}
+
+	ticker := time.NewTicker(interval)
+
+	go func() {
+		defer ticker.Stop()
 		for {
 			select {
 			case <-ticker.C:
@@ -65,7 +72,7 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 
 	metric.SetName("dummy")
 	gauge := metric.SetEmptyGauge()
-	for i := range 5 {
+	for i := 0; i < 5; i++ {
 		dp := gauge.DataPoints().AppendEmpty()
 		dp.SetIntValue(int64(i))
 		dp.Attributes().PutStr("host", host)
@@ -74,7 +81,7 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 	return md, nil
 }
 
-func (r *dummyMetricsReceiver) Shutdown(ctx context.Context) error {
+func (r *dummyMetricsReceiver) Shutdown(_ context.Context) error {
 	if r.cancel != nil {
 		r.cancel()
 	}

@@ -13,7 +13,10 @@ type Config struct {
 
 // Validate checks if the receiver configuration is valid
 func (cfg *Config) Validate() error {
-	interval, _ := time.ParseDuration(cfg.Interval)
+	interval, err := time.ParseDuration(cfg.Interval)
+	if err != nil {
+		return fmt.Errorf("interval must be a valid duration string: %v", err)
+	}
 
 	if interval.Minutes() < 1 {
 		return fmt.Errorf("when defined, the interval has to be set to at least 1 minute (1m)")
