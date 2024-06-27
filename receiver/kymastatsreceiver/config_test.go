@@ -33,7 +33,7 @@ func TestLoadConfig(t *testing.T) {
 
 				CollectionInterval: duration,
 				APIConfig: k8sconfig.APIConfig{
-					AuthType: "serviceAccount",
+					AuthType: "none",
 				},
 			},
 		},
@@ -49,7 +49,7 @@ func TestLoadConfig(t *testing.T) {
 			},
 		},
 		{
-			id: component.NewIDWithName(metadata.Type, "custom"),
+			id: component.NewIDWithName(metadata.Type, "sa"),
 			expected: &Config{
 
 				CollectionInterval: 10 * time.Second,

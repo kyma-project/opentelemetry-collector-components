@@ -2,11 +2,13 @@ package kymastatsreceiver
 
 import (
 	"context"
-	"time"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
+	"go.opentelemetry.io/collector/receiver/scraperhelper"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
@@ -15,13 +17,11 @@ var (
 	typeStr = component.MustNewType("kymastatsreceiver")
 )
 
-const defaultInterval = 30 * time.Second
-
 func createDefaultConfig() component.Config {
 	return &Config{
-		CollectionInterval: defaultInterval,
+		ControllerConfig: scraperhelper.NewDefaultControllerConfig(),
 		APIConfig: k8sconfig.APIConfig{
-			AuthType: k8sconfig.AuthTypeServiceAccount,
+			AuthType: k8sconfig.AuthTypeNone,
 		},
 	}
 }
@@ -35,9 +35,35 @@ func NewFactory() receiver.Factory {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	return &kymaStatsReceiver{
-		config:       baseCfg.(*Config),
-		nextConsumer: consumer,
-		settings:     &params,
-	}, nil
+	config := baseCfg.(*Config)
+	mbConfig := metadata.MetricsBuilderConfig{
+		KymaTelemetryModuleStat: []metadata.MetricConfig{
+			{
+				ResourceGroup:   "operator.kyma-project.io",
+				ResourceName:    "Telemetry",
+				ResourceVersion: "v1alpha1",
+				Name:            "kyma.telemetry.status.stat",
+				Description:     "Kyma telemetry module status",
+				Unit:            "1",
+			},
+			{
+				ResourceGroup:   "operator.kyma-project.io",
+				ResourceName:    "Telemetry",
+				ResourceVersion: "v1alpha1",
+				Name:            "Kyma.telemetry.status.condition",
+				Description:     "Kyma telemetry module conditions",
+				Unit:            "1",
+			},
+		},
+	}
+
+	client, err := config.getK8sDynamicClient()
+	if err != nil {
+		return nil, err
+	}
+	scrp, err := newKymaScraper(client, mbConfig)
+	if err != nil {
+		return nil, err
+	}
+	return scraperhelper.NewScraperControllerReceiver(&config.ControllerConfig, params, consumer, scraperhelper.AddScraper(scrp))
 }
