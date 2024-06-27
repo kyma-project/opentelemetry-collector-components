@@ -11,3 +11,27 @@ status:
 # Skip life cycle tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
 tests:
   skip_lifecycle: true
+
+telemetry:
+  metrics:
+    singletonreceivercreator_lease_acquire_total:
+      enabled: true
+      description: Number of successful lease acquisitions
+      unit: 1
+      sum:
+        monotonic: true
+        value_type: int
+    singletonreceivercreator_lease_lost_total:
+      enabled: true
+      description: Number of lease losses
+      unit: 1
+      sum:
+        monotonic: true
+        value_type: int
+    singletonreceivercreator_lease_slowpath_excercise_total:
+      enabled: true
+      description: Number of slow path lease exercises
+      unit: 1
+      sum:
+        monotonic: true
+        value_type: int

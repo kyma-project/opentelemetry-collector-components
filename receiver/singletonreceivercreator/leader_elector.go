@@ -6,6 +6,7 @@ import (
 
 	"context"
 
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/leaderelection"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
@@ -37,7 +38,7 @@ func newResourceLock(client kubernetes.Interface, leaderElectionNamespace, lockN
 }
 
 // newLeaderElector return  a leader elector object using client-go
-func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context.Context), onStoppedLeading func(), cfg leaderElectionConfig) (*leaderelection.LeaderElector, error) {
+func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context.Context), onStoppedLeading func(), cfg leaderElectionConfig, telemetryBuilder *metadata.TelemetryBuilder) (*leaderelection.LeaderElector, error) {
 	namespace := cfg.leaseNamespace
 	lockName := cfg.leaseName
 
@@ -57,5 +58,20 @@ func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context
 		},
 	}
 
+	if telemetryBuilder != nil {
+		leaderMetricAdapter := LeaderMetricProviderCreator{
+			telemetryBuilder: telemetryBuilder,
+		}
+		leaderelection.SetProvider(leaderMetricAdapter)
+	}
+
 	return leaderelection.NewLeaderElector(leConfig)
+}
+
+type LeaderMetricProviderCreator struct {
+	telemetryBuilder *metadata.TelemetryBuilder
+}
+
+func (l LeaderMetricProviderCreator) NewLeaderMetric() leaderelection.LeaderMetric {
+	return NewLeaderMetricProvider(l.telemetryBuilder)
 }

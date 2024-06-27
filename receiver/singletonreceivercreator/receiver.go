@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
@@ -20,6 +21,7 @@ type singletonReceiverCreator struct {
 	params              receiver.Settings
 	cfg                 *Config
 	nextMetricsConsumer consumer.Metrics
+	telemetryBuilder    *metadata.TelemetryBuilder
 
 	host              component.Host
 	subReceiverRunner *receiverRunner
@@ -27,12 +29,14 @@ type singletonReceiverCreator struct {
 	getK8sClient      func(authType k8sconfig.AuthType) (kubernetes.Interface, error)
 }
 
-func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) component.Component {
+func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) (component.Component, error) {
+	telemetry, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
 	return &singletonReceiverCreator{
-		params:       params,
-		cfg:          cfg,
-		getK8sClient: k8sconfig.GetK8sClient,
-	}
+		params:           params,
+		cfg:              cfg,
+		getK8sClient:     k8sconfig.GetK8sClient,
+		telemetryBuilder: telemetry,
+	}, err
 }
 
 // Start leader receiver creator.
@@ -67,6 +71,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 			}
 		},
 		c.cfg.leaderElectionConfig,
+		c.telemetryBuilder,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)

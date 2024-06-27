@@ -38,8 +38,13 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
+	recv, err := newSingletonReceiverCreator(params, cfg.(*Config))
+	if err != nil {
+		return nil, err
+	}
+
 	r := receivers.GetOrAdd(cfg, func() component.Component {
-		return newSingletonReceiverCreator(params, cfg.(*Config))
+		return recv
 	})
 	r.Component.(*singletonReceiverCreator).nextMetricsConsumer = consumer
 	return r, nil
