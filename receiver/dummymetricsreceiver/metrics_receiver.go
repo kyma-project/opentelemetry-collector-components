@@ -33,7 +33,7 @@ func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error 
 	}
 
 	ticker := time.NewTicker(interval)
-	
+
 	go func() {
 		defer ticker.Stop()
 		for {
