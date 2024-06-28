@@ -22,6 +22,7 @@ type dummyreceiver struct {
 }
 
 func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
+	r.settings.Logger.Info("Starting dummy receiver", zap.String("interval", r.config.Interval))
 	// Create a new context as specified in the interface documentation
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
@@ -56,6 +57,7 @@ func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
 }
 
 func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
+	r.settings.Logger.Debug("Generating metric")
 	host, err := os.Hostname()
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf("failed to get hostname: %w", err)
@@ -82,6 +84,7 @@ func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
 }
 
 func (r *dummyreceiver) Shutdown(_ context.Context) error {
+	r.settings.Logger.Info("Shutting down dummy receiver")
 	if r.cancel != nil {
 		r.cancel()
 	}
