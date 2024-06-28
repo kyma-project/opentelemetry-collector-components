@@ -48,4 +48,4 @@ Kyma telemetry module status
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
-| k8s.namespace.name | The name of the namespace that the pod is running in | Any Str | true |
+| k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |

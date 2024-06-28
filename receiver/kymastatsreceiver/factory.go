@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 
 	"go.opentelemetry.io/collector/component"

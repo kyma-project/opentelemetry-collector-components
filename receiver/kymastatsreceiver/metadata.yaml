@@ -13,7 +13,7 @@ tests:
 
 resource_attributes:
   k8s.namespace.name:
-    description: "The name of the namespace that the pod is running in"
+    description: "The name of the namespace that the resource is running in"
     enabled: true
     type: string
 attributes:
