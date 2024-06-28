@@ -26,6 +26,7 @@ CMD_MODS := $(shell find ./cmd/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
 OTHER_MODS := $(shell find . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
 ALL_MODS := $(RECEIVER_MODS) $(CMD_MODS) $(OTHER_MODS)
 
+
 .DEFAULT_GOAL := all
 
 all-modules:
@@ -143,3 +144,21 @@ checks:
 .PHONY: check-coverage
 check-coverage: $(GO_TEST_COVERAGE) gotest-with-cover
 	$(GO_TEST_COVERAGE) --config=./.testcoverage.yml
+	  # ( git tag -a $$($$dir | sed s/^.\\///)/$(OCC_VERSION) -m "Release $(OCC_VERSION)" ); \
+
+.PHONY: create-and-push-tags
+create-and-push-tags:
+	@if [ -z "$(OCC_VERSION)" ]; then \
+	  echo "OCC_VERSION is not set"; \
+	  exit 1; \
+	fi
+	@if [ -z "$(REMOTE)" ]; then \
+	  echo "REMOTE is not set"; \
+	  exit 1; \
+	fi
+	# execute git tag for every item in $(RECEIVER_MODS)
+	@set -e; for dir in $(RECEIVER_MODS); do \
+  	  clean_dir=$$(echo $$dir | sed s/^.\\///); \
+  	  git tag -a $$clean_dir/v$(OCC_VERSION) -m "Release $(OCC_VERSION)"; \
+  	  git push $(REMOTE) $$clean_dir/v$(OCC_VERSION); \
+	done

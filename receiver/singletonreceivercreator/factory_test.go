@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
@@ -31,7 +31,7 @@ func TestNewFactory(t *testing.T) {
 				cfg := createDefaultConfig().(*Config)
 				_, err := NewFactory().CreateMetricsReceiver(
 					context.Background(),
-					receivertest.NewNopCreateSettings(),
+					receivertest.NewNopSettings(),
 					cfg,
 					consumertest.NewNop(),
 				)
@@ -42,7 +42,9 @@ func TestNewFactory(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				factory := NewFactory()
 				expectedCfg := &Config{
-					authType: k8sconfig.AuthTypeServiceAccount,
+					APIConfig: k8sconfig.APIConfig{
+						AuthType: "serviceAccount",
+					},
 					leaderElectionConfig: leaderElectionConfig{
 						leaseName:            "singleton-receiver",
 						leaseNamespace:       "default",

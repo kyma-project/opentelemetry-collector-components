@@ -13,6 +13,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+// This package has been copied from "https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/internal/k8sconfig/config.go"
+// Importing internal packages from other modules is not supported in golang.
+
 type AuthType string
 
 const (

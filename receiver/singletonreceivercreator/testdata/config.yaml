@@ -23,7 +23,7 @@ singleton_receiver_creator/check-all-values:
         container.id:
           enabled: false
 singleton_receiver_creator/check-kubeconfig-authtype:
-  auth_type: kubeconfig
+  auth_type: kubeConfig
   leader_election:
     lease_name: foo
     lease_namespace: bar

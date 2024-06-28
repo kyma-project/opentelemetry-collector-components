@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,7 +28,9 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "check-default-values"),
 			expected: &Config{
-				authType: k8sconfig.AuthTypeServiceAccount,
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "serviceAccount",
+				},
 				leaderElectionConfig: leaderElectionConfig{
 					leaseName:            "singleton-receiver",
 					leaseNamespace:       "default",
@@ -49,7 +51,9 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "check-all-values"),
 			expected: &Config{
-				authType: k8sconfig.AuthType("serviceAccount"),
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "serviceAccount",
+				},
 				leaderElectionConfig: leaderElectionConfig{
 					leaseName:            "foo",
 					leaseNamespace:       "bar",
@@ -80,7 +84,9 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "check-kubeconfig-authtype"),
 			expected: &Config{
-				authType: k8sconfig.AuthType("kubeconfig"),
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "kubeConfig",
+				},
 				leaderElectionConfig: leaderElectionConfig{
 					leaseName:            "foo",
 					leaseNamespace:       "bar",

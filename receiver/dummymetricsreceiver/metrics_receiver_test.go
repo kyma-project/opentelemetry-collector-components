@@ -17,7 +17,7 @@ func TestReceiveMetrics(t *testing.T) {
 	cfg := &Config{
 		Interval: "1s",
 	}
-	mr, err := createMetricsReceiver(context.Background(), receivertest.NewNopCreateSettings(), cfg, sink)
+	mr, err := createMetricsReceiver(context.Background(), receivertest.NewNopSettings(), cfg, sink)
 	require.NoError(t, err)
 
 	err = mr.Start(context.Background(), componenttest.NewNopHost())
