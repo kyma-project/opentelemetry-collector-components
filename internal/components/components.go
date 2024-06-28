@@ -7,6 +7,8 @@ import (
 	"go.opentelemetry.io/collector/processor"
 	"go.opentelemetry.io/collector/processor/batchprocessor"
 	"go.opentelemetry.io/collector/receiver"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 )
 
 func Components() (otelcol.Factories, error) {
