@@ -66,7 +66,7 @@ func (m *Metric) emitGauge(metrics pmetric.MetricSlice) {
 	}
 }
 
-func newGaugeMetric(cfg MetricConfig) Metric {
+func NewGaugeMetric(cfg MetricConfig) Metric {
 	m := Metric{config: cfg}
 
 	m.data = pmetric.NewMetric()

@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"go.opentelemetry.io/collector/receiver/scraperhelper"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
@@ -20,7 +22,8 @@ func TestLoadConfig(t *testing.T) {
 	cm, err := confmaptest.LoadConf(filepath.Join("testdata", "config.yaml"))
 	require.NoError(t, err)
 
-	duration := 30 * time.Second
+	duration := time.Minute
+	delay := time.Second
 
 	tests := []struct {
 		id          component.ID
@@ -30,10 +33,9 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "default"),
 			expected: &Config{
-
-				CollectionInterval: duration,
+				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
-					AuthType: "none",
+					AuthType: "kubeConfig",
 				},
 			},
 		},
@@ -41,8 +43,7 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "k8s"),
 			expected: &Config{
-
-				CollectionInterval: duration,
+				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
 				},
@@ -51,8 +52,7 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "sa"),
 			expected: &Config{
-
-				CollectionInterval: 10 * time.Second,
+				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
 				},
