@@ -8,12 +8,7 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
-	"k8s.io/client-go/kubernetes"
-
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
 )
-
-var _ receiver.Metrics = (*singletonReceiverCreator)(nil)
 
 // singletonreceivercreator implements consumer.Metrics.
 type singletonReceiverCreator struct {
@@ -24,14 +19,12 @@ type singletonReceiverCreator struct {
 	host              component.Host
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
-	getK8sClient      func(authType k8sconfig.AuthType) (kubernetes.Interface, error)
 }
 
-func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) component.Component {
+func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
-		params:       params,
-		cfg:          cfg,
-		getK8sClient: k8sconfig.GetK8sClient,
+		params: params,
+		cfg:    cfg,
 	}
 }
 
@@ -44,7 +37,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 
 	c.params.TelemetrySettings.Logger.Info("Starting singleton election receiver...")
 
-	client, err := c.getK8sClient(c.cfg.authType)
+	client, err := c.cfg.getK8sClient()
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}

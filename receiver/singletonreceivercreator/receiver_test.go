@@ -5,7 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
+	k8s "k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"k8s.io/utils/ptr"
 
@@ -13,7 +15,6 @@ import (
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -30,14 +31,13 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		subreceiverConfig: receiverConfig{},
 	}
 	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
-	lr := r.(*singletonReceiverCreator)
 	fakeClient := fake.NewSimpleClientset()
-	lr.getK8sClient = func(authType k8sconfig.AuthType) (kubernetes.Interface, error) {
+	config.makeClient = func() (k8s.Interface, error) {
 		return fakeClient, nil
 	}
 
 	ctx := context.TODO()
-	err := lr.Start(ctx, componenttest.NewNopHost())
+	err := r.Start(ctx, componenttest.NewNopHost())
 	require.NoError(t, err)
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -47,13 +47,14 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		return true
 	}, 5*time.Second, 100*time.Millisecond)
 
-	require.NoError(t, lr.Shutdown(ctx))
+	require.NoError(t, r.Shutdown(ctx))
 }
 
 func TestUnsupportedAuthType(t *testing.T) {
 	config := &Config{
-		authType: k8sconfig.AuthType("foo"),
-		leaderElectionConfig: leaderElectionConfig{
+		APIConfig: k8sconfig.APIConfig{
+			AuthType: "foo",
+		}, leaderElectionConfig: leaderElectionConfig{
 			leaseName:            "my-foo-lease-1",
 			leaseNamespace:       "default",
 			leaseDurationSeconds: 10 * time.Second,
@@ -63,8 +64,7 @@ func TestUnsupportedAuthType(t *testing.T) {
 		subreceiverConfig: receiverConfig{},
 	}
 	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
-	lr := r.(*singletonReceiverCreator)
-	err := lr.Start(context.TODO(), componenttest.NewNopHost())
+	err := r.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "failed to create Kubernetes client: authentication type: foo not supported")
+	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")
 }

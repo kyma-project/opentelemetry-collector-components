@@ -54,6 +54,8 @@ The configuration consists of two parts:
 | **renew_deadline**  | The deadline for renewing the lease. It should be less than the lease duration. | 10s                |
 | **retry_period**    | The period for retrying the leader election.                                    | 2s                 |
 
+`auth-type` can be type `serviceAccount`, `kubeConfig`.
+
 ### Receiver Configuration
 
 The **name** field specifies the name of the receiver that needs to be created when the instance becomes the leader,
