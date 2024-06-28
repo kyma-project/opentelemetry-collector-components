@@ -38,7 +38,7 @@ This release process covers the steps to release new major and minor versions fo
 
    ```bash
    git tag {RELATIVE_MODULE_PATH}/v{RELEASE_VERSION}
-   # eg. git tag receiver/dummymetricsreceiver/v1.0.0
+   # eg. git tag receiver/dummyreceiver/v1.0.0
    ```
 
    The create-and-push-tags target in the Makefile helps to create and push tags for all modules.

@@ -1,4 +1,4 @@
-module github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver
+module github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver
 
 go 1.22.3
 

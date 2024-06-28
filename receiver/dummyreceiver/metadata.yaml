@@ -1,4 +1,4 @@
-type: dummymetricsreceiver
+type: dummy
 
 status:
   class: receiver

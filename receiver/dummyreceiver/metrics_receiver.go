@@ -1,4 +1,4 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type dummyMetricsReceiver struct {
+type dummyreceiver struct {
 	config       *Config
 	nextConsumer consumer.Metrics
 	settings     *receiver.Settings
@@ -21,7 +21,7 @@ type dummyMetricsReceiver struct {
 	cancel context.CancelFunc
 }
 
-func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error {
+func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
 	// Create a new context as specified in the interface documentation
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
@@ -55,7 +55,7 @@ func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error 
 	return nil
 }
 
-func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
+func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
 	host, err := os.Hostname()
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf("failed to get hostname: %w", err)
@@ -81,7 +81,7 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 	return md, nil
 }
 
-func (r *dummyMetricsReceiver) Shutdown(_ context.Context) error {
+func (r *dummyreceiver) Shutdown(_ context.Context) error {
 	if r.cancel != nil {
 		r.cancel()
 	}

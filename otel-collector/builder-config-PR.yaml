@@ -15,7 +15,7 @@ receivers:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/httpcheckreceiver vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver vOTEL_CONTRIB_VERSION
-  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver vKYMA_OCC_VERSION
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver vKYMA_OCC_VERSION
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator vKYMA_OCC_VERSION
 
 processors:
@@ -41,5 +41,5 @@ extensions:
 replaces:
   # a list of "replaces" directives that will be part of the resulting go.mod
   - github.com/go-resty/resty/v2 => github.com/go-resty/resty/v2 v2.12.0
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../receiver/dummymetricsreceiver
+  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../receiver/dummyreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../receiver/singletonreceivercreator
