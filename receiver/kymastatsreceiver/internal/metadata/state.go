@@ -1,12 +1,16 @@
 package metadata
 
-import v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 type ResourceStatusData struct {
 	State      string
-	Conditions []v1.Condition
+	Conditions []Condition
 	Name       string
 	Namespace  string
+}
+
+type Condition struct {
+	Type   string
+	Status string
+	Reason string
 }
 
 type Stats struct {

@@ -1,18 +1,18 @@
 default:
 all_set:
   metrics:
-    kyma.telemetry.status.condition:
+    kyma.module.status.condition:
       enabled: true
-    kyma.telemetry.status.stat:
+    kyma.module.status.stat:
       enabled: true
   resource_attributes:
     k8s.namespace.name:
       enabled: true
 none_set:
   metrics:
-    kyma.telemetry.status.condition:
+    kyma.module.status.condition:
       enabled: false
-    kyma.telemetry.status.stat:
+    kyma.module.status.stat:
       enabled: false
   resource_attributes:
     k8s.namespace.name:

@@ -33,17 +33,17 @@ attributes:
     description: Kyma module condition type.
     type: string
 metrics:
-  kyma.telemetry.status.stat:
+  kyma.module.status.stat:
     enabled: true
-    description: "Kyma telemetry module status"
+    description: "Kyma module status"
     unit: "1"
     gauge:
       value_type: int
     attributes: ["state", "name"]
 
-  kyma.telemetry.status.condition:
+  kyma.module.status.condition:
     enabled: true
-    description: "Kyma telemetry module conditions"
+    description: "Kyma module conditions"
     unit: "1"
     gauge:
       value_type: int

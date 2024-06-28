@@ -15,6 +15,6 @@ type ModuleMetrics struct {
 }
 
 var KymaModuleMetrics = ModuleMetrics{
-	ModuleState:     (*MetricsBuilder).RecordKymaTelemetryStatusStatDataPoint,
-	ModuleCondition: (*MetricsBuilder).RecordKymaTelemetryStatusConditionDataPoint,
+	ModuleState:     (*MetricsBuilder).RecordKymaModuleStatusStatDataPoint,
+	ModuleCondition: (*MetricsBuilder).RecordKymaModuleStatusConditionDataPoint,
 }

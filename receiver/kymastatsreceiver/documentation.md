@@ -12,9 +12,9 @@ metrics:
     enabled: false
 ```
 
-### kyma.telemetry.status.condition
+### kyma.module.status.condition
 
-Kyma telemetry module conditions
+Kyma module conditions
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -29,9 +29,9 @@ Kyma telemetry module conditions
 | status | Kyma module condition status. | Any Str |
 | type | Kyma module condition type. | Any Str |
 
-### kyma.telemetry.status.stat
+### kyma.module.status.stat
 
-Kyma telemetry module status
+Kyma module status
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |

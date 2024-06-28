@@ -25,8 +25,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaTelemetryStatusCondition: MetricConfig{Enabled: true},
-					KymaTelemetryStatusStat:      MetricConfig{Enabled: true},
+					KymaModuleStatusCondition: MetricConfig{Enabled: true},
+					KymaModuleStatusStat:      MetricConfig{Enabled: true},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
 					K8sNamespaceName: ResourceAttributeConfig{Enabled: true},
@@ -37,8 +37,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaTelemetryStatusCondition: MetricConfig{Enabled: false},
-					KymaTelemetryStatusStat:      MetricConfig{Enabled: false},
+					KymaModuleStatusCondition: MetricConfig{Enabled: false},
+					KymaModuleStatusStat:      MetricConfig{Enabled: false},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
 					K8sNamespaceName: ResourceAttributeConfig{Enabled: false},

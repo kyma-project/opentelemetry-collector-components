@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/collector/receiver"
 
@@ -61,20 +62,33 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 		}).List(ctx, ListOptions{})
 
 		if err != nil {
-			scr.logger.Error("Error fetching telemetry resource", zap.Error(err))
+			scr.logger.Error(fmt.Sprintf("Error fetching module resource %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
 			return nil, err
 		}
 
-		status := telemetryRes.Items[0].Object["status"].(map[string]interface{})
+		for _, item := range telemetryRes.Items {
 
-		r := metadata.ResourceStatusData{
-			State:      status["state"].(string),
-			Conditions: status["conditions"].([]Condition),
-			Name:       telemetryRes.Items[0].GetName(),
-			Namespace:  telemetryRes.Items[0].GetNamespace(),
+			status := item.Object["status"].(map[string]interface{})
+			conditions := []metadata.Condition{}
+
+			r := metadata.ResourceStatusData{
+				State:     status["state"].(string),
+				Name:      telemetryRes.Items[0].GetName(),
+				Namespace: telemetryRes.Items[0].GetNamespace(),
+			}
+			if status["conditions"] != nil {
+				for _, c := range status["conditions"].([]interface{}) {
+					condition := c.(map[string]interface{})
+					conditions = append(conditions, metadata.Condition{
+						Type:   condition["type"].(string),
+						Status: condition["status"].(string),
+						Reason: condition["reason"].(string),
+					})
+				}
+			}
+			r.Conditions = conditions
+			s.Resources = append(s.Resources, r)
 		}
-
-		s.Resources = append(s.Resources, r)
 	}
 
 	return s, nil
