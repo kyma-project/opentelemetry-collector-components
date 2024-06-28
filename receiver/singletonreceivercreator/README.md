@@ -37,13 +37,15 @@ The configuration consists of two parts:
 2. The receiver configuration.
 
 ### Leader Election Configuration
-| configuration   | description                                                                | default value      |
-|-----------------|----------------------------------------------------------------------------|--------------------|
-| **lease_name**      | The name of the lease object.                                              | singleton-receiver |
-| **lease_namespace** | The namespace of the lease object.                                         | default            |
-| **lease_duration**  | The duration of the lease.                                                 | 15s                |
+| configuration       | description                                                                     | default value      |
+|---------------------|---------------------------------------------------------------------------------|--------------------|
+| **lease_name**      | The name of the lease object.                                                   | singleton-receiver |
+| **lease_namespace** | The namespace of the lease object.                                              | default            |
+| **lease_duration**  | The duration of the lease.                                                      | 15s                |
 | **renew_deadline**  | The deadline for renewing the lease. It should be less than the lease duration. | 10s                |
-| **retry_period**    | The period for retrying the leader election.                               | 2s                 |
+| **retry_period**    | The period for retrying the leader election.                                    | 2s                 |
+
+`auth-type` can be type `serviceAccount`, `kubeConfig`.
 
 ### Receiver Configuration
 The **name** field specifies the name of the receiver that needs to be created when the instance becomes the leader, followed by the configuration of the receiver that needs to be created.

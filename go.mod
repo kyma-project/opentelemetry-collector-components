@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components
 go 1.22.3
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.0.1
+	github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.1.16
 	go.opentelemetry.io/collector/exporter v0.103.0
 	go.opentelemetry.io/collector/exporter/debugexporter v0.103.0
 	go.opentelemetry.io/collector/otelcol v0.103.0

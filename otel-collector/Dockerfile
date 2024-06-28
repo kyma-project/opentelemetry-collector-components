@@ -10,6 +10,7 @@ ARG BUILD_MODE="PR"
 RUN apk --update add ca-certificates git
 
 ADD receiver /receiver/
+ADD internal /internal/
 WORKDIR /app
 COPY otel-collector/builder-config-${BUILD_MODE}.yaml builder-config.yaml
 
