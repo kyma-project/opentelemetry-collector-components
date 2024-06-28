@@ -5,7 +5,7 @@
 | stability   | alpha: metrics             |
 | Code Owners | kyma-project/observability |
 
-Dummy Metrics Receiver is an OTel Collector receiver that generates dummy telemetry data. At the moment it only supports metrics. It is useful when you want to test
+Dummy Receiver is an OTel Collector receiver that generates dummy telemetry data. At the moment it only supports metrics. It is useful for testing
 the OTel Collector pipeline.
 
 ## How It Works
