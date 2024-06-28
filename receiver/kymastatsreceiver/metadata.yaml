@@ -9,5 +9,42 @@ status:
     active: [kyma-project/observability]
 # Skip life cycle tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
 tests:
-  config:
   skip_lifecycle: true
+
+resource_attributes:
+  k8s.namespace.name:
+    description: "The name of the namespace that the pod is running in"
+    enabled: true
+    type: string
+attributes:
+  state:
+    description: Kyma module state.
+    type: string
+  name:
+    description: Kyma module name.
+    type: string
+  reason:
+    description: Kyma module condition reason.
+    type: string
+  status:
+    description: Kyma module condition status.
+    type: string
+  type:
+    description: Kyma module condition type.
+    type: string
+metrics:
+  kyma.telemetry.status.stat:
+    enabled: true
+    description: "Kyma telemetry module status"
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: ["state", "name"]
+
+  kyma.telemetry.status.condition:
+    enabled: true
+    description: "Kyma telemetry module conditions"
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: ["name", "reason", "status", "type"]

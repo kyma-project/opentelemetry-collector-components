@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -23,6 +24,7 @@ func createDefaultConfig() component.Config {
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: k8sconfig.AuthTypeKubeConfig,
 		},
+		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 	}
 }
 
@@ -36,24 +38,11 @@ func NewFactory() receiver.Factory {
 
 func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	config := baseCfg.(*Config)
-	mbConfig := metadata.MetricsBuilderConfig{
-		KymaTelemetryModuleStat: []metadata.MetricConfig{
-			{
-				ResourceGroup:   "operator.kyma-project.io",
-				ResourceName:    "Telemetry",
-				ResourceVersion: "v1alpha1",
-				Name:            "kyma.telemetry.status.stat",
-				Description:     "Kyma telemetry module status",
-				Unit:            "1",
-			},
-			{
-				ResourceGroup:   "operator.kyma-project.io",
-				ResourceName:    "Telemetry",
-				ResourceVersion: "v1alpha1",
-				Name:            "Kyma.telemetry.status.condition",
-				Description:     "Kyma telemetry module conditions",
-				Unit:            "1",
-			},
+	rcConfig := []internal.Resource{
+		{
+			ResourceGroup:   "operator.kyma-project.io",
+			ResourceName:    "Telemetry",
+			ResourceVersion: "v1alpha1",
 		},
 	}
 
@@ -61,7 +50,7 @@ func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, ba
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, mbConfig)
+	scrp, err := newKymaScraper(client, params, rcConfig, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}

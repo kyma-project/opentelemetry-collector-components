@@ -37,6 +37,7 @@ func TestLoadConfig(t *testing.T) {
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
 				},
+				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			},
 		},
 
@@ -47,6 +48,7 @@ func TestLoadConfig(t *testing.T) {
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
 				},
+				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			},
 		},
 		{
@@ -56,6 +58,7 @@ func TestLoadConfig(t *testing.T) {
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
 				},
+				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			},
 		},
 	}

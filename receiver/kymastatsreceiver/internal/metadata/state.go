@@ -8,3 +8,7 @@ type ResourceStatusData struct {
 	Name       string
 	Namespace  string
 }
+
+type Stats struct {
+	Resources []ResourceStatusData
+}

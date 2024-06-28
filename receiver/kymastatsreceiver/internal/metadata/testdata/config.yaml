@@ -1,0 +1,31 @@
+default:
+all_set:
+  metrics:
+    kyma.telemetry.status.condition:
+      enabled: true
+    kyma.telemetry.status.stat:
+      enabled: true
+  resource_attributes:
+    k8s.namespace.name:
+      enabled: true
+none_set:
+  metrics:
+    kyma.telemetry.status.condition:
+      enabled: false
+    kyma.telemetry.status.stat:
+      enabled: false
+  resource_attributes:
+    k8s.namespace.name:
+      enabled: false
+filter_set_include:
+  resource_attributes:
+    k8s.namespace.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+filter_set_exclude:
+  resource_attributes:
+    k8s.namespace.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.namespace.name-val"
