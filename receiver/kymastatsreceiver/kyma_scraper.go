@@ -28,6 +28,7 @@ type kymaScraper struct {
 func newKymaScraper(client dynamic.Interface, set receiver.CreateSettings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client: client,
+		logger: set.Logger,
 		mbs: &metadata.MetricsBuilders{
 			KymaTelemetryModuleMetricsBuilder: metadata.NewMetricsBuilder(mbc, set),
 		},
@@ -69,12 +70,13 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 		for _, item := range telemetryRes.Items {
 
 			status := item.Object["status"].(map[string]interface{})
-			conditions := []metadata.Condition{}
+			var conditions []metadata.Condition
 
 			r := metadata.ResourceStatusData{
-				State:     status["state"].(string),
-				Name:      telemetryRes.Items[0].GetName(),
-				Namespace: telemetryRes.Items[0].GetNamespace(),
+				State:      status["state"].(string),
+				Name:       telemetryRes.Items[0].GetName(),
+				Namespace:  telemetryRes.Items[0].GetNamespace(),
+				ModuleName: rc.ResourceName,
 			}
 			if status["conditions"] != nil {
 				for _, c := range status["conditions"].([]interface{}) {

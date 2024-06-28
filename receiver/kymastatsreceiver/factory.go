@@ -26,6 +26,7 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeKubeConfig,
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+		Resources:            internal.NewDefaultResourceConfiguration(),
 	}
 }
 
@@ -39,19 +40,11 @@ func NewFactory() receiver.Factory {
 
 func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	config := baseCfg.(*Config)
-	rcConfig := []internal.Resource{
-		{
-			ResourceGroup:   "operator.kyma-project.io",
-			ResourceName:    "Telemetry",
-			ResourceVersion: "v1alpha1",
-		},
-	}
-
 	client, err := config.getK8sDynamicClient()
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, params, rcConfig, config.MetricsBuilderConfig)
+	scrp, err := newKymaScraper(client, params, config.Resources, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}

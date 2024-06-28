@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
+
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 
 	"github.com/stretchr/testify/assert"
@@ -38,6 +40,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "kubeConfig",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				Resources:            internal.NewDefaultResourceConfiguration(),
 			},
 		},
 
@@ -49,6 +52,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "kubeConfig",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				Resources:            internal.NewDefaultResourceConfiguration(),
 			},
 		},
 		{
@@ -59,6 +63,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				Resources:            internal.NewDefaultResourceConfiguration(),
 			},
 		},
 	}

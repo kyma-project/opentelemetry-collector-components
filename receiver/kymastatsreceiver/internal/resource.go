@@ -1,16 +1,17 @@
 package internal
 
 type Resource struct {
-	ResourceGroup   string
-	ResourceName    string
-	ResourceVersion string
+	ResourceGroup   string `mapstructure:"resource_group"`
+	ResourceName    string `mapstructure:"resource_name"`
+	ResourceVersion string `mapstructure:"resource_version"`
 }
 
-func NewResource(gorup, name, version string) *Resource {
-	return &Resource{
-		ResourceGroup:   gorup,
-		ResourceName:    name,
-		ResourceVersion: version,
+func NewDefaultResourceConfiguration() []Resource {
+	return []Resource{
+		{
+			ResourceGroup:   "operator.kyma-project.io",
+			ResourceName:    "Telemetry",
+			ResourceVersion: "v1alpha1",
+		},
 	}
-
 }
