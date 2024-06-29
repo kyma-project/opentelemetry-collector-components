@@ -28,9 +28,9 @@ func TestLoadConfig(t *testing.T) {
 	delay := time.Second
 
 	tests := []struct {
-		id          component.ID
-		expected    component.Config
-		expectedErr error
+		id        component.ID
+		expected  component.Config
+		expectErr bool
 	}{
 		{
 			id: component.NewIDWithName(metadata.Type, "default"),
@@ -66,6 +66,14 @@ func TestLoadConfig(t *testing.T) {
 				Resources:            internal.NewDefaultResourceConfiguration(),
 			},
 		},
+		{
+			id:        component.NewIDWithName(metadata.Type, "invalidauth"),
+			expectErr: true,
+		},
+		{
+			id:        component.NewIDWithName(metadata.Type, "invalidinterval"),
+			expectErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -76,8 +84,12 @@ func TestLoadConfig(t *testing.T) {
 			sub, err := cm.Sub(tt.id.String())
 			require.NoError(t, err)
 			require.NoError(t, component.UnmarshalConfig(sub, cfg))
-
-			assert.NoError(t, component.ValidateConfig(cfg))
+			err = component.ValidateConfig(cfg)
+			if tt.expectErr {
+				assert.Error(t, err)
+				return
+			}
+			assert.NoError(t, err)
 			assert.Equal(t, tt.expected, cfg)
 		})
 	}

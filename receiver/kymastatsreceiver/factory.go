@@ -35,10 +35,10 @@ func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		typeStr,
 		createDefaultConfig,
-		receiver.WithMetrics(createMetricsReceiver, component.StabilityLevelAlpha))
+		receiver.WithMetrics(CreateMetricsReceiver, component.StabilityLevelAlpha))
 }
 
-func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
+func CreateMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	config := baseCfg.(*Config)
 	client, err := config.getK8sDynamicClient()
 	if err != nil {

@@ -30,13 +30,6 @@ func (cfg *Config) Validate() error {
 	return cfg.APIConfig.Validate()
 }
 
-func (cfg *Config) getK8sClient() (k8s.Interface, error) {
-	if cfg.makeClient != nil {
-		return cfg.makeClient()
-	}
-	return k8sconfig.MakeClient(cfg.APIConfig)
-}
-
 func (cfg *Config) getK8sDynamicClient() (dynamic.Interface, error) {
 	if cfg.makeClient != nil {
 		return cfg.makeDynamicClient()
