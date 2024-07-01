@@ -24,14 +24,14 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	return &dummyreceiver{
+	return &dummyReceiver{
 		config:       baseCfg.(*Config),
 		nextConsumer: consumer,
 		settings:     &params,
 	}, nil
 }
 
-// NewFactory creates a factory for dummyreceiver receiver.
+// NewFactory creates a factory for dummyReceiver receiver.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		typeStr,

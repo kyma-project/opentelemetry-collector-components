@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
@@ -28,11 +27,11 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		leaderElectionConfig: leaderElectionConfig{
-			leaseName:            "singleton-receiver",
-			leaseNamespace:       "default",
-			leaseDurationSeconds: defaultLeaseDuration,
-			renewDeadlineSeconds: defaultRenewDeadline,
-			retryPeriodSeconds:   defaultRetryPeriod,
+			leaseName:      "singleton-receiver",
+			leaseNamespace: "default",
+			leaseDuration:  defaultLeaseDuration,
+			renewDuration:  defaultRenewDeadline,
+			retryPeriod:    defaultRetryPeriod,
 		},
 		subreceiverConfig: receiverConfig{},
 	}

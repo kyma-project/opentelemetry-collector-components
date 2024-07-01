@@ -2,11 +2,13 @@ package singletonreceivercreator
 
 import (
 	"context"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 	"testing"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
@@ -22,6 +24,22 @@ var mockReceiverConfig = receiverConfig{
 	config: map[string]any{
 		"interval": "1m",
 	},
+}
+
+
+var defaultCfg = &Config{
+	leaderElectionConfig: leaderElectionConfig{
+		leaseName:      "singleton-receiver",
+		leaseNamespace: "default",
+		leaseDuration:  defaultLeaseDuration,
+		renewDuration:  defaultRenewDeadline,
+		retryPeriod:    defaultRetryPeriod,
+	},
+	subreceiverConfig: mockReceiverConfig,
+}
+
+func createMockMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
+	return nil, nil //nolint:nilnil // required during testing
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
@@ -72,7 +90,7 @@ func TestLoadReceiverConfig(t *testing.T) {
 	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 
-	cfg, _, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
+	cfg, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
 	require.NoError(t, err)
 	require.NotNil(t, cfg)
 

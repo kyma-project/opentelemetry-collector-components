@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/consumer"
-	rcvr "go.opentelemetry.io/collector/receiver"
+	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 )
@@ -22,14 +22,14 @@ import (
 // receiverRunner handles starting/stopping of a concrete wrapped receiver instance.
 type receiverRunner struct {
 	logger      *zap.Logger
-	params      rcvr.Settings
+	params      receiver.Settings
 	idNamespace component.ID
 	host        component.Host
 	receiver    component.Component
 	lock        *sync.Mutex
 }
 
-func newReceiverRunner(params rcvr.Settings, host component.Host) *receiverRunner {
+func newReceiverRunner(params receiver.Settings, host component.Host) *receiverRunner {
 	return &receiverRunner{
 		logger:      params.Logger,
 		params:      params,
@@ -39,22 +39,25 @@ func newReceiverRunner(params rcvr.Settings, host component.Host) *receiverRunne
 	}
 }
 
-func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer.Metrics) error {
-	factory := r.host.GetFactory(component.KindReceiver, receiver.id.Type())
+func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.Metrics) error {
+	factory := r.host.GetFactory(component.KindReceiver, config.id.Type())
 
 	if factory == nil {
-		return fmt.Errorf("unable to lookup factory for wrapped receiver %q", receiver.id.String())
+		return fmt.Errorf("unable to lookup factory for wrapped receiver %q", config.id.String())
 	}
 
-	receiverFactory := factory.(rcvr.Factory)
+	receiverFactory, ok := factory.(receiver.Factory)
+	if !ok {
+		return fmt.Errorf("factory %q is not a receiver factory", config.id.Type())
+	}
 
-	cfg, _, err := r.loadReceiverConfig(receiverFactory, receiver)
+	cfg, err := r.loadReceiverConfig(receiverFactory, config)
 	if err != nil {
 		return err
 	}
 
 	// Sets dynamically created wrapped receiver to something like receiver_creator/1/redis.
-	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", receiver.id.Name(), r.idNamespace))
+	id := component.NewIDWithName(factory.Type(), fmt.Sprintf("%s/%s", config.id.Name(), r.idNamespace))
 	r.logger.Debug("Creating wrapped receiver", zap.String("receiver", id.String()))
 
 	wr := &wrappedReceiver{}
@@ -62,7 +65,7 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 
 	if wr.metrics, err = r.createMetricsRuntimeReceiver(receiverFactory, id, cfg, metricsConsumer); err != nil {
 		if errors.Is(err, component.ErrDataTypeIsNotSupported) {
-			r.logger.Info("instantiated receiver doesn't support metrics", zap.String("receiver", receiver.id.String()), zap.Error(err))
+			r.logger.Info("instantiated receiver doesn't support metrics", zap.String("receiver", config.id.String()), zap.Error(err))
 			wr.metrics = nil
 		} else {
 			createError = multierr.Combine(createError, err)
@@ -73,7 +76,7 @@ func (r *receiverRunner) start(receiver receiverConfig, metricsConsumer consumer
 		return fmt.Errorf("failed creating wrapped receiver: %w", createError)
 	}
 
-	r.params.Logger.Debug("Starting wrapped receiver with config", zap.String("receiver", receiver.id.String()), zap.Any("config", cfg))
+	r.params.Logger.Debug("Starting wrapped receiver with config", zap.String("receiver", config.id.String()), zap.Any("config", cfg))
 
 	if err = wr.Start(context.Background(), r.host); err != nil {
 		return fmt.Errorf("failed starting wrapped receiver: %w", err)
@@ -92,22 +95,22 @@ func (r *receiverRunner) shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (r *receiverRunner) loadReceiverConfig(factory rcvr.Factory, receiver receiverConfig) (component.Config, string, error) {
+func (r *receiverRunner) loadReceiverConfig(factory receiver.Factory, receiver receiverConfig) (component.Config, error) {
 	receiverCfg := factory.CreateDefaultConfig()
 	config := confmap.NewFromStringMap(receiver.config)
 	if err := config.Unmarshal(receiverCfg); err != nil {
-		return nil, "", fmt.Errorf("failed to load %q subreceiver config: %w", receiver.id.String(), err)
+		return nil, fmt.Errorf("failed to load %q subreceiver config: %w", receiver.id.String(), err)
 	}
-	return receiverCfg, "", nil
+	return receiverCfg, nil
 }
 
 // createMetricsRuntimeReceiver creates a receiver that is discovered at runtime.
 func (r *receiverRunner) createMetricsRuntimeReceiver(
-	factory rcvr.Factory,
+	factory receiver.Factory,
 	id component.ID,
 	cfg component.Config,
 	nextConsumer consumer.Metrics,
-) (rcvr.Metrics, error) {
+) (receiver.Metrics, error) {
 	runParams := r.params
 	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
 	runParams.ID = id
@@ -117,7 +120,7 @@ func (r *receiverRunner) createMetricsRuntimeReceiver(
 var _ component.Component = (*wrappedReceiver)(nil)
 
 type wrappedReceiver struct {
-	metrics rcvr.Metrics
+	metrics receiver.Metrics
 }
 
 func (w *wrappedReceiver) Start(ctx context.Context, host component.Host) error {
