@@ -28,14 +28,16 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
+	r, err := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
+	require.NoError(t, err)
+
 	fakeClient := fake.NewSimpleClientset()
 	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
 	ctx := context.TODO()
-	err := r.Start(ctx, componenttest.NewNopHost())
+	err = r.Start(ctx, componenttest.NewNopHost())
 	require.NoError(t, err)
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -61,8 +63,10 @@ func TestUnsupportedAuthType(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
-	err := r.Start(context.TODO(), componenttest.NewNopHost())
+	r, err := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
+	require.NoError(t, err)
+
+	err = r.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")
 }

@@ -36,7 +36,11 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	r := newSingletonReceiverCreator(params, cfg.(*Config))
+	r, err := newSingletonReceiverCreator(params, cfg.(*Config))
+	if err != nil {
+		return nil, err
+	}
+
 	r.nextMetricsConsumer = consumer
 	return r, nil
 }

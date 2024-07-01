@@ -8,6 +8,8 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
 // singletonreceivercreator implements consumer.Metrics.
@@ -15,17 +17,20 @@ type singletonReceiverCreator struct {
 	params              receiver.Settings
 	cfg                 *Config
 	nextMetricsConsumer consumer.Metrics
+	telemetryBuilder    *metadata.TelemetryBuilder
 
 	host              component.Host
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
 }
 
-func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) *singletonReceiverCreator {
+func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) (*singletonReceiverCreator, error) {
+	telemetry, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
 	return &singletonReceiverCreator{
-		params: params,
-		cfg:    cfg,
-	}
+		params:           params,
+		cfg:              cfg,
+		telemetryBuilder: telemetry,
+	}, err
 }
 
 // Start leader receiver creator.
@@ -62,6 +67,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 			}
 		},
 		c.cfg.leaderElectionConfig,
+		c.telemetryBuilder,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)
