@@ -67,11 +67,11 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 	}
 
 	if leaseDuration, ok := cfg["lease_duration"].(string); ok {
-		leaseduration, err := time.ParseDuration(leaseDuration)
+		leaseDuration, err := time.ParseDuration(leaseDuration)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse lease duration: %w", err)
 		}
-		lec.leaseDuration = leaseduration
+		lec.leaseDuration = leaseDuration
 	}
 
 	if renewDeadline, ok := cfg["renew_deadline"].(string); ok {
