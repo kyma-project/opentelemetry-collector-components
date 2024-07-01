@@ -13,11 +13,11 @@ func TestLeaderElector(t *testing.T) {
 	onStartedLeading := func(ctx context.Context) {}
 	onStoppedLeading := func() {}
 	lec := leaderElectionConfig{
-		leaseName:            "foo",
-		leaseNamespace:       "bar",
-		leaseDurationSeconds: 10,
-		renewDeadlineSeconds: 5,
-		retryPeriodSeconds:   2,
+		leaseName:      "foo",
+		leaseNamespace: "bar",
+		leaseDuration:  10,
+		renewDuration:  5,
+		retryPeriod:    2,
 	}
 	leaderElector, err := newLeaderElector(fakeClient, onStartedLeading, onStoppedLeading, lec)
 	require.NoError(t, err)

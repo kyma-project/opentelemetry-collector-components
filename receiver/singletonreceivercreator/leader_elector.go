@@ -1,10 +1,9 @@
 package singletonreceivercreator
 
 import (
+	"context"
 	"os"
 	"time"
-
-	"context"
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/leaderelection"
@@ -48,9 +47,9 @@ func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context
 
 	leConfig := leaderelection.LeaderElectionConfig{
 		Lock:          resourceLock,
-		LeaseDuration: cfg.leaseDurationSeconds,
-		RenewDeadline: cfg.renewDeadlineSeconds,
-		RetryPeriod:   cfg.retryPeriodSeconds,
+		LeaseDuration: cfg.leaseDuration,
+		RenewDeadline: cfg.renewDuration,
+		RetryPeriod:   cfg.retryPeriod,
 		Callbacks: leaderelection.LeaderCallbacks{
 			OnStartedLeading: onStartedLeading,
 			OnStoppedLeading: onStoppedLeading,
