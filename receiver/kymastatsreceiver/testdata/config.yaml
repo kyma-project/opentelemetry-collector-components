@@ -1,0 +1,16 @@
+kymastatsreceiver:
+kymastatsreceiver/sa:
+  collection_interval: 10s
+  auth_type: "serviceAccount"
+kymastatsreceiver/k8s:
+  collection_interval: 30s
+  auth_type: "kubeConfig"
+kymastatsreceiver/invalidauth:
+  collection_interval: 30s
+  auth_type: "123"
+kymastatsreceiver/invalidinterval:
+  collection_interval: 0s
+  auth_type: "kubeConfig"
+kymastatsreceiver/none:
+  collection_interval: 60s
+  auth_type: "none"
