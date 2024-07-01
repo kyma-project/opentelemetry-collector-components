@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/k8sconfig"
+	k8s "k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
@@ -18,9 +20,11 @@ const (
 
 // Config defines configuration for leader receiver creator.
 type Config struct {
-	authType             k8sconfig.AuthType   `mapstructure:"auth_type"`
+	k8sconfig.APIConfig  `mapstructure:",squash"`
 	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
 	subreceiverConfig    receiverConfig
+
+	makeClient func() (k8s.Interface, error)
 }
 
 type leaderElectionConfig struct {
@@ -101,11 +105,6 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 		return err
 	}
 
-	if authTypeString, ok := componentParser.Get("auth_type").(string); ok {
-		authType := k8sconfig.AuthType(authTypeString)
-		cfg.authType = authType
-	}
-
 	subreceiverConfig, err := componentParser.Sub(subreceiverConfigKey)
 	if err != nil {
 		return fmt.Errorf("unable to extract key %v: %w", subreceiverConfigKey, err)
@@ -136,4 +135,16 @@ func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
 	}
 
 	return nil
+}
+
+func (cfg *Config) Validate() error {
+	return cfg.APIConfig.Validate()
+}
+
+func (cfg *Config) getK8sClient() (k8s.Interface, error) {
+	if cfg.makeClient != nil {
+		return cfg.makeClient()
+	}
+	fmt.Printf("cfg.APIConfig: %v\n", cfg.APIConfig.AuthType)
+	return k8sconfig.MakeClient(cfg.APIConfig)
 }
