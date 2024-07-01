@@ -103,7 +103,7 @@ linters-settings:
     sections:
       - standard # Standard packages.
       - default # Imports that could not be matched to another section type.
-      - prefix(github.com/kyma-project/telemetry-manager) # Imports with the specified Prefix.
+      - prefix(github.com/kyma-project/opentelemetry-collector-components) # Imports with the specified Prefix.
       - blank # Blank imports
     custom-order: true
 
@@ -146,6 +146,10 @@ linters-settings:
     # Default: 30
     # The max complexity while enabling this linter is 15. Please check if this can be reduced. Increase the threshold only if it is absolutely necessary.
     min-complexity: 15
+
+  gomoddirectives:
+    # allow local replaces
+    replace-local: true
 
 issues:
   exclude:

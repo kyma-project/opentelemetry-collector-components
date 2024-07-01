@@ -90,6 +90,10 @@ fmt: $(GOIMPORTS)
 	gofmt  -w -s ./
 	$(GOIMPORTS) -w  -local github.com/kyma-project/opentelemetry-collector-components ./
 
+.PHONY: lintfix
+lintfix: $(LINT)
+	$(LINT) run --fix --allow-parallel-runners --verbose --timeout=30m --path-prefix $(shell basename "$(CURDIR)")
+
 .PHONY: lint
 lint: $(LINT)
 	$(LINT) run --allow-parallel-runners --verbose --timeout=30m --path-prefix $(shell basename "$(CURDIR)")

@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type dummyreceiver struct {
+type dummyReceiver struct {
 	config       *Config
 	nextConsumer consumer.Metrics
 	settings     *receiver.Settings
@@ -21,9 +21,8 @@ type dummyreceiver struct {
 	cancel context.CancelFunc
 }
 
-func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
+func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
 	r.settings.Logger.Info("Starting dummy receiver", zap.String("interval", r.config.Interval))
-	// Create a new context as specified in the interface documentation
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
@@ -45,8 +44,10 @@ func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
 					r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
 					continue
 				}
-				// nolint:errcheck //
-				r.nextConsumer.ConsumeMetrics(ctx, md)
+				err = r.nextConsumer.ConsumeMetrics(ctx, md)
+				if err != nil {
+					r.settings.Logger.Error("next consumer failed", zap.Error(err))
+				}
 			case <-ctx.Done():
 				return
 			}
@@ -56,7 +57,7 @@ func (r *dummyreceiver) Start(_ context.Context, _ component.Host) error {
 	return nil
 }
 
-func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
+func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
 	r.settings.Logger.Debug("Generating metric")
 	host, err := os.Hostname()
 	if err != nil {
@@ -84,7 +85,7 @@ func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
 	return md, nil
 }
 
-func (r *dummyreceiver) Shutdown(_ context.Context) error {
+func (r *dummyReceiver) Shutdown(_ context.Context) error {
 	r.settings.Logger.Info("Shutting down dummy receiver")
 	if r.cancel != nil {
 		r.cancel()
