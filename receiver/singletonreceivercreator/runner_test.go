@@ -69,7 +69,7 @@ func TestLoadReceiverConfig(t *testing.T) {
 	mh, err := NewMockHost()
 	require.NoError(t, err)
 	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
-	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("dummymetricsreceiver"))
+	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 
 	cfg, _, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
