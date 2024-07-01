@@ -12,7 +12,7 @@ the OTel Collector pipeline.
 
 It generates dummy metrics and sends them to the OTel Collector pipeline.
 
-For generated metrics see [metadata.yaml](metadata.yaml) file.
+For generated metrics see [documentation.md](documentation.md) file.
 
 ## Configuration
 
