@@ -1,0 +1,185 @@
+run:
+  modules-download-mode: readonly
+  timeout: 10m
+  build-tags:
+    - e2e
+linters:
+  enable-all: true
+  disable:
+  # Depreacted linters
+    - gomnd
+    - execinquery
+  # Linters to be enabled after fixing the issues
+    - intrange
+    - cyclop
+    - depguard
+    - exhaustive
+    - exhaustruct
+    - forcetypeassert
+    - funlen
+    - gochecknoglobals
+    - goconst
+    - gocritic
+    - godot
+    - godox
+    - err113
+    - gofumpt
+    - mnd
+    - ireturn
+    - lll
+    - maintidx
+    - makezero
+    - mirror
+    - nestif
+    - nlreturn
+    - noctx
+    - nonamedreturns
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - protogetter
+    - tagliatelle
+    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
+    - varnamelen
+    - whitespace
+    - wrapcheck
+    - wsl
+
+linters-settings:
+  dupl:
+    threshold: 100 # Tokens count to trigger error.
+  importas:
+    no-unaliased: true
+    no-extra-aliases: true
+    alias:
+      - pkg: crypto/rand
+        alias: crand
+      - pkg: github.com/prometheus/client_golang/api/prometheus/v1
+        alias: promv1
+      - pkg: github.com/prometheus/client_model/go
+        alias: prommodel
+      - pkg: go.opentelemetry.io/otel/sdk/trace
+        alias: tracesdk
+      - pkg: k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1
+        alias: apiextensionsv1
+      - pkg: k8s.io/apimachinery/pkg/api/equality
+        alias: apiequality
+      - pkg: k8s.io/apimachinery/pkg/api/errors
+        alias: apierrors
+      - pkg: k8s.io/apimachinery/pkg/apis/meta/v1
+        alias: metav1
+      - pkg: k8s.io/apimachinery/pkg/util/runtime
+        alias: utilruntime
+      - pkg: k8s.io/client-go/kubernetes/scheme
+        alias: clientgoscheme
+      - pkg: sigs.k8s.io/controller-runtime
+        alias: ctrl
+      - pkg: sigs.k8s.io/controller-runtime/pkg/log
+        alias: logf
+      - pkg: sigs.k8s.io/controller-runtime/pkg/log/zap
+        alias: logzap
+      - pkg: sigs.k8s.io/controller-runtime/pkg/metrics/server
+        alias: metricsserver
+      - pkg: sigs.k8s.io/controller-runtime/pkg/predicate
+        alias: ctrlpredicate
+
+  errcheck:
+    check-type-assertions: true # Reports type assertions: `a := b.(SomeStruct)`.
+    check-blank: true # Report assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`.
+    exclude-functions: # List of functions to exclude from checking.
+      - io/ioutil.ReadFile
+      - io.Copy(*bytes.Buffer)
+      - io.Copy(os.Stdout)
+      - gopkg.in/yaml.v3.Marshal
+
+  errchkjson:
+    check-error-free-encoding: true
+    report-no-exported: true
+
+  gci:
+    sections:
+      - standard # Standard packages.
+      - default # Imports that could not be matched to another section type.
+      - prefix(github.com/kyma-project/telemetry-manager) # Imports with the specified Prefix.
+      - blank # Blank imports
+    custom-order: true
+
+  goimports:
+    local-prefixes: github.com/kyma-project/telemetry-manager
+
+  govet:
+    enable:
+      - shadow
+
+  loggercheck:
+    klog: true # Allows checking for the k8s.io/klog/v2.
+    zap: true # Allows checking for the go.uber.org/zap.
+    kitlog: false # Prohibits checking for the github.com/go-kit/log.
+    logr: false # Prohibits checking for the github.com/go-logr/logr.
+    require-string-key: true # Require all logging keys to be inlined constant strings.
+    no-printf-like: true
+
+  misspell:
+    locale: US
+
+  stylecheck:
+    dot-import-whitelist:
+      # Allows using dot imports for Ginkgo and Gomega (out-of-the-box and custom matchers)
+      - github.com/onsi/ginkgo/v2
+      - github.com/onsi/gomega
+
+  nolintlint:
+    allow-unused: true
+    require-explanation: true
+    require-specific: true
+
+  revive:
+    rules:
+      - name: dot-imports
+        disabled: true
+
+  gocyclo:
+    # Minimal code complexity to report.
+    # Default: 30
+    # The max complexity while enabling this linter is 15. Please check if this can be reduced. Increase the threshold only if it is absolutely necessary.
+    min-complexity: 15
+
+issues:
+  exclude:
+    # Check this issue for more info: https://github.com/kyoh86/scopelint/issues/4
+    - Using the variable on range scope `tc` in function literal
+    - Using the variable on range scope `tt` in function literal
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - dupl
+    - path: _test\.go
+      text: "shadow: declaration of \"ctx\" shadows declaration at line ([\\d]+)"
+      linters:
+        - govet
+    - path: .go
+      text: "shadow: declaration of \"err\" shadows declaration at line ([\\d]+)"
+      linters:
+        - govet
+    - linters: [dupl]
+      path: controllers/telemetry/(logparser|logpipeline|metricpipeline|tracepipeline)_controller.go
+    - linters: [dupl]
+      path: internal/k8sutils/utils.go
+    # Unify components checkers after getting rid of custom conditions in favor of metav1.Conditions
+    - linters: [dupl]
+      path: internal/reconciler/telemetry/(log|metric|trace)_components_checker.go
+    - linters: [dupl]
+      path: test/testkit/matchers/(log|metric|trace)_matchers.go
+    - linters: [errcheck]
+      path: test/testkit/otel/traces/traces.go
+    - linters: [dupl]
+      path: test/testkit/assert/(deployment|daemon_set|metrics|traces).go
+    - linters: [dupl]
+      path: main.go
+    - linters:
+        - importas
+      text: has alias "" which is not part of config # Ignore false positives that emerged due to https://github.com/julz/importas/issues/15.
