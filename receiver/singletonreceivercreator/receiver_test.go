@@ -81,11 +81,11 @@ func TestSubReceiverCreation(t *testing.T) {
 
 	config := &Config{
 		leaderElectionConfig: leaderElectionConfig{
-			leaseName:            "my-foo-lease-1",
-			leaseNamespace:       "default",
-			leaseDurationSeconds: 10 * time.Second,
-			renewDeadlineSeconds: 5 * time.Second,
-			retryPeriodSeconds:   2 * time.Second,
+			leaseName:      "my-foo-lease-1",
+			leaseNamespace: "default",
+			leaseDuration:  10 * time.Second,
+			renewDuration:  5 * time.Second,
+			retryPeriod:    2 * time.Second,
 		},
 		subreceiverConfig: receiverConfig{
 			id: component.NewIDWithName(component.MustNewType("dummy"), "name"),
@@ -96,7 +96,7 @@ func TestSubReceiverCreation(t *testing.T) {
 	}
 	sink1 := new(consumertest.MetricsSink)
 	fakeClient := fake.NewSimpleClientset()
-	config.makeClient = func() (k8s.Interface, error) {
+	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
