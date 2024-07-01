@@ -23,7 +23,7 @@ func createDefaultConfig() component.Config {
 	return &Config{
 		ControllerConfig: scraperhelper.NewDefaultControllerConfig(),
 		APIConfig: k8sconfig.APIConfig{
-			AuthType: k8sconfig.AuthTypeNone,
+			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 		Resources:            internal.NewDefaultResourceConfiguration(),
