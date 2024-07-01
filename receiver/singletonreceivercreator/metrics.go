@@ -9,6 +9,10 @@ import (
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
+const (
+	leaseAttrKey = "lease"
+)
+
 type LeaderMetricProvider struct {
 	telemetryBuilder *metadata.TelemetryBuilder
 }
@@ -23,7 +27,8 @@ func (p LeaderMetricProvider) On(name string) {
 	}
 
 	ctx := context.Background()
-	p.telemetryBuilder.SingletonreceivercreatorLeaseAcquireTotal.Add(ctx, 1, metric.WithAttributes(attribute.String("lease", name)))
+	p.telemetryBuilder.ReceiverSingletonLeaseAcquiredTotal.Add(ctx, 1, metric.WithAttributes(attribute.String(leaseAttrKey, name)))
+	p.telemetryBuilder.ReceiverSingletonLeaderStatus.Record(ctx, 1, metric.WithAttributes(attribute.String(leaseAttrKey, name)))
 }
 
 func (p LeaderMetricProvider) Off(name string) {
@@ -32,7 +37,8 @@ func (p LeaderMetricProvider) Off(name string) {
 	}
 
 	ctx := context.Background()
-	p.telemetryBuilder.SingletonreceivercreatorLeaseLostTotal.Add(ctx, 1, metric.WithAttributes(attribute.String("lease", name)))
+	p.telemetryBuilder.ReceiverSingletonLeaseLostTotal.Add(ctx, 1, metric.WithAttributes(attribute.String(leaseAttrKey, name)))
+	p.telemetryBuilder.ReceiverSingletonLeaderStatus.Record(ctx, 0, metric.WithAttributes(attribute.String(leaseAttrKey, name)))
 }
 
 func (p LeaderMetricProvider) SlowpathExercised(name string) {
@@ -41,5 +47,5 @@ func (p LeaderMetricProvider) SlowpathExercised(name string) {
 	}
 
 	ctx := context.Background()
-	p.telemetryBuilder.SingletonreceivercreatorLeaseSlowpathExcerciseTotal.Add(ctx, 1, metric.WithAttributes(attribute.String("lease", name)))
+	p.telemetryBuilder.ReceiverSingletonLeaseSlowpathTotal.Add(ctx, 1, metric.WithAttributes(attribute.String(leaseAttrKey, name)))
 }

@@ -14,23 +14,29 @@ tests:
 
 telemetry:
   metrics:
-    singletonreceivercreator_lease_acquire_total:
+    receiver_singleton_leader_status:
       enabled: true
-      description: Number of successful lease acquisitions
+      description: Gauge of if the reporting system is leader of the relevant lease, 0 indicates backup, 1 indicates leader.
+      unit: 1
+      gauge:
+        value_type: int
+    receiver_singleton_lease_acquired_total:
+      enabled: true
+      description: Total number of successful lease acquisitions.
       unit: 1
       sum:
         monotonic: true
         value_type: int
-    singletonreceivercreator_lease_lost_total:
+    receiver_singleton_lease_lost_total:
       enabled: true
-      description: Number of lease losses
+      description: Total number of lease losses.
       unit: 1
       sum:
         monotonic: true
         value_type: int
-    singletonreceivercreator_lease_slowpath_excercise_total:
+    receiver_singleton_lease_slowpath_total:
       enabled: true
-      description: Number of slow path lease exercises
+      description: Total number of slow path exercised in renewing leader leases.
       unit: 1
       sum:
         monotonic: true

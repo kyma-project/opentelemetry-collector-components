@@ -24,11 +24,12 @@ func Tracer(settings component.TelemetrySettings) trace.Tracer {
 // TelemetryBuilder provides an interface for components to report telemetry
 // as defined in metadata and user config.
 type TelemetryBuilder struct {
-	meter                                               metric.Meter
-	SingletonreceivercreatorLeaseAcquireTotal           metric.Int64Counter
-	SingletonreceivercreatorLeaseLostTotal              metric.Int64Counter
-	SingletonreceivercreatorLeaseSlowpathExcerciseTotal metric.Int64Counter
-	level                                               configtelemetry.Level
+	meter                               metric.Meter
+	ReceiverSingletonLeaderStatus       metric.Int64Gauge
+	ReceiverSingletonLeaseAcquiredTotal metric.Int64Counter
+	ReceiverSingletonLeaseLostTotal     metric.Int64Counter
+	ReceiverSingletonLeaseSlowpathTotal metric.Int64Counter
+	level                               configtelemetry.Level
 }
 
 // telemetryBuilderOption applies changes to default builder.
@@ -54,21 +55,27 @@ func NewTelemetryBuilder(settings component.TelemetrySettings, options ...teleme
 	} else {
 		builder.meter = noop.Meter{}
 	}
-	builder.SingletonreceivercreatorLeaseAcquireTotal, err = builder.meter.Int64Counter(
-		"singletonreceivercreator_lease_acquire_total",
-		metric.WithDescription("Number of successful lease acquisitions"),
+	builder.ReceiverSingletonLeaderStatus, err = builder.meter.Int64Gauge(
+		"receiver_singleton_leader_status",
+		metric.WithDescription("Gauge of if the reporting system is leader of the relevant lease, 0 indicates backup, 1 indicates leader."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
-	builder.SingletonreceivercreatorLeaseLostTotal, err = builder.meter.Int64Counter(
-		"singletonreceivercreator_lease_lost_total",
-		metric.WithDescription("Number of lease losses"),
+	builder.ReceiverSingletonLeaseAcquiredTotal, err = builder.meter.Int64Counter(
+		"receiver_singleton_lease_acquired_total",
+		metric.WithDescription("Total number of successful lease acquisitions."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
-	builder.SingletonreceivercreatorLeaseSlowpathExcerciseTotal, err = builder.meter.Int64Counter(
-		"singletonreceivercreator_lease_slowpath_excercise_total",
-		metric.WithDescription("Number of slow path lease exercises"),
+	builder.ReceiverSingletonLeaseLostTotal, err = builder.meter.Int64Counter(
+		"receiver_singleton_lease_lost_total",
+		metric.WithDescription("Total number of lease losses."),
+		metric.WithUnit("1"),
+	)
+	errs = errors.Join(errs, err)
+	builder.ReceiverSingletonLeaseSlowpathTotal, err = builder.meter.Int64Counter(
+		"receiver_singleton_lease_slowpath_total",
+		metric.WithDescription("Total number of slow path exercised in renewing leader leases."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
