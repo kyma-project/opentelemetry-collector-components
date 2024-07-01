@@ -1,12 +1,14 @@
-module github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver
+module github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver
 
 go 1.22.3
 
 require (
+	github.com/google/go-cmp v0.6.0
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.103.0
 	go.opentelemetry.io/collector/confmap v0.103.0
 	go.opentelemetry.io/collector/consumer v0.103.0
+	go.opentelemetry.io/collector/filter v0.103.0
 	go.opentelemetry.io/collector/pdata v1.10.0
 	go.opentelemetry.io/collector/receiver v0.103.0
 	go.uber.org/goleak v1.3.0

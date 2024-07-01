@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Type = component.MustNewType("dummymetricsreceiver")
+	Type = component.MustNewType("dummy")
 )
 
 const (
