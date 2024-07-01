@@ -73,6 +73,7 @@ func (r *dummyreceiver) generateMetric() (pmetric.Metrics, error) {
 		AppendEmpty()
 
 	metric.SetName("dummy")
+	metric.SetDescription("a dummy gauge")
 	gauge := metric.SetEmptyGauge()
 	for i := 0; i < 5; i++ {
 		dp := gauge.DataPoints().AppendEmpty()
