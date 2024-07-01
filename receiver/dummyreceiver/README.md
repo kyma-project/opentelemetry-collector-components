@@ -9,7 +9,7 @@ Dummy Receiver is an OTel Collector receiver that generates dummy telemetry data
 
 ## How It Works
 
-It generates dummy metrics and sends them to the OTel Collector pipeline.
+Dummy Receiver generates dummy metrics and sends them to the OTel Collector pipeline.
 
 For the generated metrics, see [documentation.md](documentation.md).
 
