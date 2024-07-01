@@ -40,7 +40,7 @@ func NewFactory() receiver.Factory {
 
 func CreateMetricsReceiver(_ context.Context, params receiver.CreateSettings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
 	config := baseCfg.(*Config)
-	client, err := config.getK8sDynamicClient()
+	client, err := config.GetK8sDynamicClient()
 	if err != nil {
 		return nil, err
 	}

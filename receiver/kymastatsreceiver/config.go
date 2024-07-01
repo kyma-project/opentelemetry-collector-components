@@ -3,7 +3,6 @@ package kymastatsreceiver
 import (
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"k8s.io/client-go/dynamic"
-	k8s "k8s.io/client-go/kubernetes"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 
@@ -16,7 +15,6 @@ import (
 type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	k8sconfig.APIConfig            `mapstructure:",squash"`
-	makeClient                     func() (k8s.Interface, error)
 	makeDynamicClient              func() (dynamic.Interface, error)
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
 	Resources                      []internal.Resource `mapstructure:"kyma_module_resources"`
@@ -30,8 +28,8 @@ func (cfg *Config) Validate() error {
 	return cfg.APIConfig.Validate()
 }
 
-func (cfg *Config) getK8sDynamicClient() (dynamic.Interface, error) {
-	if cfg.makeClient != nil {
+func (cfg *Config) GetK8sDynamicClient() (dynamic.Interface, error) {
+	if cfg.makeDynamicClient != nil {
 		return cfg.makeDynamicClient()
 	}
 	return k8sconfig.MakeDynamicClient(cfg.APIConfig)

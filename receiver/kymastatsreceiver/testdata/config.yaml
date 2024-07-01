@@ -11,3 +11,6 @@ kymastatsreceiver/invalidauth:
 kymastatsreceiver/invalidinterval:
   collection_interval: 0s
   auth_type: "kubeConfig"
+kymastatsreceiver/none:
+  collection_interval: 60s
+  auth_type: "none"

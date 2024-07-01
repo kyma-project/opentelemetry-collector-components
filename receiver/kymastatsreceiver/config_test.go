@@ -74,6 +74,17 @@ func TestLoadConfig(t *testing.T) {
 			id:        component.NewIDWithName(metadata.Type, "invalidinterval"),
 			expectErr: true,
 		},
+		{
+			id: component.NewIDWithName(metadata.Type, "none"),
+			expected: &Config{
+				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "none",
+				},
+				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				Resources:            internal.NewDefaultResourceConfiguration(),
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -83,7 +94,7 @@ func TestLoadConfig(t *testing.T) {
 
 			sub, err := cm.Sub(tt.id.String())
 			require.NoError(t, err)
-			require.NoError(t, component.UnmarshalConfig(sub, cfg))
+			require.NoError(t, sub.Unmarshal(&cfg))
 			err = component.ValidateConfig(cfg)
 			if tt.expectErr {
 				assert.Error(t, err)

@@ -2,8 +2,13 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/dynamic/fake"
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
@@ -57,7 +62,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 	cfg := &Config{
 
 		APIConfig: k8sconfig.APIConfig{
-			AuthType: "foo",
+			AuthType: "none",
 		},
 	}
 	_, err := factory.CreateMetricsReceiver(
@@ -69,7 +74,30 @@ func TestFactoryBadAuthType(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestFactoryNoneAuthType(t *testing.T) {
+	os.Setenv("KUBERNETES_SERVICE_HOST", "somehost")
+	os.Setenv("KUBERNETES_SERVICE_PORT", "443")
+	factory := NewFactory()
+	cfg := &Config{
+
+		APIConfig: k8sconfig.APIConfig{
+			AuthType: "none",
+		},
+		ControllerConfig: scraperhelper.ControllerConfig{
+			CollectionInterval: 10 * time.Second,
+		},
+	}
+	_, err := factory.CreateMetricsReceiver(
+		context.Background(),
+		receivertest.NewNopCreateSettings(),
+		cfg,
+		consumertest.NewNop(),
+	)
+	require.NoError(t, err)
+}
+
 func kubeConfig() *Config {
+	scheme := runtime.NewScheme()
 	return &Config{
 		ControllerConfig: scraperhelper.ControllerConfig{
 			CollectionInterval: 10 * time.Second,
@@ -81,5 +109,6 @@ func kubeConfig() *Config {
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 		Resources:            internal.NewDefaultResourceConfiguration(),
+		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
 	}
 }
