@@ -10,13 +10,19 @@ status:
 
 resource_attributes:
   k8s.cluster.name:
-    value: test-cluster
+    description: "static value: test-cluster"
+    type: string
 
 attributes:
   host:
     description: the current hostname
+    type: string
 
 metrics:
   dummy:
     description: a dummy gauge
     attributes: [host]
+    enabled: true
+    gauge:
+      value_type: int
+    unit: '{ event }'
