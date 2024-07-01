@@ -26,7 +26,6 @@ var mockReceiverConfig = receiverConfig{
 	},
 }
 
-
 var defaultCfg = &Config{
 	leaderElectionConfig: leaderElectionConfig{
 		leaseName:      "singleton-receiver",
