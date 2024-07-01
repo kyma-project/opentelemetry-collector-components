@@ -2,6 +2,8 @@ package singletonreceivercreator
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 
@@ -37,7 +39,11 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	r := newSingletonReceiverCreator(params, cfg.(*Config))
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get hostname: %w", err)
+	}
+	r := newSingletonReceiverCreator(params, cfg.(*Config), consumer, hostname)
 	r.nextMetricsConsumer = consumer
 	return r, nil
 }

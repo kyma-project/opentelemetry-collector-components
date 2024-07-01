@@ -19,7 +19,7 @@ func TestLeaderElector(t *testing.T) {
 		renewDeadlineSeconds: 5,
 		retryPeriodSeconds:   2,
 	}
-	leaderElector, err := newLeaderElector(fakeClient, onStartedLeading, onStoppedLeading, lec)
+	leaderElector, err := newLeaderElector(fakeClient, onStartedLeading, onStoppedLeading, lec, "hos1")
 	require.NoError(t, err)
 	require.NotNil(t, leaderElector)
 }

@@ -17,14 +17,17 @@ type singletonReceiverCreator struct {
 	nextMetricsConsumer consumer.Metrics
 
 	host              component.Host
+	identity          string
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
 }
 
-func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) *singletonReceiverCreator {
+func newSingletonReceiverCreator(params receiver.Settings, cfg *Config, nextMetricsConsumer consumer.Metrics, identity string) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
-		params: params,
-		cfg:    cfg,
+		params:              params,
+		cfg:                 cfg,
+		nextMetricsConsumer: nextMetricsConsumer,
+		identity:            identity,
 	}
 }
 
@@ -60,6 +63,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 			}
 		},
 		c.cfg.leaderElectionConfig,
+		c.identity,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)

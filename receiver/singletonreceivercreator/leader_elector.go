@@ -1,7 +1,6 @@
 package singletonreceivercreator
 
 import (
-	"os"
 	"time"
 
 	"context"
@@ -17,31 +16,17 @@ const (
 	defaultRetryPeriod   = 2 * time.Second
 )
 
-// NewResourceLock creates a new leases resource lock for use in a leader election loop
-func newResourceLock(client kubernetes.Interface, leaderElectionNamespace, lockName string) (resourcelock.Interface, error) {
-	// Leader id, needs to be unique, use pod name in kubernetes case.
-	id, err := os.Hostname()
-	if err != nil {
-		return nil, err
-	}
-
-	return resourcelock.New(
+// newLeaderElector return  a leader elector object using client-go
+func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context.Context), onStoppedLeading func(), cfg leaderElectionConfig, identity string) (*leaderelection.LeaderElector, error) {
+	resourceLock, err := resourcelock.New(
 		resourcelock.LeasesResourceLock,
-		leaderElectionNamespace,
-		lockName,
+		cfg.leaseNamespace,
+		cfg.leaseName,
 		client.CoreV1(),
 		client.CoordinationV1(),
 		resourcelock.ResourceLockConfig{
-			Identity: id,
+			Identity: identity,
 		})
-}
-
-// newLeaderElector return  a leader elector object using client-go
-func newLeaderElector(client kubernetes.Interface, onStartedLeading func(context.Context), onStoppedLeading func(), cfg leaderElectionConfig) (*leaderelection.LeaderElector, error) {
-	namespace := cfg.leaseNamespace
-	lockName := cfg.leaseName
-
-	resourceLock, err := newResourceLock(client, namespace, lockName)
 	if err != nil {
 		return &leaderelection.LeaderElector{}, err
 	}
