@@ -10,12 +10,18 @@ import (
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 var (
-	typeStr = component.MustNewType("kymastatsreceiver")
+	typeStr          = component.MustNewType("kymastatsreceiver")
+	defaultResources = []Resource{
+		{
+			ResourceGroup:   "operator.kyma-project.io",
+			ResourceName:    "Telemetry",
+			ResourceVersion: "v1alpha1",
+		},
+	}
 )
 
 func createDefaultConfig() component.Config {
@@ -25,7 +31,7 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Resources:            internal.NewDefaultResourceConfiguration(),
+		Resources:            defaultResources,
 	}
 }
 

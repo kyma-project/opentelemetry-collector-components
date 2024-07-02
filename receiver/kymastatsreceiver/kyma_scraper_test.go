@@ -13,14 +13,13 @@ import (
 	"k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 const dataLen = 6
 
 func TestScraper(t *testing.T) {
-	rcConfig := []internal.Resource{
+	rcConfig := []Resource{
 		{
 			ResourceGroup:   "group",
 			ResourceName:    "thekinds",
@@ -57,7 +56,7 @@ func TestScraper(t *testing.T) {
 }
 
 func TestScraperCantPullResource(t *testing.T) {
-	rcConfig := []internal.Resource{
+	rcConfig := []Resource{
 		{
 			ResourceGroup:   "group",
 			ResourceName:    "thekinds",

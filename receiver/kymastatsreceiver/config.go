@@ -5,7 +5,6 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -15,7 +14,13 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	makeDynamicClient              func() (dynamic.Interface, error)
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	Resources                      []internal.Resource `mapstructure:"kyma_module_resources"`
+	Resources                      []Resource `mapstructure:"kyma_module_resources"`
+}
+
+type Resource struct {
+	ResourceGroup   string `mapstructure:"resource_group"`
+	ResourceName    string `mapstructure:"resource_name"`
+	ResourceVersion string `mapstructure:"resource_version"`
 }
 
 func (cfg *Config) Validate() error {

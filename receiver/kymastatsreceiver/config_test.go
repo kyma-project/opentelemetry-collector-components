@@ -12,7 +12,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -38,7 +37,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            internal.NewDefaultResourceConfiguration(),
+				Resources:            defaultResources,
 			},
 		},
 
@@ -50,7 +49,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "kubeConfig",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            internal.NewDefaultResourceConfiguration(),
+				Resources:            defaultResources,
 			},
 		},
 		{
@@ -61,7 +60,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            internal.NewDefaultResourceConfiguration(),
+				Resources:            defaultResources,
 			},
 		},
 		{
@@ -80,7 +79,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "none",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            internal.NewDefaultResourceConfiguration(),
+				Resources:            defaultResources,
 			},
 		},
 	}

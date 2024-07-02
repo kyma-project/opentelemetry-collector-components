@@ -14,7 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -22,7 +21,7 @@ type kymaScraper struct {
 	client     dynamic.Interface
 	logger     *zap.Logger
 	mb         *metadata.MetricsBuilder
-	moduleGVRs []internal.Resource
+	moduleGVRs []Resource
 }
 
 type moduleStats struct {
@@ -40,7 +39,7 @@ type condition struct {
 	reason   string
 }
 
-func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client:     client,
 		logger:     settings.Logger,

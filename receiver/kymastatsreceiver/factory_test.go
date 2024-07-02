@@ -16,7 +16,6 @@ import (
 	"k8s.io/client-go/dynamic/fake"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -106,7 +105,7 @@ func kubeConfig() *Config {
 			AuthType: "kubeConfig",
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Resources:            internal.NewDefaultResourceConfiguration(),
+		Resources:            defaultResources,
 		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
 	}
 }
