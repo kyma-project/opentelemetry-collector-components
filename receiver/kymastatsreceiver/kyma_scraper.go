@@ -3,7 +3,9 @@ package kymastatsreceiver
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
@@ -17,108 +19,135 @@ import (
 )
 
 type kymaScraper struct {
-	client    dynamic.Interface
-	logger    *zap.Logger
-	mbs       *metadata.MetricsBuilders
-	resources []internal.Resource
+	client     dynamic.Interface
+	logger     *zap.Logger
+	mb         *metadata.MetricsBuilder
+	moduleGVRs []internal.Resource
 }
 
-func newKymaScraper(client dynamic.Interface, set receiver.Settings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+type moduleStats struct {
+	name      string
+	namespace string
+	resource  string
+
+	state      string
+	conditions []condition
+}
+
+type condition struct {
+	condType string
+	status   string
+	reason   string
+}
+
+func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
-		client: client,
-		logger: set.Logger,
-		mbs: &metadata.MetricsBuilders{
-			KymaTelemetryModuleMetricsBuilder: metadata.NewMetricsBuilder(mbc, set),
-		},
-		resources: resources,
+		client:     client,
+		logger:     settings.Logger,
+		mb:         metadata.NewMetricsBuilder(mbc, settings),
+		moduleGVRs: resources,
 	}
 
 	return scraperhelper.NewScraper(metadata.Type.String(), ks.scrape)
 }
 
-func (scr *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	summary, err := scr.summary(ctx)
+func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
+	stats, err := ks.collectModuleStats(ctx)
 	if err != nil {
-		scr.logger.Error("scraping module resources failed", zap.Error(err))
+		ks.logger.Error("scraping module resources failed", zap.Error(err))
 		return pmetric.Metrics{}, err
 	}
-	mds := internal.MetricsData(scr.mbs, *summary)
 
-	md := pmetric.NewMetrics()
-	for i := range mds {
-		mds[i].ResourceMetrics().MoveAndAppendTo(md.ResourceMetrics())
+	now := pcommon.NewTimestampFromTime(time.Now())
+
+	for _, s := range stats {
+		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.name)
+		rb := ks.mb.NewResourceBuilder()
+		rb.SetK8sNamespaceName(s.namespace)
+		rb.SetKymaModuleName(s.name)
+		for _, c := range s.conditions {
+			value := -1
+			switch c.status {
+			case string(metav1.ConditionTrue):
+				value = 1
+			case string(metav1.ConditionFalse):
+				value = 0
+			}
+			ks.mb.RecordKymaModuleStatusConditionDataPoint(now, int64(value), s.name, c.reason, c.status, c.condType)
+		}
+		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
-	return md, nil
+
+	return ks.mb.Emit(), nil
 }
 
-func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
-	s := &metadata.Stats{}
-	for _, rc := range scr.resources {
-		telemetryRes, err := scr.client.Resource(schema.GroupVersionResource{
+func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
+	var res []moduleStats
+	for _, rc := range ks.moduleGVRs {
+		telemetryRes, err := ks.client.Resource(schema.GroupVersionResource{
 			Group:    rc.ResourceGroup,
 			Version:  rc.ResourceVersion,
 			Resource: rc.ResourceName,
 		}).List(ctx, metav1.ListOptions{})
 
 		if err != nil {
-			scr.logger.Error(fmt.Sprintf("Error fetching module resource %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+			ks.logger.Error(fmt.Sprintf("Error fetching module resource %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
 			return nil, err
 		}
 
 		for _, item := range telemetryRes.Items {
-
 			_, ok := item.Object["status"]
 			if !ok {
-				scr.logger.Error(fmt.Sprintf("Error getting module status for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				ks.logger.Error(fmt.Sprintf("Error getting module status for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
 				continue
 			}
 
 			status, sok := item.Object["status"].(map[string]interface{})
 			if !sok {
-				scr.logger.Error(fmt.Sprintf("Error getting module status type for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				ks.logger.Error(fmt.Sprintf("Error getting module status type for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
 				continue
 			}
 			state, sok := status["state"].(string)
 
 			if !sok {
-				scr.logger.Error(fmt.Sprintf("Error getting module status state for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				ks.logger.Error(fmt.Sprintf("Error getting module status state for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
 				continue
 			}
-			var conditions []metadata.Condition
-			r := metadata.ResourceStatusData{
-				State:     state,
-				Name:      item.GetName(),
-				Namespace: item.GetNamespace(),
-				Module:    rc.ResourceName,
+			var conditions []condition
+			stats := moduleStats{
+				state:     state,
+				name:      item.GetName(),
+				namespace: item.GetNamespace(),
+				resource:  rc.ResourceName,
 			}
 
 			if condList, cok := status["conditions"].([]interface{}); cok {
 				conditions = buildConditions(condList)
 			}
-			r.Conditions = conditions
-			s.Resources = append(s.Resources, r)
+			stats.conditions = conditions
+			res = append(res, stats)
 		}
 	}
 
-	return s, nil
+	return res, nil
 }
 
-func buildConditions(conditionsObj []interface{}) []metadata.Condition {
-	var conditions []metadata.Condition
+func buildConditions(conditionsObj []interface{}) []condition {
+	var conditions []condition
 	for _, c := range conditionsObj {
 		if cond, ok := c.(map[string]interface{}); ok {
-			condition := metadata.Condition{}
+			condition := condition{}
 
 			if t, tok := cond["type"].(string); tok {
-				condition.Type = t
+				condition.condType = t
 			}
 
 			if s, sok := cond["status"].(string); sok {
-				condition.Status = s
+				condition.status = s
 			}
 
 			if r, rok := cond["reason"].(string); rok {
-				condition.Reason = r
+				condition.reason = r
 			}
 
 			conditions = append(conditions, condition)
