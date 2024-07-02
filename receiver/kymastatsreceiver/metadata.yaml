@@ -7,10 +7,11 @@ status:
   distributions: [kyma]
   codeowners:
     active: [kyma-project/observability]
-# Skip life cycle tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
+# Skip life cycle and shutdown tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
 tests:
   config:
   skip_lifecycle: true
+  skip_shutdown: true
 
 resource_attributes:
   k8s.namespace.name:

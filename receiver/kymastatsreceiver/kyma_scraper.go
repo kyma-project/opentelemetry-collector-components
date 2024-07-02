@@ -25,7 +25,7 @@ type kymaScraper struct {
 	resources []internal.Resource
 }
 
-func newKymaScraper(client dynamic.Interface, set receiver.CreateSettings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+func newKymaScraper(client dynamic.Interface, set receiver.Settings, resources []internal.Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client: client,
 		logger: set.Logger,
