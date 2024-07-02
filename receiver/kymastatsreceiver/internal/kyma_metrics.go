@@ -17,7 +17,7 @@ func MetricsData(mbs *metadata.MetricsBuilders, s metadata.Stats) []pmetric.Metr
 	for _, r := range s.Resources {
 		acc.resourceStats(r)
 		for _, c := range r.Conditions {
-			acc.resourceConditionStats(r.Name, r.Namespace, c)
+			acc.resourceConditionStats(r.Name, r.Module, r.Namespace, c)
 		}
 	}
 	return acc.m

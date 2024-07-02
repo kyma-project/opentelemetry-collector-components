@@ -29,7 +29,7 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 // MetricsConfig provides config for kymastatsreceiver metrics.
 type MetricsConfig struct {
 	KymaModuleStatusCondition MetricConfig `mapstructure:"kyma.module.status.condition"`
-	KymaModuleStatusStat      MetricConfig `mapstructure:"kyma.module.status.stat"`
+	KymaModuleStatusState     MetricConfig `mapstructure:"kyma.module.status.state"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
@@ -37,7 +37,7 @@ func DefaultMetricsConfig() MetricsConfig {
 		KymaModuleStatusCondition: MetricConfig{
 			Enabled: true,
 		},
-		KymaModuleStatusStat: MetricConfig{
+		KymaModuleStatusState: MetricConfig{
 			Enabled: true,
 		},
 	}
@@ -72,11 +72,15 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 // ResourceAttributesConfig provides config for kymastatsreceiver resource attributes.
 type ResourceAttributesConfig struct {
 	K8sNamespaceName ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
+	KymaModuleName   ResourceAttributeConfig `mapstructure:"kyma.module.name"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		K8sNamespaceName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		KymaModuleName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}

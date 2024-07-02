@@ -21,30 +21,34 @@ func (acc *metricDataAccumulator) resourceStats(r metadata.ResourceStatusData) {
 	addModuleStats(acc.mbs.KymaTelemetryModuleMetricsBuilder, metadata.KymaModuleMetrics.ModuleState, r, currentTime)
 	rb := acc.mbs.KymaTelemetryModuleMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sNamespaceName(r.Namespace)
+	rb.SetKymaModuleName(r.Name)
 	acc.m = append(acc.m, acc.mbs.KymaTelemetryModuleMetricsBuilder.Emit(metadata.WithResource(rb.Emit())))
 }
 
-func (acc *metricDataAccumulator) resourceConditionStats(name string, namespace string, r metadata.Condition) {
+func (acc *metricDataAccumulator) resourceConditionStats(name string, module string, namespace string, r metadata.Condition) {
 	currentTime := pcommon.NewTimestampFromTime(acc.time)
 
-	addModuleConditionStats(acc.mbs.KymaTelemetryModuleMetricsBuilder, metadata.KymaModuleMetrics.ModuleCondition, name, r, currentTime)
+	addModuleConditionStats(acc.mbs.KymaTelemetryModuleMetricsBuilder, metadata.KymaModuleMetrics.ModuleCondition, module, r, currentTime)
 	rb := acc.mbs.KymaTelemetryModuleMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sNamespaceName(namespace)
+	rb.SetKymaModuleName(name)
 	acc.m = append(acc.m, acc.mbs.KymaTelemetryModuleMetricsBuilder.Emit(metadata.WithResource(rb.Emit())))
 }
 
 func addModuleStats(mb *metadata.MetricsBuilder, moduleMetrics metadata.RecordModuleStateDatapointFunc, r metadata.ResourceStatusData, currentTime pcommon.Timestamp) {
-	value := 0
-	if r.State == "Ready" {
-		value = 1
-	}
-	moduleMetrics(mb, currentTime, int64(value), r.State, r.Name)
+	moduleMetrics(mb, currentTime, int64(1), r.State, r.Name)
 }
 
-func addModuleConditionStats(mb *metadata.MetricsBuilder, moduleMetrics metadata.RecordModuleConditionDatapointFunc, name string, r metadata.Condition, currentTime pcommon.Timestamp) {
-	value := 0
-	if r.Status == "True" {
+func addModuleConditionStats(mb *metadata.MetricsBuilder, moduleMetrics metadata.RecordModuleConditionDatapointFunc, module string, r metadata.Condition, currentTime pcommon.Timestamp) {
+	value := -1
+	switch r.Status {
+	case "True":
+	case "true":
 		value = 1
+	case "False":
+	case "false":
+		value = 0
 	}
-	moduleMetrics(mb, currentTime, int64(value), name, r.Reason, r.Status, r.Type)
+
+	moduleMetrics(mb, currentTime, int64(value), module, r.Reason, r.Status, r.Type)
 }

@@ -28,6 +28,13 @@ func (rb *ResourceBuilder) SetK8sNamespaceName(val string) {
 	}
 }
 
+// SetKymaModuleName sets provided value as "kyma.module.name" attribute.
+func (rb *ResourceBuilder) SetKymaModuleName(val string) {
+	if rb.config.KymaModuleName.Enabled {
+		rb.res.Attributes().PutStr("kyma.module.name", val)
+	}
+}
+
 // Emit returns the built resource and resets the internal builder state.
 func (rb *ResourceBuilder) Emit() pcommon.Resource {
 	r := rb.res

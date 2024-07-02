@@ -18,35 +18,39 @@ resource_attributes:
     description: "The name of the namespace that the resource is running in"
     enabled: true
     type: string
+  kyma.module.name:
+    description: "The name of the Kyma module instance"
+    enabled: true
+    type: string
 attributes:
   state:
-    description: Kyma module state.
+    description: The state of the module status.
     type: string
-  name:
-    description: Kyma module name.
+  module:
+    description: The kind of the module.
     type: string
   reason:
-    description: Kyma module condition reason.
+    description: The reason of the module condition status.
     type: string
   status:
-    description: Kyma module condition status.
+    description: The status of the module condition.
     type: string
   type:
-    description: Kyma module condition type.
+    description: The type of the module condition.
     type: string
 metrics:
-  kyma.module.status.stat:
+  kyma.module.status.state:
     enabled: true
-    description: "Kyma module status"
+    description: "The module status state, including module and state."
     unit: "1"
     gauge:
       value_type: int
-    attributes: ["state", "name"]
+    attributes: ["state", "module"]
 
   kyma.module.status.condition:
     enabled: true
-    description: "Kyma module conditions"
+    description: "The Kyma module status conditions, including module, condition reason, status, and type."
     unit: "1"
     gauge:
       value_type: int
-    attributes: ["name", "reason", "status", "type"]
+    attributes: ["module", "reason", "status", "type"]

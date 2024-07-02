@@ -5,7 +5,7 @@ type ResourceStatusData struct {
 	Conditions []Condition
 	Name       string
 	Namespace  string
-	ModuleName string
+	Module     string
 }
 
 type Condition struct {

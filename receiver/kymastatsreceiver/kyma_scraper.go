@@ -69,24 +69,30 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 
 		for _, item := range telemetryRes.Items {
 
-			status := item.Object["status"].(map[string]interface{})
-			var conditions []metadata.Condition
-
-			r := metadata.ResourceStatusData{
-				State:      status["state"].(string),
-				Name:       telemetryRes.Items[0].GetName(),
-				Namespace:  telemetryRes.Items[0].GetNamespace(),
-				ModuleName: rc.ResourceName,
+			_, ok := item.Object["status"]
+			if !ok {
+				scr.logger.Error(fmt.Sprintf("Error getting module status for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				continue
 			}
-			if status["conditions"] != nil {
-				for _, c := range status["conditions"].([]interface{}) {
-					condition := c.(map[string]interface{})
-					conditions = append(conditions, metadata.Condition{
-						Type:   condition["type"].(string),
-						Status: condition["status"].(string),
-						Reason: condition["reason"].(string),
-					})
-				}
+
+			status := item.Object["status"].(map[string]interface{})
+
+			state, sok := status["state"].(string)
+
+			if !sok {
+				scr.logger.Error(fmt.Sprintf("Error getting module status state for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				continue
+			}
+			var conditions []metadata.Condition
+			r := metadata.ResourceStatusData{
+				State:     state,
+				Name:      item.GetName(),
+				Namespace: item.GetNamespace(),
+				Module:    rc.ResourceName,
+			}
+
+			if condList, cok := status["conditions"].([]interface{}); cok {
+				conditions = buildConditions(condList)
 			}
 			r.Conditions = conditions
 			s.Resources = append(s.Resources, r)
@@ -94,4 +100,28 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 	}
 
 	return s, nil
+}
+
+func buildConditions(conditionsObj []interface{}) []metadata.Condition {
+	var conditions []metadata.Condition
+	for _, c := range conditionsObj {
+		if cond, ok := c.(map[string]interface{}); ok {
+			condition := metadata.Condition{}
+
+			if t, tok := cond["type"].(string); tok {
+				condition.Type = t
+			}
+
+			if s, sok := cond["status"].(string); sok {
+				condition.Status = s
+			}
+
+			if r, rok := cond["reason"].(string); rok {
+				condition.Reason = r
+			}
+
+			conditions = append(conditions, condition)
+		}
+	}
+	return conditions
 }

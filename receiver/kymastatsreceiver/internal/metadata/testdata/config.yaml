@@ -3,23 +3,31 @@ all_set:
   metrics:
     kyma.module.status.condition:
       enabled: true
-    kyma.module.status.stat:
+    kyma.module.status.state:
       enabled: true
   resource_attributes:
     k8s.namespace.name:
+      enabled: true
+    kyma.module.name:
       enabled: true
 none_set:
   metrics:
     kyma.module.status.condition:
       enabled: false
-    kyma.module.status.stat:
+    kyma.module.status.state:
       enabled: false
   resource_attributes:
     k8s.namespace.name:
+      enabled: false
+    kyma.module.name:
       enabled: false
 filter_set_include:
   resource_attributes:
     k8s.namespace.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    kyma.module.name:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -29,3 +37,7 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "k8s.namespace.name-val"
+    kyma.module.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "kyma.module.name-val"

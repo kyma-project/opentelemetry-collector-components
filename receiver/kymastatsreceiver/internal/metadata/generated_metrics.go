@@ -21,13 +21,13 @@ type metricKymaModuleStatusCondition struct {
 // init fills kyma.module.status.condition metric with initial data.
 func (m *metricKymaModuleStatusCondition) init() {
 	m.data.SetName("kyma.module.status.condition")
-	m.data.SetDescription("Kyma module conditions")
+	m.data.SetDescription("The Kyma module status conditions, including module, condition reason, status, and type.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricKymaModuleStatusCondition) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, nameAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
+func (m *metricKymaModuleStatusCondition) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, moduleAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -35,7 +35,7 @@ func (m *metricKymaModuleStatusCondition) recordDataPoint(start pcommon.Timestam
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
-	dp.Attributes().PutStr("name", nameAttributeValue)
+	dp.Attributes().PutStr("module", moduleAttributeValue)
 	dp.Attributes().PutStr("reason", reasonAttributeValue)
 	dp.Attributes().PutStr("status", statusAttributeValue)
 	dp.Attributes().PutStr("type", typeAttributeValue)
@@ -66,22 +66,22 @@ func newMetricKymaModuleStatusCondition(cfg MetricConfig) metricKymaModuleStatus
 	return m
 }
 
-type metricKymaModuleStatusStat struct {
+type metricKymaModuleStatusState struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
 	capacity int            // max observed number of data points added to the metric.
 }
 
-// init fills kyma.module.status.stat metric with initial data.
-func (m *metricKymaModuleStatusStat) init() {
-	m.data.SetName("kyma.module.status.stat")
-	m.data.SetDescription("Kyma module status")
+// init fills kyma.module.status.state metric with initial data.
+func (m *metricKymaModuleStatusState) init() {
+	m.data.SetName("kyma.module.status.state")
+	m.data.SetDescription("The module status state, including module and state.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricKymaModuleStatusStat) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, stateAttributeValue string, nameAttributeValue string) {
+func (m *metricKymaModuleStatusState) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, stateAttributeValue string, moduleAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -90,18 +90,18 @@ func (m *metricKymaModuleStatusStat) recordDataPoint(start pcommon.Timestamp, ts
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
 	dp.Attributes().PutStr("state", stateAttributeValue)
-	dp.Attributes().PutStr("name", nameAttributeValue)
+	dp.Attributes().PutStr("module", moduleAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricKymaModuleStatusStat) updateCapacity() {
+func (m *metricKymaModuleStatusState) updateCapacity() {
 	if m.data.Gauge().DataPoints().Len() > m.capacity {
 		m.capacity = m.data.Gauge().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricKymaModuleStatusStat) emit(metrics pmetric.MetricSlice) {
+func (m *metricKymaModuleStatusState) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
@@ -109,8 +109,8 @@ func (m *metricKymaModuleStatusStat) emit(metrics pmetric.MetricSlice) {
 	}
 }
 
-func newMetricKymaModuleStatusStat(cfg MetricConfig) metricKymaModuleStatusStat {
-	m := metricKymaModuleStatusStat{config: cfg}
+func newMetricKymaModuleStatusState(cfg MetricConfig) metricKymaModuleStatusState {
+	m := metricKymaModuleStatusState{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -129,7 +129,7 @@ type MetricsBuilder struct {
 	resourceAttributeIncludeFilter  map[string]filter.Filter
 	resourceAttributeExcludeFilter  map[string]filter.Filter
 	metricKymaModuleStatusCondition metricKymaModuleStatusCondition
-	metricKymaModuleStatusStat      metricKymaModuleStatusStat
+	metricKymaModuleStatusState     metricKymaModuleStatusState
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -149,7 +149,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricsBuffer:                   pmetric.NewMetrics(),
 		buildInfo:                       settings.BuildInfo,
 		metricKymaModuleStatusCondition: newMetricKymaModuleStatusCondition(mbc.Metrics.KymaModuleStatusCondition),
-		metricKymaModuleStatusStat:      newMetricKymaModuleStatusStat(mbc.Metrics.KymaModuleStatusStat),
+		metricKymaModuleStatusState:     newMetricKymaModuleStatusState(mbc.Metrics.KymaModuleStatusState),
 		resourceAttributeIncludeFilter:  make(map[string]filter.Filter),
 		resourceAttributeExcludeFilter:  make(map[string]filter.Filter),
 	}
@@ -158,6 +158,12 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 	if mbc.ResourceAttributes.K8sNamespaceName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.namespace.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNamespaceName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.KymaModuleName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["kyma.module.name"] = filter.CreateFilter(mbc.ResourceAttributes.KymaModuleName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.KymaModuleName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["kyma.module.name"] = filter.CreateFilter(mbc.ResourceAttributes.KymaModuleName.MetricsExclude)
 	}
 
 	for _, op := range options {
@@ -221,7 +227,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	ils.Scope().SetVersion(mb.buildInfo.Version)
 	ils.Metrics().EnsureCapacity(mb.metricsCapacity)
 	mb.metricKymaModuleStatusCondition.emit(ils.Metrics())
-	mb.metricKymaModuleStatusStat.emit(ils.Metrics())
+	mb.metricKymaModuleStatusState.emit(ils.Metrics())
 
 	for _, op := range rmo {
 		op(rm)
@@ -254,13 +260,13 @@ func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
 }
 
 // RecordKymaModuleStatusConditionDataPoint adds a data point to kyma.module.status.condition metric.
-func (mb *MetricsBuilder) RecordKymaModuleStatusConditionDataPoint(ts pcommon.Timestamp, val int64, nameAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
-	mb.metricKymaModuleStatusCondition.recordDataPoint(mb.startTime, ts, val, nameAttributeValue, reasonAttributeValue, statusAttributeValue, typeAttributeValue)
+func (mb *MetricsBuilder) RecordKymaModuleStatusConditionDataPoint(ts pcommon.Timestamp, val int64, moduleAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
+	mb.metricKymaModuleStatusCondition.recordDataPoint(mb.startTime, ts, val, moduleAttributeValue, reasonAttributeValue, statusAttributeValue, typeAttributeValue)
 }
 
-// RecordKymaModuleStatusStatDataPoint adds a data point to kyma.module.status.stat metric.
-func (mb *MetricsBuilder) RecordKymaModuleStatusStatDataPoint(ts pcommon.Timestamp, val int64, stateAttributeValue string, nameAttributeValue string) {
-	mb.metricKymaModuleStatusStat.recordDataPoint(mb.startTime, ts, val, stateAttributeValue, nameAttributeValue)
+// RecordKymaModuleStatusStateDataPoint adds a data point to kyma.module.status.state metric.
+func (mb *MetricsBuilder) RecordKymaModuleStatusStateDataPoint(ts pcommon.Timestamp, val int64, stateAttributeValue string, moduleAttributeValue string) {
+	mb.metricKymaModuleStatusState.recordDataPoint(mb.startTime, ts, val, stateAttributeValue, moduleAttributeValue)
 }
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,

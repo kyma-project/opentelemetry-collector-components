@@ -14,7 +14,7 @@ metrics:
 
 ### kyma.module.status.condition
 
-Kyma module conditions
+The Kyma module status conditions, including module, condition reason, status, and type.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -24,14 +24,14 @@ Kyma module conditions
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| name | Kyma module name. | Any Str |
-| reason | Kyma module condition reason. | Any Str |
-| status | Kyma module condition status. | Any Str |
-| type | Kyma module condition type. | Any Str |
+| module | The kind of the module. | Any Str |
+| reason | The reason of the module condition status. | Any Str |
+| status | The status of the module condition. | Any Str |
+| type | The type of the module condition. | Any Str |
 
-### kyma.module.status.stat
+### kyma.module.status.state
 
-Kyma module status
+The module status state, including module and state.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -41,11 +41,12 @@ Kyma module status
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| state | Kyma module state. | Any Str |
-| name | Kyma module name. | Any Str |
+| state | The state of the module status. | Any Str |
+| module | The kind of the module. | Any Str |
 
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
+| kyma.module.name | The name of the Kyma module instance | Any Str | true |

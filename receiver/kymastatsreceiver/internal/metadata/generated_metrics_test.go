@@ -70,14 +70,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusConditionDataPoint(ts, 1, "name-val", "reason-val", "status-val", "type-val")
+			mb.RecordKymaModuleStatusConditionDataPoint(ts, 1, "module-val", "reason-val", "status-val", "type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusStatDataPoint(ts, 1, "state-val", "name-val")
+			mb.RecordKymaModuleStatusStateDataPoint(ts, 1, "state-val", "module-val")
 
 			rb := mb.NewResourceBuilder()
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
+			rb.SetKymaModuleName("kyma.module.name-val")
 			res := rb.Emit()
 			metrics := mb.Emit(WithResource(res))
 
@@ -105,16 +106,16 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.module.status.condition"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Kyma module conditions", ms.At(i).Description())
+					assert.Equal(t, "The Kyma module status conditions, including module, condition reason, status, and type.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("name")
+					attrVal, ok := dp.Attributes().Get("module")
 					assert.True(t, ok)
-					assert.EqualValues(t, "name-val", attrVal.Str())
+					assert.EqualValues(t, "module-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("reason")
 					assert.True(t, ok)
 					assert.EqualValues(t, "reason-val", attrVal.Str())
@@ -124,12 +125,12 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("type")
 					assert.True(t, ok)
 					assert.EqualValues(t, "type-val", attrVal.Str())
-				case "kyma.module.status.stat":
-					assert.False(t, validatedMetrics["kyma.module.status.stat"], "Found a duplicate in the metrics slice: kyma.module.status.stat")
-					validatedMetrics["kyma.module.status.stat"] = true
+				case "kyma.module.status.state":
+					assert.False(t, validatedMetrics["kyma.module.status.state"], "Found a duplicate in the metrics slice: kyma.module.status.state")
+					validatedMetrics["kyma.module.status.state"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Kyma module status", ms.At(i).Description())
+					assert.Equal(t, "The module status state, including module and state.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -139,9 +140,9 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("state")
 					assert.True(t, ok)
 					assert.EqualValues(t, "state-val", attrVal.Str())
-					attrVal, ok = dp.Attributes().Get("name")
+					attrVal, ok = dp.Attributes().Get("module")
 					assert.True(t, ok)
-					assert.EqualValues(t, "name-val", attrVal.Str())
+					assert.EqualValues(t, "module-val", attrVal.Str())
 				}
 			}
 		})
