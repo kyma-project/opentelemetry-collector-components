@@ -41,8 +41,6 @@ linters:
     - tagliatelle
     - testifylint
     - testpackage
-    - thelper
-    - tparallel
     - varnamelen
     - whitespace
     - wrapcheck
