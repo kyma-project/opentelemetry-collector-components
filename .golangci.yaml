@@ -1,0 +1,138 @@
+run:
+  modules-download-mode: readonly
+  timeout: 10m
+  build-tags:
+    - e2e
+linters:
+  enable-all: true
+  disable:
+  # Depreacted linters
+    - gomnd
+    - execinquery
+  # Linters to be enabled after fixing the issues
+    - intrange
+    - cyclop
+    - depguard
+    - exhaustive
+    - exhaustruct
+    - forcetypeassert
+    - funlen
+    - gochecknoglobals
+    - goconst
+    - gocritic
+    - godot
+    - godox
+    - err113
+    - gofumpt
+    - mnd
+    - ireturn
+    - lll
+    - maintidx
+    - makezero
+    - mirror
+    - nestif
+    - nlreturn
+    - noctx
+    - nonamedreturns
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - protogetter
+    - tagliatelle
+    - testpackage
+    - varnamelen
+    - whitespace
+    - wrapcheck
+    - wsl
+
+linters-settings:
+  dupl:
+    threshold: 100 # Tokens count to trigger error.
+  importas:
+    no-unaliased: true
+    no-extra-aliases: true
+    alias:
+      - pkg: "k8s.io/apimachinery/pkg/apis/meta/v1"
+        alias: metav1
+
+  errcheck:
+    check-type-assertions: true # Reports type assertions: `a := b.(SomeStruct)`.
+    check-blank: true # Report assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`.
+    exclude-functions: # List of functions to exclude from checking.
+      - io/ioutil.ReadFile
+      - io.Copy(*bytes.Buffer)
+      - io.Copy(os.Stdout)
+      - gopkg.in/yaml.v3.Marshal
+
+  errchkjson:
+    check-error-free-encoding: true
+    report-no-exported: true
+
+  gci:
+    sections:
+      - standard # Standard packages.
+      - default # Imports that could not be matched to another section type.
+      - prefix(github.com/kyma-project/opentelemetry-collector-components) # Imports with the specified Prefix.
+      - blank # Blank imports
+    custom-order: true
+
+  goimports:
+    local-prefixes: github.com/kyma-project/opentelemetry-collector-components
+
+  govet:
+    enable:
+      - shadow
+
+  loggercheck:
+    klog: true # Allows checking for the k8s.io/klog/v2.
+    zap: true # Allows checking for the go.uber.org/zap.
+    kitlog: false # Prohibits checking for the github.com/go-kit/log.
+    logr: false # Prohibits checking for the github.com/go-logr/logr.
+    require-string-key: true # Require all logging keys to be inlined constant strings.
+    no-printf-like: true
+
+  misspell:
+    locale: US
+
+  nolintlint:
+    allow-unused: true
+    require-explanation: true
+    require-specific: true
+
+  revive:
+    rules:
+      - name: dot-imports
+        disabled: true
+
+  gocyclo:
+    # Minimal code complexity to report.
+    # Default: 30
+    # The max complexity while enabling this linter is 15. Please check if this can be reduced. Increase the threshold only if it is absolutely necessary.
+    min-complexity: 15
+
+  gomoddirectives:
+    # allow local replaces
+    replace-local: true
+
+issues:
+  exclude:
+    # Check this issue for more info: https://github.com/kyoh86/scopelint/issues/4
+    - Using the variable on range scope `tc` in function literal
+    - Using the variable on range scope `tt` in function literal
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - dupl
+    - path: _test\.go
+      text: "shadow: declaration of \"ctx\" shadows declaration at line ([\\d]+)"
+      linters:
+        - govet
+    - path: .go
+      text: "shadow: declaration of \"err\" shadows declaration at line ([\\d]+)"
+      linters:
+        - govet
+    # Unify components checkers after getting rid of custom conditions in favor of metav1.Conditions
+    - linters:
+        - importas
+      text: has alias "" which is not part of config # Ignore false positives that emerged due to https://github.com/julz/importas/issues/15.

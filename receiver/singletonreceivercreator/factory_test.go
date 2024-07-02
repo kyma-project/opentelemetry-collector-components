@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
@@ -46,11 +45,11 @@ func TestNewFactory(t *testing.T) {
 						AuthType: "serviceAccount",
 					},
 					leaderElectionConfig: leaderElectionConfig{
-						leaseName:            "singleton-receiver",
-						leaseNamespace:       "default",
-						leaseDurationSeconds: defaultLeaseDuration,
-						renewDeadlineSeconds: defaultRenewDeadline,
-						retryPeriodSeconds:   defaultRetryPeriod,
+						leaseName:      "singleton-receiver",
+						leaseNamespace: "default",
+						leaseDuration:  defaultLeaseDuration,
+						renewDuration:  defaultRenewDeadline,
+						retryPeriod:    defaultRetryPeriod,
 					},
 					subreceiverConfig: receiverConfig{},
 				}

@@ -49,10 +49,12 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 		client,
 		func(ctx context.Context) {
 			c.params.TelemetrySettings.Logger.Info("Elected as leader")
+			//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 			if err := c.startSubReceiver(); err != nil {
 				c.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
 			}
 		},
+		//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 		func() {
 			c.params.TelemetrySettings.Logger.Info("Lost leadership")
 			if err := c.stopSubReceiver(); err != nil {
@@ -65,6 +67,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 		return fmt.Errorf("failed to create leader elector: %w", err)
 	}
 
+	//nolint:contextcheck // Create a new context as specified in the interface documentation
 	go leaderElector.Run(ctx)
 	return nil
 }
@@ -78,21 +81,21 @@ func (c *singletonReceiverCreator) startSubReceiver() error {
 		},
 		c.nextMetricsConsumer,
 	); err != nil {
-		return fmt.Errorf("failed to start wrapped reciever %s: %w", c.cfg.subreceiverConfig.id.String(), err)
+		return fmt.Errorf("failed to start wrapped receiver %s: %w", c.cfg.subreceiverConfig.id.String(), err)
 	}
 	return nil
 }
 
 func (c *singletonReceiverCreator) stopSubReceiver() error {
 	c.params.TelemetrySettings.Logger.Info("Stopping wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
-	// if we dont get the lease then the wrapped reciever is not set
+	// if we don't get the lease then the wrapped receiver is not set
 	if c.subReceiverRunner != nil {
 		return c.subReceiverRunner.shutdown(context.Background())
 	}
 	return nil
 }
 
-// Shutdown stops the leader receiver creater and all its receivers started at runtime.
+// Shutdown stops the leader receiver creature and all its receivers started at runtime.
 func (c *singletonReceiverCreator) Shutdown(context.Context) error {
 	if c.cancel != nil {
 		c.cancel()

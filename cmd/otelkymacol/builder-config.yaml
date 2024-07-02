@@ -5,8 +5,7 @@ dist:
   version: 0.0.1-dev
   otelcol_version: 0.103.0
 
-receivers:
-  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver v0.0.1
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
 
 processors:
@@ -16,6 +15,6 @@ exporters:
   - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.103.0
 
 replaces:
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver => ../../receiver/dummymetricsreceiver
+  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../../receiver/dummyreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig

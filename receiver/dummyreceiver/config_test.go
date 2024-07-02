@@ -1,7 +1,6 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,11 +22,11 @@ func TestLoadConfig(t *testing.T) {
 		}, {
 			name:   "check-invalid-interval",
 			passed: &Config{Interval: "foo"},
-			err:    fmt.Errorf("interval must be a valid duration string: time: invalid duration \"foo\""),
+			err:    ErrParsingInterval,
 		}, {
 			name:   "check-interval-less-than-1m",
 			passed: &Config{Interval: "30s"},
-			err:    fmt.Errorf("when defined, the interval has to be set to at least 1 minute (1m)"),
+			err:    ErrIntervalTooShort,
 		},
 	}
 
@@ -35,7 +34,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := tt.passed.(*Config)
 			err := cfg.Validate()
-			require.Equal(t, tt.err, err)
+			require.ErrorIs(t, err, tt.err)
 		})
 	}
 }

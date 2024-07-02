@@ -11,7 +11,8 @@ updates:
       - "area/dependency"
 
   - package-ecosystem: "gomod"
-    directory: "/"
+    directories:
+      - "**/*"
     schedule:
       interval: "daily"
     commit-message:

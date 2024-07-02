@@ -5,13 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
 
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
@@ -32,11 +31,11 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				leaderElectionConfig: leaderElectionConfig{
-					leaseName:            "singleton-receiver",
-					leaseNamespace:       "default",
-					leaseDurationSeconds: defaultLeaseDuration,
-					renewDeadlineSeconds: defaultRenewDeadline,
-					retryPeriodSeconds:   defaultRetryPeriod,
+					leaseName:      "singleton-receiver",
+					leaseNamespace: "default",
+					leaseDuration:  defaultLeaseDuration,
+					renewDuration:  defaultRenewDeadline,
+					retryPeriod:    defaultRetryPeriod,
 				},
 				subreceiverConfig: receiverConfig{
 					id: component.MustNewID("otlp"),
@@ -55,11 +54,11 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				leaderElectionConfig: leaderElectionConfig{
-					leaseName:            "foo",
-					leaseNamespace:       "bar",
-					leaseDurationSeconds: 15 * time.Second,
-					renewDeadlineSeconds: 10 * time.Second,
-					retryPeriodSeconds:   2 * time.Second,
+					leaseName:      "foo",
+					leaseNamespace: "bar",
+					leaseDuration:  15 * time.Second,
+					renewDuration:  10 * time.Second,
+					retryPeriod:    2 * time.Second,
 				},
 				subreceiverConfig: receiverConfig{
 					id: component.MustNewID("k8s_cluster"),
@@ -88,11 +87,11 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "kubeConfig",
 				},
 				leaderElectionConfig: leaderElectionConfig{
-					leaseName:            "foo",
-					leaseNamespace:       "bar",
-					leaseDurationSeconds: 15 * time.Second,
-					renewDeadlineSeconds: 10 * time.Second,
-					retryPeriodSeconds:   2 * time.Second,
+					leaseName:      "foo",
+					leaseNamespace: "bar",
+					leaseDuration:  15 * time.Second,
+					renewDuration:  10 * time.Second,
+					retryPeriod:    2 * time.Second,
 				},
 				subreceiverConfig: receiverConfig{
 					id: component.MustNewID("k8s_cluster"),
