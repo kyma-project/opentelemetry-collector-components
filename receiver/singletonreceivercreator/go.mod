@@ -87,10 +87,4 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-retract (
-	v0.76.2
-	v0.76.1
-	v0.65.0
-)
-
 replace github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig

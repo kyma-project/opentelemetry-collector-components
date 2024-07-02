@@ -5,28 +5,26 @@ import (
 	"testing"
 	"time"
 
-	k8s "k8s.io/client-go/kubernetes"
-
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-
-	"k8s.io/utils/ptr"
-
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
+	"k8s.io/utils/ptr"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 func TestSingletonReceiverCreator(t *testing.T) {
 	var expectedLeaseDurationSeconds = ptr.To(int32(10))
 	config := &Config{
 		leaderElectionConfig: leaderElectionConfig{
-			leaseName:            "my-foo-lease-1",
-			leaseNamespace:       "default",
-			leaseDurationSeconds: 10 * time.Second,
-			renewDeadlineSeconds: 5 * time.Second,
-			retryPeriodSeconds:   2 * time.Second,
+			leaseName:      "my-foo-lease-1",
+			leaseNamespace: "default",
+			leaseDuration:  10 * time.Second,
+			renewDuration:  5 * time.Second,
+			retryPeriod:    2 * time.Second,
 		},
 		subreceiverConfig: receiverConfig{},
 	}
@@ -34,7 +32,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	require.NoError(t, err)
 
 	fakeClient := fake.NewSimpleClientset()
-	config.makeClient = func() (k8s.Interface, error) {
+	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
@@ -57,11 +55,11 @@ func TestUnsupportedAuthType(t *testing.T) {
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: "foo",
 		}, leaderElectionConfig: leaderElectionConfig{
-			leaseName:            "my-foo-lease-1",
-			leaseNamespace:       "default",
-			leaseDurationSeconds: 10 * time.Second,
-			renewDeadlineSeconds: 5 * time.Second,
-			retryPeriodSeconds:   2 * time.Second,
+			leaseName:      "my-foo-lease-1",
+			leaseNamespace: "default",
+			leaseDuration:  10 * time.Second,
+			renewDuration:  5 * time.Second,
+			retryPeriod:    2 * time.Second,
 		},
 		subreceiverConfig: receiverConfig{},
 	}

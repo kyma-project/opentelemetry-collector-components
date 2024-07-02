@@ -1,4 +1,4 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type dummyMetricsReceiver struct {
+type dummyReceiver struct {
 	config       *Config
 	nextConsumer consumer.Metrics
 	settings     *receiver.Settings
@@ -21,8 +21,8 @@ type dummyMetricsReceiver struct {
 	cancel context.CancelFunc
 }
 
-func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error {
-	// Create a new context as specified in the interface documentation
+func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
+	r.settings.Logger.Info("Starting dummy receiver", zap.String("interval", r.config.Interval))
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
@@ -44,8 +44,10 @@ func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error 
 					r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
 					continue
 				}
-				// nolint:errcheck //
-				r.nextConsumer.ConsumeMetrics(ctx, md)
+				err = r.nextConsumer.ConsumeMetrics(ctx, md)
+				if err != nil {
+					r.settings.Logger.Error("next consumer failed", zap.Error(err))
+				}
 			case <-ctx.Done():
 				return
 			}
@@ -55,7 +57,8 @@ func (r *dummyMetricsReceiver) Start(_ context.Context, _ component.Host) error 
 	return nil
 }
 
-func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
+func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
+	r.settings.Logger.Debug("Generating metric")
 	host, err := os.Hostname()
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf("failed to get hostname: %w", err)
@@ -71,6 +74,7 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 		AppendEmpty()
 
 	metric.SetName("dummy")
+	metric.SetDescription("a dummy gauge")
 	gauge := metric.SetEmptyGauge()
 	for i := 0; i < 5; i++ {
 		dp := gauge.DataPoints().AppendEmpty()
@@ -81,7 +85,8 @@ func (r *dummyMetricsReceiver) generateMetric() (pmetric.Metrics, error) {
 	return md, nil
 }
 
-func (r *dummyMetricsReceiver) Shutdown(_ context.Context) error {
+func (r *dummyReceiver) Shutdown(_ context.Context) error {
+	r.settings.Logger.Info("Shutting down dummy receiver")
 	if r.cancel != nil {
 		r.cancel()
 	}

@@ -12,7 +12,7 @@ import (
 	batchprocessor "go.opentelemetry.io/collector/processor/batchprocessor"
 	"go.opentelemetry.io/collector/receiver"
 
-	dummymetricsreceiver "github.com/kyma-project/opentelemetry-collector-components/receiver/dummymetricsreceiver"
+	dummyreceiver "github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 	singletonreceivercreator "github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator"
 )
 
@@ -26,7 +26,7 @@ func components() (otelcol.Factories, error) {
 	}
 
 	factories.Receivers, err = receiver.MakeFactoryMap(
-		dummymetricsreceiver.NewFactory(),
+		dummyreceiver.NewFactory(),
 		singletonreceivercreator.NewFactory(),
 	)
 	if err != nil {

@@ -30,17 +30,17 @@ var mockReceiverConfig = receiverConfig{
 
 var defaultCfg = &Config{
 	leaderElectionConfig: leaderElectionConfig{
-		leaseName:            "singleton-receiver",
-		leaseNamespace:       "default",
-		leaseDurationSeconds: defaultLeaseDuration,
-		renewDeadlineSeconds: defaultRenewDeadline,
-		retryPeriodSeconds:   defaultRetryPeriod,
+		leaseName:      "singleton-receiver",
+		leaseNamespace: "default",
+		leaseDuration:  defaultLeaseDuration,
+		renewDuration:  defaultRenewDeadline,
+		retryPeriod:    defaultRetryPeriod,
 	},
 	subreceiverConfig: mockReceiverConfig,
 }
 
 func createMockMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	return nil, nil
+	return nil, nil //nolint:nilnil // required during testing
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
@@ -97,7 +97,7 @@ func TestLoadReceiverConfig(t *testing.T) {
 	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("foo"))
 	recvrFact := factory.(receiver.Factory)
 
-	cfg, _, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
+	cfg, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
 	require.NoError(t, err)
 	require.NotNil(t, cfg)
 	rcvrCfg := cfg.(**Config)
