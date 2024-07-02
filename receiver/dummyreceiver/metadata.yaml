@@ -1,0 +1,28 @@
+type: dummy
+
+status:
+  class: receiver
+  stability:
+    alpha: [metrics]
+  distributions: [kyma]
+  codeowners:
+    active: [kyma-project/observability]
+
+resource_attributes:
+  k8s.cluster.name:
+    description: "static value: test-cluster"
+    type: string
+
+attributes:
+  host:
+    description: the current hostname
+    type: string
+
+metrics:
+  dummy:
+    description: a dummy gauge
+    attributes: [host]
+    enabled: true
+    gauge:
+      value_type: int
+    unit: '{ event }'

@@ -1,4 +1,4 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	typeStr = component.MustNewType("dummymetricsreceiver")
+	typeStr = component.MustNewType("dummy")
 )
 
 const (
@@ -24,14 +24,14 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	return &dummyMetricsReceiver{
+	return &dummyReceiver{
 		config:       baseCfg.(*Config),
 		nextConsumer: consumer,
 		settings:     &params,
 	}, nil
 }
 
-// NewFactory creates a factory for dummymetricsreceiver receiver.
+// NewFactory creates a factory for dummyReceiver receiver.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		typeStr,

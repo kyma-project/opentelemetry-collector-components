@@ -1,8 +1,14 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
+	"errors"
 	"fmt"
 	"time"
+)
+
+var (
+	ErrParsingInterval  = errors.New("interval must be a valid duration string")
+	ErrIntervalTooShort = errors.New("when defined, the interval has to be set to at least 1 minute (1m)")
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
@@ -15,11 +21,11 @@ type Config struct {
 func (cfg *Config) Validate() error {
 	interval, err := time.ParseDuration(cfg.Interval)
 	if err != nil {
-		return fmt.Errorf("interval must be a valid duration string: %v", err)
+		return fmt.Errorf("%w: %w", ErrParsingInterval, err)
 	}
 
 	if interval.Minutes() < 1 {
-		return fmt.Errorf("when defined, the interval has to be set to at least 1 minute (1m)")
+		return ErrIntervalTooShort
 	}
 
 	return nil

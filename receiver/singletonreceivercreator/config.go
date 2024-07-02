@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	k8s "k8s.io/client-go/kubernetes"
-
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
+	"k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 const (
 	// receiversConfigKey is the config key name used to specify the subreceivers.
-	subreceiverConfigKey    = "receiver"
+	subreceiverConfigKey = "receiver"
+
 	leaderElectionConfigKey = "leader_election"
 )
 
@@ -24,15 +24,15 @@ type Config struct {
 	leaderElectionConfig leaderElectionConfig `yaml:"leader_election"`
 	subreceiverConfig    receiverConfig
 
-	makeClient func() (k8s.Interface, error)
+	makeClient func() (kubernetes.Interface, error)
 }
 
 type leaderElectionConfig struct {
-	leaseName            string        `mapstructure:"lease_name"`
-	leaseNamespace       string        `mapstructure:"lease_namespace"`
-	leaseDurationSeconds time.Duration `mapstructure:"lease_duration"`
-	renewDeadlineSeconds time.Duration `mapstructure:"renew_deadline"`
-	retryPeriodSeconds   time.Duration `mapstructure:"retry_period"`
+	leaseName      string        `mapstructure:"lease_name"`
+	leaseNamespace string        `mapstructure:"lease_namespace"`
+	leaseDuration  time.Duration `mapstructure:"lease_duration"`
+	renewDuration  time.Duration `mapstructure:"renew_deadline"`
+	retryPeriod    time.Duration `mapstructure:"retry_period"`
 }
 
 // receiverConfig describes a receiver instance with a default config.
@@ -67,27 +67,27 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 	}
 
 	if leaseDuration, ok := cfg["lease_duration"].(string); ok {
-		leasedurationSec, err := time.ParseDuration(leaseDuration)
+		leaseDuration, err := time.ParseDuration(leaseDuration)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse lease duration: %w", err)
 		}
-		lec.leaseDurationSeconds = leasedurationSec
+		lec.leaseDuration = leaseDuration
 	}
 
 	if renewDeadline, ok := cfg["renew_deadline"].(string); ok {
-		renewDeadlineSec, err := time.ParseDuration(renewDeadline)
+		renewDeadline, err := time.ParseDuration(renewDeadline)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse renew deadline: %w", err)
 		}
-		lec.renewDeadlineSeconds = renewDeadlineSec
+		lec.renewDuration = renewDeadline
 	}
 
 	if retryPeriod, ok := cfg["retry_period"].(string); ok {
-		retryPeriodSec, err := time.ParseDuration(retryPeriod)
+		retryPeriod, err := time.ParseDuration(retryPeriod)
 		if err != nil {
 			return leaderElectionConfig{}, fmt.Errorf("failed to parse retry period: %w", err)
 		}
-		lec.retryPeriodSeconds = retryPeriodSec
+		lec.retryPeriod = retryPeriod
 	}
 
 	return lec, nil
@@ -141,10 +141,9 @@ func (cfg *Config) Validate() error {
 	return cfg.APIConfig.Validate()
 }
 
-func (cfg *Config) getK8sClient() (k8s.Interface, error) {
+func (cfg *Config) getK8sClient() (kubernetes.Interface, error) {
 	if cfg.makeClient != nil {
 		return cfg.makeClient()
 	}
-	fmt.Printf("cfg.APIConfig: %v\n", cfg.APIConfig.AuthType)
 	return k8sconfig.MakeClient(cfg.APIConfig)
 }

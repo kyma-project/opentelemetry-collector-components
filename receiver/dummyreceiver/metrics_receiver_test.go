@@ -1,4 +1,4 @@
-package dummymetricsreceiver
+package dummyreceiver
 
 import (
 	"context"

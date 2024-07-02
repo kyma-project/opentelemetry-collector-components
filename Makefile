@@ -69,6 +69,10 @@ gofmt:
 golint:
 	$(MAKE) $(FOR_GROUP_TARGET) TARGET="lint"
 
+.PHONY: golintfix
+golintfix:
+	$(MAKE) $(FOR_GROUP_TARGET) TARGET="lintfix"
+
 .PHONY: for-all
 for-all:
 	@echo "running $${CMD} in root"
