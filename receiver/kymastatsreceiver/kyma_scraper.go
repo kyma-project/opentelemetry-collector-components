@@ -11,7 +11,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"go.uber.org/zap"
-	. "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 
@@ -60,7 +60,7 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 			Group:    rc.ResourceGroup,
 			Version:  rc.ResourceVersion,
 			Resource: rc.ResourceName,
-		}).List(ctx, ListOptions{})
+		}).List(ctx, metav1.ListOptions{})
 
 		if err != nil {
 			scr.logger.Error(fmt.Sprintf("Error fetching module resource %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))

@@ -2,7 +2,6 @@ package kymastatsreceiver
 
 import (
 	"context"
-	"os"
 	"testing"
 	"time"
 
@@ -32,7 +31,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 	factory := NewFactory()
 	metricsReceiver, err := factory.CreateMetricsReceiver(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		kubeConfig(),
 		consumertest.NewNop(),
 	)
@@ -44,7 +43,7 @@ func TestCreateTraceReceiver(t *testing.T) {
 	factory := NewFactory()
 	traceReceiver, err := factory.CreateTracesReceiver(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		&Config{
 
 			APIConfig: k8sconfig.APIConfig{
@@ -67,7 +66,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 	}
 	_, err := factory.CreateMetricsReceiver(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		cfg,
 		consumertest.NewNop(),
 	)
@@ -75,8 +74,8 @@ func TestFactoryBadAuthType(t *testing.T) {
 }
 
 func TestFactoryNoneAuthType(t *testing.T) {
-	os.Setenv("KUBERNETES_SERVICE_HOST", "somehost")
-	os.Setenv("KUBERNETES_SERVICE_PORT", "443")
+	t.Setenv("KUBERNETES_SERVICE_HOST", "somehost")
+	t.Setenv("KUBERNETES_SERVICE_PORT", "443")
 	factory := NewFactory()
 	cfg := &Config{
 
@@ -89,7 +88,7 @@ func TestFactoryNoneAuthType(t *testing.T) {
 	}
 	_, err := factory.CreateMetricsReceiver(
 		context.Background(),
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		cfg,
 		consumertest.NewNop(),
 	)

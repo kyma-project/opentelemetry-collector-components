@@ -46,5 +46,5 @@ func addModuleConditionStats(mb *metadata.MetricsBuilder, moduleMetrics metadata
 	if r.Status == "True" {
 		value = 1
 	}
-	moduleMetrics(mb, currentTime, int64(value), name, r.Reason, string(r.Status), r.Type)
+	moduleMetrics(mb, currentTime, int64(value), name, r.Reason, r.Status, r.Type)
 }

@@ -40,11 +40,12 @@ func TestScraper(t *testing.T) {
 		newUnstructured("group/version", "TheKind", "ns-foo", "name-bar"),
 		newUnstructuredReady("group/version", "TheKind", "ns-foo", "name-baz"),
 		newUnstructured("group2/version", "TheKind", "ns-foo", "name2-baz"),
+		newUnstructured("group/version", "AnotherKind", "ns-foo", "name2-baz"),
 	)
 
 	r, err := newKymaScraper(
 		client,
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		rcConfig,
 		metadata.DefaultMetricsBuilderConfig(),
 	)
@@ -75,7 +76,7 @@ func TestScraperCantPullResource(t *testing.T) {
 
 	r, err := newKymaScraper(
 		client,
-		receivertest.NewNopCreateSettings(),
+		receivertest.NewNopSettings(),
 		rcConfig,
 		metadata.DefaultMetricsBuilderConfig(),
 	)
