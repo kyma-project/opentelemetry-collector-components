@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint v1.59.1
 	github.com/vladopajic/go-test-coverage/v2 v2.10.1
 	go.opentelemetry.io/build-tools/crosslink v0.13.0
-	go.opentelemetry.io/collector/cmd/builder v0.103.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.103.0
+	go.opentelemetry.io/collector/cmd/builder v0.104.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.104.0
 	golang.org/x/tools v0.22.0
 )
 
@@ -167,7 +167,7 @@ require (
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.8.0 // indirect
+	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
@@ -194,13 +194,13 @@ require (
 	go-simpler.org/musttag v0.12.2 // indirect
 	go-simpler.org/sloglint v0.7.1 // indirect
 	go.opentelemetry.io/build-tools v0.13.0 // indirect
-	go.opentelemetry.io/collector/component v0.103.0 // indirect
-	go.opentelemetry.io/collector/config/configtelemetry v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap v0.103.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v0.103.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.10.0 // indirect
-	go.opentelemetry.io/collector/filter v0.103.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.10.0 // indirect
+	go.opentelemetry.io/collector/component v0.104.0 // indirect
+	go.opentelemetry.io/collector/config/configtelemetry v0.104.0 // indirect
+	go.opentelemetry.io/collector/confmap v0.104.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v0.104.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.11.0 // indirect
+	go.opentelemetry.io/collector/filter v0.104.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.11.0 // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
