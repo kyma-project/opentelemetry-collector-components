@@ -39,7 +39,6 @@ linters:
     - prealloc
     - protogetter
     - tagliatelle
-    - testifylint
     - testpackage
     - varnamelen
     - whitespace
