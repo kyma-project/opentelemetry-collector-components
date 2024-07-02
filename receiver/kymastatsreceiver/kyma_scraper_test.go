@@ -36,7 +36,7 @@ func TestScraper(t *testing.T) {
 		},
 		newUnstructured("group/version", "TheKind", "ns-foo", "name-foo"),
 		newUnstructured("group2/version", "TheKind", "ns-foo", "name2-foo"),
-		newUnstructured("group/version", "TheKind", "ns-foo", "name-bar"),
+		newUnstructured("group/version", "TheKind", "ns-foo1", "name-bar"),
 		newUnstructuredReady("group/version", "TheKind", "ns-foo", "name-baz"),
 		newUnstructured("group2/version", "TheKind", "ns-foo", "name2-baz"),
 		newUnstructured("group/version", "AnotherKind", "ns-foo", "name2-baz"),

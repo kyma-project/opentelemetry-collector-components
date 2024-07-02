@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"errors"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -37,7 +38,10 @@ func NewFactory() receiver.Factory {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	config := baseCfg.(*Config)
+	config, ok := baseCfg.(*Config)
+	if !ok {
+		return nil, errors.New("invalid configuration")
+	}
 	client, err := config.GetK8sDynamicClient()
 	if err != nil {
 		return nil, err

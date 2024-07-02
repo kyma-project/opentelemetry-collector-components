@@ -20,6 +20,7 @@ func TestNewFactory(t *testing.T) {
 		{
 			desc: "creates a new factory with correct type",
 			testFunc: func(t *testing.T) {
+				t.Helper()
 				factory := NewFactory()
 				ft := factory.Type()
 				require.EqualValues(t, metadata.Type, ft)
@@ -27,6 +28,7 @@ func TestNewFactory(t *testing.T) {
 		}, {
 			desc: "creates a new factory and CreateMetricsReceiver returns no error",
 			testFunc: func(t *testing.T) {
+				t.Helper()
 				cfg := createDefaultConfig().(*Config)
 				_, err := NewFactory().CreateMetricsReceiver(
 					context.Background(),
@@ -39,6 +41,7 @@ func TestNewFactory(t *testing.T) {
 		}, {
 			desc: "creates a new factory and CreateMetricsReceiver with default config",
 			testFunc: func(t *testing.T) {
+				t.Helper()
 				factory := NewFactory()
 				expectedCfg := &Config{
 					APIConfig: k8sconfig.APIConfig{

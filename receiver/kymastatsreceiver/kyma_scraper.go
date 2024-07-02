@@ -73,8 +73,11 @@ func (scr *kymaScraper) summary(ctx context.Context) (*metadata.Stats, error) {
 				continue
 			}
 
-			status := item.Object["status"].(map[string]interface{})
-
+			status, sok := item.Object["status"].(map[string]interface{})
+			if !sok {
+				scr.logger.Error(fmt.Sprintf("Error getting module status type for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+				continue
+			}
 			state, sok := status["state"].(string)
 
 			if !sok {
