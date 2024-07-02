@@ -5,14 +5,13 @@ import (
 	"errors"
 	"testing"
 
-	clienttesting "k8s.io/client-go/testing"
-
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic/fake"
+	clienttesting "k8s.io/client-go/testing"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"

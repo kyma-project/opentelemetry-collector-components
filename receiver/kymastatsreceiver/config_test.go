@@ -5,16 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
-
-	"go.opentelemetry.io/collector/receiver/scraperhelper"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
+	"go.opentelemetry.io/collector/receiver/scraperhelper"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -89,6 +87,7 @@ func TestLoadConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.id.String(), func(t *testing.T) {
+			t.Parallel()
 			factory := NewFactory()
 			cfg := factory.CreateDefaultConfig()
 

@@ -3,16 +3,14 @@ package kymastatsreceiver
 import (
 	"context"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 var (

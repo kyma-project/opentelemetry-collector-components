@@ -4,11 +4,9 @@ import (
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"k8s.io/client-go/dynamic"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
-
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
