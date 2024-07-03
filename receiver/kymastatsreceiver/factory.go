@@ -18,7 +18,7 @@ var (
 	defaultResources = []ModuleResourceConfig{
 		{
 			ResourceGroup:   "operator.kyma-project.io",
-			ResourceName:    "Telemetry",
+			ResourceName:    "Telemetries",
 			ResourceVersion: "v1alpha1",
 		},
 	}
