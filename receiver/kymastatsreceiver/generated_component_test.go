@@ -10,7 +10,7 @@ import (
 )
 
 func TestComponentFactoryType(t *testing.T) {
-	require.Equal(t, "kymastatsreceiver", NewFactory().Type().String())
+	require.Equal(t, "kymastats", NewFactory().Type().String())
 }
 
 func TestComponentConfigStruct(t *testing.T) {

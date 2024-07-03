@@ -28,7 +28,7 @@ The following settings are optional:
 Example:
 
 ```yaml
-  kymastatsreceiver:
+  kymastats:
     auth_type: kubeConfig
     collection_interval: 30s
     metrics:

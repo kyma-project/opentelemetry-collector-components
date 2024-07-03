@@ -26,7 +26,7 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
-// MetricsConfig provides config for kymastatsreceiver metrics.
+// MetricsConfig provides config for kymastats metrics.
 type MetricsConfig struct {
 	KymaModuleStatusConditions MetricConfig `mapstructure:"kyma.module.status.conditions"`
 	KymaModuleStatusState      MetricConfig `mapstructure:"kyma.module.status.state"`
@@ -69,7 +69,7 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
-// ResourceAttributesConfig provides config for kymastatsreceiver resource attributes.
+// ResourceAttributesConfig provides config for kymastats resource attributes.
 type ResourceAttributesConfig struct {
 	K8sNamespaceName ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
 	KymaModuleName   ResourceAttributeConfig `mapstructure:"kyma.module.name"`
@@ -86,7 +86,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	}
 }
 
-// MetricsBuilderConfig is a configuration for kymastatsreceiver metrics builder.
+// MetricsBuilderConfig is a configuration for kymastats metrics builder.
 type MetricsBuilderConfig struct {
 	Metrics            MetricsConfig            `mapstructure:"metrics"`
 	ResourceAttributes ResourceAttributesConfig `mapstructure:"resource_attributes"`

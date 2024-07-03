@@ -1,4 +1,4 @@
-type: kymastatsreceiver
+type: kymastats
 
 status:
   class: receiver
