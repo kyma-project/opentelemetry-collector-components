@@ -19,7 +19,7 @@ import (
 const dataLen = 6
 
 func TestScraper(t *testing.T) {
-	rcConfig := []Resource{
+	rcConfig := []ModuleResourceConfig{
 		{
 			ResourceGroup:   "group",
 			ResourceName:    "thekinds",
@@ -56,7 +56,7 @@ func TestScraper(t *testing.T) {
 }
 
 func TestScraperCantPullResource(t *testing.T) {
-	rcConfig := []Resource{
+	rcConfig := []ModuleResourceConfig{
 		{
 			ResourceGroup:   "group",
 			ResourceName:    "thekinds",

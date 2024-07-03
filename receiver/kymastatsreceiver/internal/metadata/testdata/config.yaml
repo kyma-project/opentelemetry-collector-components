@@ -1,7 +1,7 @@
 default:
 all_set:
   metrics:
-    kyma.module.status.condition:
+    kyma.module.status.conditions:
       enabled: true
     kyma.module.status.state:
       enabled: true
@@ -12,7 +12,7 @@ all_set:
       enabled: true
 none_set:
   metrics:
-    kyma.module.status.condition:
+    kyma.module.status.conditions:
       enabled: false
     kyma.module.status.state:
       enabled: false

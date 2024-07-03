@@ -19,7 +19,7 @@ resource_attributes:
     enabled: true
     type: string
   kyma.module.name:
-    description: "The name of the Kyma module instance"
+    description: "The name of the module instance"
     enabled: true
     type: string
 attributes:
@@ -47,9 +47,9 @@ metrics:
       value_type: int
     attributes: ["state", "module"]
 
-  kyma.module.status.condition:
+  kyma.module.status.conditions:
     enabled: true
-    description: "The Kyma module status conditions, including module, condition reason, status, and type."
+    description: "The module status conditions, including module, condition reason, status, and type."
     unit: "1"
     gauge:
       value_type: int

@@ -21,7 +21,7 @@ type kymaScraper struct {
 	client     dynamic.Interface
 	logger     *zap.Logger
 	mb         *metadata.MetricsBuilder
-	moduleGVRs []Resource
+	moduleGVRs []ModuleResourceConfig
 }
 
 type moduleStats struct {
@@ -39,7 +39,7 @@ type condition struct {
 	reason   string
 }
 
-func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []Resource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []ModuleResourceConfig, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client:     client,
 		logger:     settings.Logger,
@@ -60,7 +60,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	for _, s := range stats {
-		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.name)
+		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.resource)
 		rb := ks.mb.NewResourceBuilder()
 		rb.SetK8sNamespaceName(s.namespace)
 		rb.SetKymaModuleName(s.name)
@@ -72,7 +72,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 			case string(metav1.ConditionFalse):
 				value = 0
 			}
-			ks.mb.RecordKymaModuleStatusConditionDataPoint(now, int64(value), s.name, c.reason, c.status, c.condType)
+			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, int64(value), s.resource, c.reason, c.status, c.condType)
 		}
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
@@ -135,21 +135,21 @@ func buildConditions(conditionsObj []interface{}) []condition {
 	var conditions []condition
 	for _, c := range conditionsObj {
 		if cond, ok := c.(map[string]interface{}); ok {
-			condition := condition{}
+			condItem := condition{}
 
 			if t, tok := cond["type"].(string); tok {
-				condition.condType = t
+				condItem.condType = t
 			}
 
 			if s, sok := cond["status"].(string); sok {
-				condition.status = s
+				condItem.status = s
 			}
 
 			if r, rok := cond["reason"].(string); rok {
-				condition.reason = r
+				condItem.reason = r
 			}
 
-			conditions = append(conditions, condition)
+			conditions = append(conditions, condItem)
 		}
 	}
 	return conditions

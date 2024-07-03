@@ -15,7 +15,7 @@ import (
 
 var (
 	typeStr          = component.MustNewType("kymastatsreceiver")
-	defaultResources = []Resource{
+	defaultResources = []ModuleResourceConfig{
 		{
 			ResourceGroup:   "operator.kyma-project.io",
 			ResourceName:    "Telemetry",
@@ -31,7 +31,7 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Resources:            defaultResources,
+		ModuleConfig:         defaultResources,
 	}
 }
 
@@ -48,11 +48,11 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	if !ok {
 		return nil, errors.New("invalid configuration")
 	}
-	client, err := config.GetK8sDynamicClient()
+	client, err := config.getK8sDynamicClient()
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, params, config.Resources, config.MetricsBuilderConfig)
+	scrp, err := newKymaScraper(client, params, config.ModuleConfig, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -70,7 +70,7 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusConditionDataPoint(ts, 1, "module-val", "reason-val", "status-val", "type-val")
+			mb.RecordKymaModuleStatusConditionsDataPoint(ts, 1, "module-val", "reason-val", "status-val", "type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -101,12 +101,12 @@ func TestMetricsBuilder(t *testing.T) {
 			validatedMetrics := make(map[string]bool)
 			for i := 0; i < ms.Len(); i++ {
 				switch ms.At(i).Name() {
-				case "kyma.module.status.condition":
-					assert.False(t, validatedMetrics["kyma.module.status.condition"], "Found a duplicate in the metrics slice: kyma.module.status.condition")
-					validatedMetrics["kyma.module.status.condition"] = true
+				case "kyma.module.status.conditions":
+					assert.False(t, validatedMetrics["kyma.module.status.conditions"], "Found a duplicate in the metrics slice: kyma.module.status.conditions")
+					validatedMetrics["kyma.module.status.conditions"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The Kyma module status conditions, including module, condition reason, status, and type.", ms.At(i).Description())
+					assert.Equal(t, "The module status conditions, including module, condition reason, status, and type.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())

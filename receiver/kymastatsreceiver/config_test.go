@@ -37,7 +37,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            defaultResources,
+				ModuleConfig:         defaultResources,
 			},
 		},
 
@@ -49,7 +49,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "kubeConfig",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            defaultResources,
+				ModuleConfig:         defaultResources,
 			},
 		},
 		{
@@ -60,7 +60,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            defaultResources,
+				ModuleConfig:         defaultResources,
 			},
 		},
 		{
@@ -79,7 +79,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "none",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Resources:            defaultResources,
+				ModuleConfig:         defaultResources,
 			},
 		},
 	}

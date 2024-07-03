@@ -12,9 +12,9 @@ metrics:
     enabled: false
 ```
 
-### kyma.module.status.condition
+### kyma.module.status.conditions
 
-The Kyma module status conditions, including module, condition reason, status, and type.
+The module status conditions, including module, condition reason, status, and type.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -49,4 +49,4 @@ The module status state, including module and state.
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
-| kyma.module.name | The name of the Kyma module instance | Any Str | true |
+| kyma.module.name | The name of the module instance | Any Str | true |

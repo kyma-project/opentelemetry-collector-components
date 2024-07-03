@@ -14,10 +14,10 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	makeDynamicClient              func() (dynamic.Interface, error)
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	Resources                      []Resource `mapstructure:"kyma_module_resources"`
+	ModuleConfig                   []ModuleResourceConfig `mapstructure:"modules"`
 }
 
-type Resource struct {
+type ModuleResourceConfig struct {
 	ResourceGroup   string `mapstructure:"resource_group"`
 	ResourceName    string `mapstructure:"resource_name"`
 	ResourceVersion string `mapstructure:"resource_version"`
@@ -31,7 +31,7 @@ func (cfg *Config) Validate() error {
 	return cfg.APIConfig.Validate()
 }
 
-func (cfg *Config) GetK8sDynamicClient() (dynamic.Interface, error) {
+func (cfg *Config) getK8sDynamicClient() (dynamic.Interface, error) {
 	if cfg.makeDynamicClient != nil {
 		return cfg.makeDynamicClient()
 	}

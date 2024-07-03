@@ -27,10 +27,24 @@ func TestValidConfig(t *testing.T) {
 
 func TestCreateMetricsReceiver(t *testing.T) {
 	factory := NewFactory()
+	scheme := runtime.NewScheme()
+	cfg := &Config{
+		ControllerConfig: scraperhelper.ControllerConfig{
+			CollectionInterval: 10 * time.Second,
+			InitialDelay:       time.Second,
+		},
+
+		APIConfig: k8sconfig.APIConfig{
+			AuthType: "kubeConfig",
+		},
+		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+		ModuleConfig:         defaultResources,
+		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
+	}
 	metricsReceiver, err := factory.CreateMetricsReceiver(
 		context.Background(),
 		receivertest.NewNopSettings(),
-		kubeConfig(),
+		cfg,
 		consumertest.NewNop(),
 	)
 	require.NoError(t, err)
@@ -52,6 +66,23 @@ func TestCreateTraceReceiver(t *testing.T) {
 	)
 	require.ErrorIs(t, err, component.ErrDataTypeIsNotSupported)
 	require.Nil(t, traceReceiver)
+}
+
+func TestCreateLogsReceiver(t *testing.T) {
+	factory := NewFactory()
+	logsReceiver, err := factory.CreateLogsReceiver(
+		context.Background(),
+		receivertest.NewNopSettings(),
+		&Config{
+
+			APIConfig: k8sconfig.APIConfig{
+				AuthType: "kubeConfig",
+			},
+		},
+		nil,
+	)
+	require.ErrorIs(t, err, component.ErrDataTypeIsNotSupported)
+	require.Nil(t, logsReceiver)
 }
 
 func TestFactoryBadAuthType(t *testing.T) {
@@ -91,21 +122,4 @@ func TestFactoryNoneAuthType(t *testing.T) {
 		consumertest.NewNop(),
 	)
 	require.NoError(t, err)
-}
-
-func kubeConfig() *Config {
-	scheme := runtime.NewScheme()
-	return &Config{
-		ControllerConfig: scraperhelper.ControllerConfig{
-			CollectionInterval: 10 * time.Second,
-			InitialDelay:       time.Second,
-		},
-
-		APIConfig: k8sconfig.APIConfig{
-			AuthType: "kubeConfig",
-		},
-		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Resources:            defaultResources,
-		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
-	}
 }

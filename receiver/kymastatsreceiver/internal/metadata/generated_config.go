@@ -28,13 +28,13 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for kymastatsreceiver metrics.
 type MetricsConfig struct {
-	KymaModuleStatusCondition MetricConfig `mapstructure:"kyma.module.status.condition"`
-	KymaModuleStatusState     MetricConfig `mapstructure:"kyma.module.status.state"`
+	KymaModuleStatusConditions MetricConfig `mapstructure:"kyma.module.status.conditions"`
+	KymaModuleStatusState      MetricConfig `mapstructure:"kyma.module.status.state"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
-		KymaModuleStatusCondition: MetricConfig{
+		KymaModuleStatusConditions: MetricConfig{
 			Enabled: true,
 		},
 		KymaModuleStatusState: MetricConfig{
