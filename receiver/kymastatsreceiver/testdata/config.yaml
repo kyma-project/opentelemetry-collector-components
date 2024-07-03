@@ -1,17 +1,17 @@
-kymastatsreceiver:
-kymastatsreceiver/sa:
+kymastats:
+kymastats/sa:
   collection_interval: 10s
   auth_type: "serviceAccount"
-kymastatsreceiver/k8s:
+kymastats/k8s:
   collection_interval: 30s
   auth_type: "kubeConfig"
   context: "k8s-context"
-kymastatsreceiver/invalidauth:
+kymastats/invalidauth:
   collection_interval: 30s
   auth_type: "123"
-kymastatsreceiver/invalidinterval:
+kymastats/invalidinterval:
   collection_interval: 0s
   auth_type: "kubeConfig"
-kymastatsreceiver/none:
+kymastats/none:
   collection_interval: 60s
   auth_type: "none"
