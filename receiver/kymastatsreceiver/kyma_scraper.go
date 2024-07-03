@@ -2,6 +2,7 @@ package kymastatsreceiver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -11,12 +12,11 @@ import (
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 
-	"errors"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type kymaScraper struct {
@@ -29,7 +29,7 @@ type kymaScraper struct {
 type moduleStats struct {
 	name      string
 	namespace string
-	resource  string
+	kind      string
 
 	state      string
 	conditions []condition
@@ -41,11 +41,11 @@ type condition struct {
 	reason   string
 }
 
-type errFieldNotFound struct {
+type fieldNotFoundError struct {
 	field string
 }
 
-func (e *errFieldNotFound) Error() string {
+func (e *fieldNotFoundError) Error() string {
 	return fmt.Sprintf("field not found: %s", e.field)
 }
 
@@ -69,19 +69,13 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	for _, s := range stats {
-		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.resource)
+		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.kind)
 		rb := ks.mb.NewResourceBuilder()
 		rb.SetK8sNamespaceName(s.namespace)
 		rb.SetKymaModuleName(s.name)
 		for _, c := range s.conditions {
-			value := -1
-			switch c.status {
-			case string(metav1.ConditionTrue):
-				value = 1
-			case string(metav1.ConditionFalse):
-				value = 0
-			}
-			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, int64(value), s.resource, c.reason, c.status, c.condType)
+			val := conditionStatusToValue(c.status)
+			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, val, s.kind, c.reason, c.status, c.condType)
 		}
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
@@ -131,7 +125,7 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"status"}
+		return nil, &fieldNotFoundError{"status"}
 	}
 
 	state, found, err := unstructured.NestedString(status, "state")
@@ -139,7 +133,7 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"state"}
+		return nil, &fieldNotFoundError{"state"}
 	}
 
 	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
@@ -147,14 +141,14 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"conditions"}
+		return nil, &fieldNotFoundError{"conditions"}
 	}
 
 	stats := &moduleStats{
 		state:     state,
 		name:      module.GetName(),
 		namespace: module.GetNamespace(),
-		resource:  module.GetKind(),
+		kind:      module.GetKind(),
 	}
 
 	for _, unstructuredCond := range unstructuredConds {
@@ -179,7 +173,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"type"}
+		return nil, &fieldNotFoundError{"type"}
 	}
 
 	status, found, err := unstructured.NestedString(condMap, "status")
@@ -187,7 +181,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"status"}
+		return nil, &fieldNotFoundError{"status"}
 	}
 
 	reason, found, err := unstructured.NestedString(condMap, "reason")
@@ -195,7 +189,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 		return nil, err
 	}
 	if !found {
-		return nil, &errFieldNotFound{"reason"}
+		return nil, &fieldNotFoundError{"reason"}
 	}
 
 	return &condition{
@@ -203,4 +197,15 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 		status:   status,
 		reason:   reason,
 	}, nil
+}
+
+func conditionStatusToValue(status string) int64 {
+	switch status {
+	case string(metav1.ConditionTrue):
+		return 1
+	case string(metav1.ConditionFalse):
+		return 0
+	default:
+		return -1
+	}
 }
