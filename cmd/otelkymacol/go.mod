@@ -6,6 +6,7 @@ go 1.22.4
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
+	github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
 	github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
 	go.opentelemetry.io/collector/component v0.104.0
 	go.opentelemetry.io/collector/confmap v0.104.0
@@ -47,7 +48,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
-	github.com/imdario/mergo v0.3.6 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -80,6 +81,7 @@ require (
 	go.opentelemetry.io/collector/config/configtelemetry v0.104.0 // indirect
 	go.opentelemetry.io/collector/consumer v0.104.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.11.0 // indirect
+	go.opentelemetry.io/collector/filter v0.104.0 // indirect
 	go.opentelemetry.io/collector/pdata v1.11.0 // indirect
 	go.opentelemetry.io/collector/semconv v0.104.0 // indirect
 	go.opentelemetry.io/collector/service v0.104.0 // indirect
@@ -127,8 +129,10 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
+replace github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig
+
 replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../../receiver/dummyreceiver
 
-replace github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
+replace github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../../receiver/kymastatsreceiver
 
-replace github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig
+replace github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
