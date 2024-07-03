@@ -31,7 +31,7 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		ModuleConfig:         defaultResources,
+		Modules:              defaultResources,
 	}
 }
 
@@ -52,7 +52,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, params, config.ModuleConfig, config.MetricsBuilderConfig)
+	scrp, err := newKymaScraper(client, params, config.Modules, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -10,11 +10,12 @@ import (
 
 // Config represents the receiver config settings within the collector's config.yaml
 type Config struct {
-	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	k8sconfig.APIConfig            `mapstructure:",squash"`
-	makeDynamicClient              func() (dynamic.Interface, error)
+	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	ModuleConfig                   []ModuleResourceConfig `mapstructure:"modules"`
+
+	Modules           []ModuleResourceConfig `mapstructure:"modules"`
+	makeDynamicClient func() (dynamic.Interface, error)
 }
 
 type ModuleResourceConfig struct {
