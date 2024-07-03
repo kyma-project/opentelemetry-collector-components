@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	typeStr          = component.MustNewType("kymastatsreceiver")
+	typeStr          = component.MustNewType("kymastats")
 	defaultResources = []ModuleResourceConfig{
 		{
 			ResourceGroup:   "operator.kyma-project.io",
