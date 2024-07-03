@@ -14,7 +14,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 
+	"errors"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type kymaScraper struct {
@@ -39,6 +41,14 @@ type condition struct {
 	reason   string
 }
 
+type errFieldNotFound struct {
+	field string
+}
+
+func (e *errFieldNotFound) Error() string {
+	return fmt.Sprintf("field not found: %s", e.field)
+}
+
 func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []ModuleResourceConfig, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client:     client,
@@ -53,7 +63,6 @@ func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resour
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	stats, err := ks.collectModuleStats(ctx)
 	if err != nil {
-		ks.logger.Error("scraping module resources failed", zap.Error(err))
 		return pmetric.Metrics{}, err
 	}
 
@@ -82,75 +91,116 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 
 func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
 	var res []moduleStats
-	for _, rc := range ks.moduleGVRs {
-		telemetryRes, err := ks.client.Resource(schema.GroupVersionResource{
-			Group:    rc.ResourceGroup,
-			Version:  rc.ResourceVersion,
-			Resource: rc.ResourceName,
+	for _, gvr := range ks.moduleGVRs {
+		moduleList, err := ks.client.Resource(schema.GroupVersionResource{
+			Group:    gvr.ResourceGroup,
+			Version:  gvr.ResourceVersion,
+			Resource: gvr.ResourceName,
 		}).List(ctx, metav1.ListOptions{})
-
 		if err != nil {
-			ks.logger.Error(fmt.Sprintf("Error fetching module resource %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+			ks.logger.Error("Error fetching module list",
+				zap.Error(err),
+				zap.String("group", gvr.ResourceGroup),
+				zap.String("version", gvr.ResourceVersion),
+				zap.String("resource", gvr.ResourceName))
 			return nil, err
 		}
 
-		for _, item := range telemetryRes.Items {
-			_, ok := item.Object["status"]
-			if !ok {
-				ks.logger.Error(fmt.Sprintf("Error getting module status for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
+		for _, module := range moduleList.Items {
+			stats, err := ks.unstructuredToStats(module)
+			if err != nil {
+				ks.logger.Error("Error converting unstructured module to stats",
+					zap.Error(err),
+					zap.String("name", module.GetName()),
+					zap.String("namespace", module.GetNamespace()),
+					zap.String("kind", module.GetKind()),
+				)
 				continue
 			}
 
-			status, sok := item.Object["status"].(map[string]interface{})
-			if !sok {
-				ks.logger.Error(fmt.Sprintf("Error getting module status type for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
-				continue
-			}
-			state, sok := status["state"].(string)
-
-			if !sok {
-				ks.logger.Error(fmt.Sprintf("Error getting module status state for %s %s %s", rc.ResourceGroup, rc.ResourceVersion, rc.ResourceName), zap.Error(err))
-				continue
-			}
-			var conditions []condition
-			stats := moduleStats{
-				state:     state,
-				name:      item.GetName(),
-				namespace: item.GetNamespace(),
-				resource:  item.GetKind(),
-			}
-
-			if condList, cok := status["conditions"].([]interface{}); cok {
-				conditions = buildConditions(condList)
-			}
-			stats.conditions = conditions
-			res = append(res, stats)
+			res = append(res, *stats)
 		}
 	}
 
 	return res, nil
 }
 
-func buildConditions(conditionsObj []interface{}) []condition {
-	var conditions []condition
-	for _, c := range conditionsObj {
-		if cond, ok := c.(map[string]interface{}); ok {
-			condItem := condition{}
-
-			if t, tok := cond["type"].(string); tok {
-				condItem.condType = t
-			}
-
-			if s, sok := cond["status"].(string); sok {
-				condItem.status = s
-			}
-
-			if r, rok := cond["reason"].(string); rok {
-				condItem.reason = r
-			}
-
-			conditions = append(conditions, condItem)
-		}
+func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*moduleStats, error) {
+	status, found, err := unstructured.NestedMap(module.Object, "status")
+	if err != nil {
+		return nil, err
 	}
-	return conditions
+	if !found {
+		return nil, &errFieldNotFound{"status"}
+	}
+
+	state, found, err := unstructured.NestedString(status, "state")
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, &errFieldNotFound{"state"}
+	}
+
+	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, &errFieldNotFound{"conditions"}
+	}
+
+	stats := &moduleStats{
+		state:     state,
+		name:      module.GetName(),
+		namespace: module.GetNamespace(),
+		resource:  module.GetKind(),
+	}
+
+	for _, unstructuredCond := range unstructuredConds {
+		cond, err := ks.unstructuredToCondition(unstructuredCond)
+		if err != nil {
+			return nil, err
+		}
+		stats.conditions = append(stats.conditions, *cond)
+	}
+
+	return stats, nil
+}
+
+func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
+	condMap, ok := cond.(map[string]any)
+	if !ok {
+		return nil, errors.New("condition is not a map")
+	}
+
+	condType, found, err := unstructured.NestedString(condMap, "type")
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, &errFieldNotFound{"type"}
+	}
+
+	status, found, err := unstructured.NestedString(condMap, "status")
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, &errFieldNotFound{"status"}
+	}
+
+	reason, found, err := unstructured.NestedString(condMap, "reason")
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, &errFieldNotFound{"reason"}
+	}
+
+	return &condition{
+		condType: condType,
+		status:   status,
+		reason:   reason,
+	}, nil
 }
