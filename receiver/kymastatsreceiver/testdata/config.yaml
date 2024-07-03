@@ -5,6 +5,7 @@ kymastatsreceiver/sa:
 kymastatsreceiver/k8s:
   collection_interval: 30s
   auth_type: "kubeConfig"
+  context: "k8s-context"
 kymastatsreceiver/invalidauth:
   collection_interval: 30s
   auth_type: "123"

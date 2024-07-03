@@ -47,6 +47,7 @@ func TestLoadConfig(t *testing.T) {
 				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
+					Context:  "k8s-context",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 				ModuleConfig:         defaultResources,
