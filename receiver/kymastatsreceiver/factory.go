@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	typeStr          = component.MustNewType("kymastats")
-	defaultResources = []ModuleResourceConfig{
+	typeStr        = component.MustNewType("kymastats")
+	defaultModules = []ModuleResourceConfig{
 		{
 			ResourceGroup:   "operator.kyma-project.io",
 			ResourceName:    "telemetries",
@@ -26,12 +26,12 @@ var (
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		ControllerConfig: scraperhelper.NewDefaultControllerConfig(),
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
+		ControllerConfig:     scraperhelper.NewDefaultControllerConfig(),
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Modules:              defaultResources,
+		Modules:              defaultModules,
 	}
 }
 
