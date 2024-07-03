@@ -117,7 +117,7 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, e
 				state:     state,
 				name:      item.GetName(),
 				namespace: item.GetNamespace(),
-				resource:  rc.ResourceName,
+				resource:  item.GetKind(),
 			}
 
 			if condList, cok := status["conditions"].([]interface{}); cok {
