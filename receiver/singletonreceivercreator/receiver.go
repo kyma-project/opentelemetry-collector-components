@@ -24,13 +24,18 @@ type singletonReceiverCreator struct {
 	cancel            context.CancelFunc
 }
 
-func newSingletonReceiverCreator(params receiver.Settings, cfg *Config) (*singletonReceiverCreator, error) {
-	telemetry, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
+func newSingletonReceiverCreator(
+	params receiver.Settings,
+	cfg *Config,
+	consumer consumer.Metrics,
+	telemetryBuilder *metadata.TelemetryBuilder,
+) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
-		params:           params,
-		cfg:              cfg,
-		telemetryBuilder: telemetry,
-	}, err
+		params:              params,
+		cfg:                 cfg,
+		nextMetricsConsumer: consumer,
+		telemetryBuilder:    telemetryBuilder,
+	}
 }
 
 // Start leader receiver creator.
@@ -51,7 +56,9 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 	c.subReceiverRunner = newReceiverRunner(c.params, c.host)
 
 	leaderElector, err := newLeaderElector(
+		c.cfg.leaderElectionConfig,
 		client,
+		c.telemetryBuilder,
 		func(ctx context.Context) {
 			c.params.TelemetrySettings.Logger.Info("Elected as leader")
 			//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
@@ -66,8 +73,6 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
-		c.cfg.leaderElectionConfig,
-		c.telemetryBuilder,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)
