@@ -27,7 +27,6 @@ type kymaScraper struct {
 }
 
 type moduleStats struct {
-	name      string
 	namespace string
 	kind      string
 
@@ -69,13 +68,13 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	for _, s := range stats {
-		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state, s.kind)
+		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state)
 		rb := ks.mb.NewResourceBuilder()
 		rb.SetK8sNamespaceName(s.namespace)
-		rb.SetKymaModuleName(s.name)
+		rb.SetKymaModuleName(s.kind)
 		for _, c := range s.conditions {
 			val := conditionStatusToValue(c.status)
-			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, val, s.kind, c.reason, c.status, c.condType)
+			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, val, c.reason, c.status, c.condType)
 		}
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
@@ -146,7 +145,6 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 
 	stats := &moduleStats{
 		state:     state,
-		name:      module.GetName(),
 		namespace: module.GetNamespace(),
 		kind:      module.GetKind(),
 	}

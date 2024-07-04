@@ -70,11 +70,11 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusConditionsDataPoint(ts, 1, "module-val", "reason-val", "status-val", "type-val")
+			mb.RecordKymaModuleStatusConditionsDataPoint(ts, 1, "reason-val", "status-val", "type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusStateDataPoint(ts, 1, "state-val", "module-val")
+			mb.RecordKymaModuleStatusStateDataPoint(ts, 1, "state-val")
 
 			rb := mb.NewResourceBuilder()
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
@@ -113,10 +113,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("module")
-					assert.True(t, ok)
-					assert.EqualValues(t, "module-val", attrVal.Str())
-					attrVal, ok = dp.Attributes().Get("reason")
+					attrVal, ok := dp.Attributes().Get("reason")
 					assert.True(t, ok)
 					assert.EqualValues(t, "reason-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("status")
@@ -140,9 +137,6 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("state")
 					assert.True(t, ok)
 					assert.EqualValues(t, "state-val", attrVal.Str())
-					attrVal, ok = dp.Attributes().Get("module")
-					assert.True(t, ok)
-					assert.EqualValues(t, "module-val", attrVal.Str())
 				}
 			}
 		})

@@ -24,7 +24,6 @@ The module status conditions, including module, condition reason, status, and ty
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| module | The kind of the module. | Any Str |
 | reason | The reason of the module condition status. | Any Str |
 | status | The status of the module condition. | Any Str |
 | type | The type of the module condition. | Any Str |
@@ -42,11 +41,10 @@ The module status state, including module and state.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | state | The state of the module status. | Any Str |
-| module | The kind of the module. | Any Str |
 
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
-| kyma.module.name | The name of the module instance | Any Str | true |
+| kyma.module.name | The module kind | Any Str | true |
