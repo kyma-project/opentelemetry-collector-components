@@ -1,4 +1,5 @@
 type: kymastats
+scope_name: otelcol/kymastats
 
 status:
   class: receiver

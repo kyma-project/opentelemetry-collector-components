@@ -3,6 +3,7 @@ package kymastatsreceiver
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,85 +15,80 @@ import (
 	clienttesting "k8s.io/client-go/testing"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-)
-
-const (
-	dataLen = 6
-)
-
-var (
-	statusError = map[string]interface{}{
-		"state": "Error",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"type":    "ConditionType1",
-				"status":  "False",
-				"reason":  "Reason1",
-				"message": "some message",
-			},
-		},
-	}
-
-	statusReady = map[string]interface{}{
-		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"type":    "ConditionType1",
-				"status":  "False",
-				"reason":  "Reason1",
-				"message": "some message",
-			},
-		},
-	}
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 )
 
 func TestScrape(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
+	gvrs := []schema.GroupVersionResource{
 		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
+			Group:    "operator.kyma-project.io",
+			Version:  "v1",
+			Resource: "telemetries",
+		},
+		{
+			Group:    "operator.kyma-project.io",
+			Version:  "v1",
+			Resource: "istios",
 		},
 	}
 
 	scheme := runtime.NewScheme()
 
-	obj1 := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
-	obj2 := newUnstructuredObject("group2/version", "TheKind", "ns-foo", "name2-foo")
-	obj3 := newUnstructuredObject("group/version", "TheKind", "ns-foo1", "name-bar")
-	obj4 := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-baz")
-	obj5 := newUnstructuredObject("group2/version", "TheKind", "ns-foo", "name2-baz")
-	obj6 := newUnstructuredObject("group/version", "AnotherKind", "ns-foo", "name2-baz")
+	telemetry := newUnstructuredObject("operator.kyma-project.io/v1", "Telemetry", "kyma-system", "default")
+	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+		"state": "Ready",
+		"conditions": []interface{}{
+			map[string]interface{}{
+				"type":   "TelemetryHealthy",
+				"status": "True",
+				"reason": "AllFine",
+			},
+		},
+	}, "status")
 
-	unstructured.SetNestedMap(obj1, statusError, "status")
-	unstructured.SetNestedMap(obj2, statusError, "status")
-	unstructured.SetNestedMap(obj3, statusReady, "status")
-	unstructured.SetNestedMap(obj4, statusReady, "status")
-	unstructured.SetNestedMap(obj5, statusReady, "status")
-	unstructured.SetNestedMap(obj6, statusReady, "status")
+	istio := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "default")
+	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+		"state": "Warning",
+		"conditions": []interface{}{
+			map[string]interface{}{
+				"type":   "IstioHealthy",
+				"status": "False",
+				"reason": "IstiodDown",
+			},
+		},
+	}, "status")
+
+	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "custom")
+	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
+		"state": "Ready",
+		"conditions": []interface{}{
+			map[string]interface{}{
+				"type":   "IstioHealthy",
+				"status": "True",
+				"reason": "AllFine",
+			},
+		},
+	}, "status")
 
 	client := fake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
-			{Group: "group", Version: "version", Resource: "thekinds"}: "TheKindList",
+			gvrs[0]: "TelemetryList",
+			gvrs[1]: "IstioList",
 		}, &unstructured.Unstructured{
-			Object: obj1,
+			Object: telemetry,
 		},
 		&unstructured.Unstructured{
-			Object: obj2,
+			Object: istio,
 		}, &unstructured.Unstructured{
-			Object: obj3,
-		}, &unstructured.Unstructured{
-			Object: obj4,
-		}, &unstructured.Unstructured{
-			Object: obj5,
-		}, &unstructured.Unstructured{
-			Object: obj6},
+			Object: istioCustom,
+		},
 	)
 
 	r, err := newKymaScraper(
 		client,
 		receivertest.NewNopSettings(),
-		rcConfig,
+		gvrs,
 		metadata.DefaultMetricsBuilderConfig(),
 	)
 
@@ -100,32 +96,44 @@ func TestScrape(t *testing.T) {
 
 	md, err := r.Scrape(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, dataLen, md.DataPointCount())
+
+	expectedFile := filepath.Join("testdata", "expected_metrics.yaml")
+	expected, err := golden.ReadMetrics(expectedFile)
+
+	require.NoError(t, err)
+	require.NoError(t, pmetrictest.CompareMetrics(expected, md,
+		pmetrictest.IgnoreTimestamp(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+	))
 }
 
 func TestScrape_CantPullResource(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
+	gvrs := []schema.GroupVersionResource{
 		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
+			Group:    "operator.kyma-project.io",
+			Version:  "v1",
+			Resource: "mykymamodules",
 		},
 	}
 
 	scheme := runtime.NewScheme()
 
 	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
-		Object: newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo"),
+		Object: newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "kyma-system", "default"),
 	})
 
-	client.PrependReactor("list", "thekinds", func(action clienttesting.Action) (bool, runtime.Object, error) {
+	client.PrependReactor("list", "mykymamodules", func(action clienttesting.Action) (bool, runtime.Object, error) {
 		return true, nil, errors.New("error")
 	})
 
 	r, err := newKymaScraper(
 		client,
 		receivertest.NewNopSettings(),
-		rcConfig,
+		gvrs,
 		metadata.DefaultMetricsBuilderConfig(),
 	)
 
@@ -271,7 +279,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			rcConfig := []schema.GroupVersionResource{
+			gvrs := []schema.GroupVersionResource{
 				{
 					Group:    "operator.kyma-project.io",
 					Version:  "v1",
@@ -279,7 +287,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				},
 			}
 			scheme := runtime.NewScheme()
-			obj := newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "default", "default")
+			obj := newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "kyma-system", "default")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
@@ -289,7 +297,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			r, err := newKymaScraper(
 				client,
 				receivertest.NewNopSettings(),
-				rcConfig,
+				gvrs,
 				metadata.DefaultMetricsBuilderConfig(),
 			)
 			require.NoError(t, err)

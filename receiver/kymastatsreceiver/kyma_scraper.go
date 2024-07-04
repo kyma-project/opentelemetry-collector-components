@@ -108,6 +108,9 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, e
 			}
 
 			res = append(res, *stats)
+
+			// Take only the first valid module custom resource
+			break
 		}
 	}
 
