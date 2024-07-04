@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -14,29 +16,32 @@ import (
 	"k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
-
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+)
+
+const (
+	moduleGroup     = "operator.kyma-project.io"
+	moduleVersion   = "v1"
+	moduleNamespace = "kyma-system"
 )
 
 func TestScrape(t *testing.T) {
 	gvrs := []schema.GroupVersionResource{
 		{
-			Group:    "operator.kyma-project.io",
-			Version:  "v1",
+			Group:    moduleGroup,
+			Version:  moduleVersion,
 			Resource: "telemetries",
 		},
 		{
-			Group:    "operator.kyma-project.io",
-			Version:  "v1",
+			Group:    moduleGroup,
+			Version:  moduleVersion,
 			Resource: "istios",
 		},
 	}
 
 	scheme := runtime.NewScheme()
 
-	telemetry := newUnstructuredObject("operator.kyma-project.io/v1", "Telemetry", "kyma-system", "default")
+	telemetry := newUnstructuredObject("Telemetry", "default")
 	unstructured.SetNestedMap(telemetry, map[string]interface{}{
 		"state": "Ready",
 		"conditions": []interface{}{
@@ -48,7 +53,7 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istio := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "default")
+	istio := newUnstructuredObject("Istio", "default")
 	unstructured.SetNestedMap(istio, map[string]interface{}{
 		"state": "Warning",
 		"conditions": []interface{}{
@@ -61,7 +66,7 @@ func TestScrape(t *testing.T) {
 	}, "status")
 
 	// istio custom resource is broken since it has no conditions, thus it should be ignored
-	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "custom")
+	istioCustom := newUnstructuredObject("Istio", "custom")
 	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
 		"state": "Ready",
 	}, "status")
@@ -109,8 +114,8 @@ func TestScrape(t *testing.T) {
 func TestScrape_CantPullResource(t *testing.T) {
 	gvrs := []schema.GroupVersionResource{
 		{
-			Group:    "operator.kyma-project.io",
-			Version:  "v1",
+			Group:    moduleGroup,
+			Version:  moduleVersion,
 			Resource: "mykymamodules",
 		},
 	}
@@ -118,7 +123,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 	scheme := runtime.NewScheme()
 
 	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
-		Object: newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "kyma-system", "default"),
+		Object: newUnstructuredObject("MyKymaModule", "default"),
 	})
 
 	client.PrependReactor("list", "mykymamodules", func(action clienttesting.Action) (bool, runtime.Object, error) {
@@ -276,13 +281,13 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			gvrs := []schema.GroupVersionResource{
 				{
-					Group:    "operator.kyma-project.io",
-					Version:  "v1",
+					Group:    moduleGroup,
+					Version:  moduleVersion,
 					Resource: "mykymamodules",
 				},
 			}
 			scheme := runtime.NewScheme()
-			obj := newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "kyma-system", "default")
+			obj := newUnstructuredObject("MyKymaModule", "default")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
@@ -304,12 +309,12 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	}
 }
 
-func newUnstructuredObject(apiVersion, kind, namespace, name string) map[string]interface{} {
+func newUnstructuredObject(kind, name string) map[string]interface{} {
 	return map[string]interface{}{
-		"apiVersion": apiVersion,
+		"apiVersion": moduleGroup + "/" + moduleVersion,
 		"kind":       kind,
 		"metadata": map[string]interface{}{
-			"namespace": namespace,
+			"namespace": moduleNamespace,
 			"name":      name,
 		},
 	}
