@@ -16,7 +16,7 @@ For details about the metrics produced by the Kyma Stats Receiver, see [metadata
 
 The following settings are required:
 
-- `auth_type` (default = `serviceAccount`): Specifies the authentication method for accessing the Kubernetes API server. 
+- `auth_type` (default = `serviceAccount`): Specifies the authentication method for accessing the Kubernetes API server.
    Options include `none` (no authentication), `serviceAccount` (uses the default service account token assigned to the Pod), or `kubeConfig` (uses credentials from `~/.kube/config`).
 
 The following settings are optional:
@@ -40,4 +40,4 @@ Example:
 ```
 
 For the full list of settings exposed for the Kyma Stats Receiver, see the [config.go](./config.go) file.
-For detailed sample configurations , see the [config.yaml](./testdata/config.yaml) file.
+For detailed sample configurations , see the [config.yaml](./testdata/expected_config.yaml) file.
