@@ -46,7 +46,7 @@ metrics:
 
   kyma.module.status.conditions:
     enabled: true
-    description: "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute."
+    description: "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values."
     unit: "1"
     gauge:
       value_type: int
