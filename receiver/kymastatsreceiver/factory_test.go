@@ -38,7 +38,6 @@ func TestCreateMetricsReceiver(t *testing.T) {
 			AuthType: "kubeConfig",
 		},
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Modules:              defaultModules,
 		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
 	}
 	metricsReceiver, err := factory.CreateMetricsReceiver(

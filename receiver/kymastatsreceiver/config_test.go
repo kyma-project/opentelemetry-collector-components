@@ -37,7 +37,6 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules:              defaultModules,
 			},
 		},
 
@@ -50,7 +49,6 @@ func TestLoadConfig(t *testing.T) {
 					Context:  "k8s-context",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules:              defaultModules,
 			},
 		},
 		{
@@ -61,7 +59,6 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules:              defaultModules,
 			},
 		},
 		{
@@ -80,7 +77,6 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "none",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules:              defaultModules,
 			},
 		},
 	}

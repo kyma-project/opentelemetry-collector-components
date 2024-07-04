@@ -14,7 +14,6 @@ type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
 
-	Modules           []ModuleResourceConfig
 	makeDynamicClient func() (dynamic.Interface, error)
 }
 

@@ -31,7 +31,6 @@ func createDefaultConfig() component.Config {
 		},
 		ControllerConfig:     scraperhelper.NewDefaultControllerConfig(),
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Modules:              defaultModules,
 	}
 }
 
@@ -52,7 +51,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, params, config.Modules, config.MetricsBuilderConfig)
+	scrp, err := newKymaScraper(client, params, defaultModules, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}
