@@ -131,6 +131,12 @@ github.com/onsi/ginkgo/v2 v2.17.1 h1:V++EzdbhI4ZV4ev0UTIj0PzhzOcReJFyJaLjtSF55M8
 github.com/onsi/ginkgo/v2 v2.17.1/go.mod h1:llBI3WDLL9Z6taip6f33H76YcWtJv+7R3HigUjbIBOs=
 github.com/onsi/gomega v1.32.0 h1:JRYU78fJ1LPxlckP6Txi/EYqJvjtMrDC04/MM5XRHPk=
 github.com/onsi/gomega v1.32.0/go.mod h1:a4x4gW6Pz2yK1MAmvluYme5lvYTn61afQ2ETw/8n4Lg=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.104.0 h1:J4VwD+t7XpMuhdgd5KwhI5f17bOKHDD862szUW2ulVo=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.104.0/go.mod h1:MYspCVghl0glPIWT/gca6hXL48fROuJxo7lkEB171Ws=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.104.0 h1:bgS1X1UnUuYfKXsQPq3U50jsMNpN5lI+BcDeklPJOW8=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.104.0/go.mod h1:tImy4FWNu1qpaXRVaNi2BU+TmZHtYgLO6LbB6mspZio=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.104.0 h1:Pl4rXXpRG/xJuNWUS3I/w1jViHcrssMf47bGX/Ug/KY=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.104.0/go.mod h1:tP4dyc5+g/qoXYb8lmNj+y+Nhphn4MkL23/np0Zhx2g=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
