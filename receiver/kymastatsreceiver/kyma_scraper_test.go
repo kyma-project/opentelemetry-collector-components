@@ -84,11 +84,11 @@ var (
 )
 
 func TestScraper(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 
@@ -141,11 +141,11 @@ func TestScraper(t *testing.T) {
 }
 
 func TestScraperCantPullResource(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 
@@ -174,11 +174,11 @@ func TestScraperCantPullResource(t *testing.T) {
 }
 
 func TestScraperResourceWithoutStatus(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 	scheme := runtime.NewScheme()
@@ -200,11 +200,11 @@ func TestScraperResourceWithoutStatus(t *testing.T) {
 }
 
 func TestScraperResourceWithNoCondition(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 	scheme := runtime.NewScheme()
@@ -226,11 +226,11 @@ func TestScraperResourceWithNoCondition(t *testing.T) {
 }
 
 func TestScraperResourceNoConditionType(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 	scheme := runtime.NewScheme()
@@ -252,11 +252,11 @@ func TestScraperResourceNoConditionType(t *testing.T) {
 }
 
 func TestScraperResourceNoConditionStatus(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 	scheme := runtime.NewScheme()
@@ -278,11 +278,11 @@ func TestScraperResourceNoConditionStatus(t *testing.T) {
 }
 
 func TestScraperResourceNoConditionReason(t *testing.T) {
-	rcConfig := []ModuleResourceConfig{
+	rcConfig := []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "group",
-			ResourceName:    "thekinds",
-			ResourceVersion: "version",
+			Group:    "group",
+			Version:  "version",
+			Resource: "thekinds",
 		},
 	}
 	scheme := runtime.NewScheme()
