@@ -14,9 +14,10 @@ import (
 	"k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 func TestScrape(t *testing.T) {
