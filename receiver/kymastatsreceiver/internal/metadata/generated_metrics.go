@@ -21,7 +21,7 @@ type metricKymaModuleStatusConditions struct {
 // init fills kyma.module.status.conditions metric with initial data.
 func (m *metricKymaModuleStatusConditions) init() {
 	m.data.SetName("kyma.module.status.conditions")
-	m.data.SetDescription("The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute.")
+	m.data.SetDescription("The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)

@@ -14,7 +14,7 @@ metrics:
 
 ### kyma.module.status.conditions
 
-The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute.
+The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
