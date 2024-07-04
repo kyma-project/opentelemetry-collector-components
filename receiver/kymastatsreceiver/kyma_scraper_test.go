@@ -59,16 +59,10 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "deployed-manually")
+	// istio custom resource is broken since it has no conditions, thus it should be ignored
+	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "custom")
 	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
 		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"type":   "IstioHealthy",
-				"status": "True",
-				"reason": "AllFine",
-			},
-		},
 	}, "status")
 
 	client := fake.NewSimpleDynamicClientWithCustomListKinds(scheme,
