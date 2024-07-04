@@ -26,28 +26,52 @@ func TestValidConfig(t *testing.T) {
 }
 
 func TestCreateMetricsReceiver(t *testing.T) {
-	factory := NewFactory()
-	scheme := runtime.NewScheme()
-	cfg := &Config{
-		ControllerConfig: scraperhelper.ControllerConfig{
-			CollectionInterval: 10 * time.Second,
-			InitialDelay:       time.Second,
-		},
+	tests := []struct {
+		name        string
+		cfg         component.Config
+		expectedErr bool
+	}{
+		{
+			name: "valid",
+			cfg: &Config{
+				ControllerConfig: scraperhelper.ControllerConfig{
+					CollectionInterval: 10 * time.Second,
+					InitialDelay:       time.Second,
+				},
 
-		APIConfig: k8sconfig.APIConfig{
-			AuthType: "kubeConfig",
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "kubeConfig",
+				},
+				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(runtime.NewScheme()), nil },
+			},
 		},
-		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(scheme), nil },
+		{
+			name:        "invalid",
+			cfg:         component.Config([]byte{1, 2, 3}),
+			expectedErr: true,
+		},
 	}
-	metricsReceiver, err := factory.CreateMetricsReceiver(
-		context.Background(),
-		receivertest.NewNopSettings(),
-		cfg,
-		consumertest.NewNop(),
-	)
-	require.NoError(t, err)
-	require.NotNil(t, metricsReceiver)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			factory := NewFactory()
+			metricsReceiver, err := factory.CreateMetricsReceiver(
+				context.Background(),
+				receivertest.NewNopSettings(),
+				tt.cfg,
+				consumertest.NewNop(),
+			)
+			if tt.expectedErr {
+				require.Error(t, err)
+				require.Nil(t, metricsReceiver)
+				return
+			}
+
+			require.NoError(t, err)
+			require.NotNil(t, metricsReceiver)
+		})
+	}
 }
 
 func TestCreateTraceReceiver(t *testing.T) {

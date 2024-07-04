@@ -44,46 +44,9 @@ var (
 			},
 		},
 	}
-
-	statusNoCondition = map[string]interface{}{
-		"state": "Ready",
-	}
-
-	statusNoConditionType = map[string]interface{}{
-		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"status":  "False",
-				"reason":  "Reason1",
-				"message": "some message",
-			},
-		},
-	}
-
-	statusNoConditionStatus = map[string]interface{}{
-		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"type":    "ConditionType1",
-				"reason":  "Reason1",
-				"message": "some message",
-			},
-		},
-	}
-
-	statusNoConditionReason = map[string]interface{}{
-		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
-				"type":    "ConditionType1",
-				"status":  "True",
-				"message": "some message",
-			},
-		},
-	}
 )
 
-func TestScraper(t *testing.T) {
+func TestScrape(t *testing.T) {
 	rcConfig := []schema.GroupVersionResource{
 		{
 			Group:    "group",
@@ -140,7 +103,7 @@ func TestScraper(t *testing.T) {
 	require.Equal(t, dataLen, md.DataPointCount())
 }
 
-func TestScraperCantPullResource(t *testing.T) {
+func TestScrape_CantPullResource(t *testing.T) {
 	rcConfig := []schema.GroupVersionResource{
 		{
 			Group:    "group",
@@ -173,134 +136,169 @@ func TestScraperCantPullResource(t *testing.T) {
 
 }
 
-func TestScraperResourceWithoutStatus(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
+func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		status any
+	}{
 		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
+			name: "no status",
+		},
+		{
+			name:   "status not a map",
+			status: "not a map",
+		},
+		{
+			name: "no state",
+			status: map[string]interface{}{
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   "FakeConditionType",
+						"status": "False",
+						"reason": "FakeReason",
+					},
+				},
+			},
+		},
+		{
+			name: "state not a string",
+			status: map[string]interface{}{
+				"state": map[string]interface{}{},
+			},
+		},
+		{
+			name: "no conditions",
+			status: map[string]interface{}{
+				"state": "Ready",
+			},
+		},
+		{
+			name: "conditions not a list",
+			status: map[string]interface{}{
+				"state":      "Ready",
+				"conditions": "not a list",
+			},
+		},
+		{
+			name: "condition not a map",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					"not a map",
+				},
+			},
+		},
+		{
+			name: "no condition type",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"status": "False",
+						"reason": "FakeReason",
+					},
+				},
+			},
+		},
+		{
+			name: "condition type not a string",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   map[string]interface{}{},
+						"status": "False",
+						"reason": "FakeReason",
+					},
+				},
+			},
+		},
+		{
+			name: "no condition status",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   "FakeConditionType",
+						"reason": "FakeReason",
+					},
+				},
+			},
+		},
+		{
+			name: "condition status not a string",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   "FakeConditionType",
+						"status": map[string]interface{}{},
+						"reason": "FakeReason",
+					},
+				},
+			},
+		},
+		{
+			name: "no condition reason",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   "FakeConditionType",
+						"status": "False",
+					},
+				},
+			},
+		},
+		{
+			name: "condition reason not a string",
+			status: map[string]interface{}{
+				"state": "Ready",
+				"conditions": []interface{}{
+					map[string]interface{}{
+						"type":   "FakeConditionType",
+						"status": "False",
+						"reason": map[string]interface{}{},
+					},
+				},
+			},
 		},
 	}
-	scheme := runtime.NewScheme()
-	obj := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
 
-	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	r, err := newKymaScraper(
-		client,
-		receivertest.NewNopSettings(),
-		rcConfig,
-		metadata.DefaultMetricsBuilderConfig(),
-	)
+			rcConfig := []schema.GroupVersionResource{
+				{
+					Group:    "operator.kyma-project.io",
+					Version:  "v1",
+					Resource: "mykymamodules",
+				},
+			}
+			scheme := runtime.NewScheme()
+			obj := newUnstructuredObject("operator.kyma-project.io/v1", "MyKymaModule", "default", "default")
+			if tt.status != nil {
+				unstructured.SetNestedField(obj, tt.status, "status")
+			}
 
-	require.NoError(t, err)
+			client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
-	_, err = r.Scrape(context.Background())
-	require.NoError(t, err)
-}
+			r, err := newKymaScraper(
+				client,
+				receivertest.NewNopSettings(),
+				rcConfig,
+				metadata.DefaultMetricsBuilderConfig(),
+			)
+			require.NoError(t, err)
 
-func TestScraperResourceWithNoCondition(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
-		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
-		},
+			metrics, err := r.Scrape(context.Background())
+			require.NoError(t, err)
+			require.Zero(t, metrics.DataPointCount())
+		})
 	}
-	scheme := runtime.NewScheme()
-	obj := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
-	unstructured.SetNestedMap(obj, statusNoCondition, "status")
-	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
-
-	r, err := newKymaScraper(
-		client,
-		receivertest.NewNopSettings(),
-		rcConfig,
-		metadata.DefaultMetricsBuilderConfig(),
-	)
-
-	require.NoError(t, err)
-
-	_, err = r.Scrape(context.Background())
-	require.NoError(t, err)
-}
-
-func TestScraperResourceNoConditionType(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
-		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
-		},
-	}
-	scheme := runtime.NewScheme()
-	obj := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
-	unstructured.SetNestedMap(obj, statusNoConditionType, "status")
-	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
-
-	r, err := newKymaScraper(
-		client,
-		receivertest.NewNopSettings(),
-		rcConfig,
-		metadata.DefaultMetricsBuilderConfig(),
-	)
-
-	require.NoError(t, err)
-
-	_, err = r.Scrape(context.Background())
-	require.NoError(t, err)
-}
-
-func TestScraperResourceNoConditionStatus(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
-		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
-		},
-	}
-	scheme := runtime.NewScheme()
-	obj := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
-	unstructured.SetNestedMap(obj, statusNoConditionStatus, "status")
-	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
-
-	r, err := newKymaScraper(
-		client,
-		receivertest.NewNopSettings(),
-		rcConfig,
-		metadata.DefaultMetricsBuilderConfig(),
-	)
-
-	require.NoError(t, err)
-
-	_, err = r.Scrape(context.Background())
-	require.NoError(t, err)
-}
-
-func TestScraperResourceNoConditionReason(t *testing.T) {
-	rcConfig := []schema.GroupVersionResource{
-		{
-			Group:    "group",
-			Version:  "version",
-			Resource: "thekinds",
-		},
-	}
-	scheme := runtime.NewScheme()
-	obj := newUnstructuredObject("group/version", "TheKind", "ns-foo", "name-foo")
-	unstructured.SetNestedMap(obj, statusNoConditionReason, "status")
-	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
-
-	r, err := newKymaScraper(
-		client,
-		receivertest.NewNopSettings(),
-		rcConfig,
-		metadata.DefaultMetricsBuilderConfig(),
-	)
-
-	require.NoError(t, err)
-
-	_, err = r.Scrape(context.Background())
-	require.NoError(t, err)
 }
 
 func newUnstructuredObject(apiVersion, kind, namespace, name string) map[string]interface{} {
