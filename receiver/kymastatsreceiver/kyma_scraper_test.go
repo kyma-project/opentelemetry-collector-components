@@ -48,7 +48,7 @@ func TestScrape(t *testing.T) {
 	}, "status")
 
 	istio := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "default")
-	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+	unstructured.SetNestedMap(istio, map[string]interface{}{
 		"state": "Warning",
 		"conditions": []interface{}{
 			map[string]interface{}{
@@ -59,7 +59,7 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "custom")
+	istioCustom := newUnstructuredObject("operator.kyma-project.io/v1", "Istio", "kyma-system", "deployed-manually")
 	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
 		"state": "Ready",
 		"conditions": []interface{}{
@@ -79,9 +79,9 @@ func TestScrape(t *testing.T) {
 			Object: telemetry,
 		},
 		&unstructured.Unstructured{
-			Object: istio,
-		}, &unstructured.Unstructured{
 			Object: istioCustom,
+		}, &unstructured.Unstructured{
+			Object: istio,
 		},
 	)
 
@@ -105,8 +105,8 @@ func TestScrape(t *testing.T) {
 		pmetrictest.IgnoreTimestamp(),
 		pmetrictest.IgnoreStartTimestamp(),
 		pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreScopeMetricsOrder(),
+		pmetrictest.IgnoreMetricsOrder(),
 		pmetrictest.IgnoreMetricDataPointsOrder(),
 	))
 }

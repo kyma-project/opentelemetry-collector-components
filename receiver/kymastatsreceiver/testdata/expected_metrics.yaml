@@ -6,7 +6,7 @@ resourceMetrics:
             stringValue: kyma-system
         - key: kyma.module.name
           value:
-            stringValue: Istio
+            stringValue: Telemetry
     scopeMetrics:
       - metrics:
           - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
@@ -45,7 +45,7 @@ resourceMetrics:
             stringValue: kyma-system
         - key: kyma.module.name
           value:
-            stringValue: Telemetry
+            stringValue: Istio
     scopeMetrics:
       - metrics:
           - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
