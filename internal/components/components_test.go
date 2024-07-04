@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDefaultComponents(t *testing.T) {
 	factories, err := Components()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	exts := factories.Extensions
 	for k, v := range exts {

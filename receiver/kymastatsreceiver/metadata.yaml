@@ -1,0 +1,54 @@
+type: kymastats
+scope_name: otelcol/kymastats
+
+status:
+  class: receiver
+  stability:
+    alpha: [metrics]
+  distributions: [kyma]
+  codeowners:
+    active: [kyma-project/observability]
+# Skip life cycle and shutdown tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
+tests:
+  config:
+  skip_lifecycle: true
+  skip_shutdown: true
+
+resource_attributes:
+  k8s.namespace.name:
+    description: "The name of the namespace that the resource is running in"
+    enabled: true
+    type: string
+  kyma.module.name:
+    description: "The module kind"
+    enabled: true
+    type: string
+attributes:
+  state:
+    description: The state of the module status.
+    type: string
+  reason:
+    description: The reason of the module condition status.
+    type: string
+  status:
+    description: The status of the module condition.
+    type: string
+  type:
+    description: The type of the module condition.
+    type: string
+metrics:
+  kyma.module.status.state:
+    enabled: true
+    description: "The module status state, metric value is 1 for last scraped module status state, including state as metric attribute."
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: ["state"]
+
+  kyma.module.status.conditions:
+    enabled: true
+    description: "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values."
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: ["reason", "status", "type"]
