@@ -106,7 +106,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.module.status.conditions"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The module status conditions, including module, condition reason, status, and type.", ms.At(i).Description())
+					assert.Equal(t, "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -127,7 +127,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.module.status.state"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The module status state, including module and state.", ms.At(i).Description())
+					assert.Equal(t, "The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
