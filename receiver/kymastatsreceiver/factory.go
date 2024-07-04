@@ -8,18 +8,19 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 var (
-	typeStr        = component.MustNewType("kymastats")
-	defaultModules = []ModuleResourceConfig{
+	typeStr           = component.MustNewType("kymastats")
+	defaultModuleGVRs = []schema.GroupVersionResource{
 		{
-			ResourceGroup:   "operator.kyma-project.io",
-			ResourceName:    "telemetries",
-			ResourceVersion: "v1alpha1",
+			Group:    "operator.kyma-project.io",
+			Version:  "v1alpha1",
+			Resource: "telemetries",
 		},
 	}
 )
@@ -31,7 +32,6 @@ func createDefaultConfig() component.Config {
 		},
 		ControllerConfig:     scraperhelper.NewDefaultControllerConfig(),
 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-		Modules:              defaultModules,
 	}
 }
 
@@ -52,7 +52,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	if err != nil {
 		return nil, err
 	}
-	scrp, err := newKymaScraper(client, params, config.Modules, config.MetricsBuilderConfig)
+	scrp, err := newKymaScraper(client, params, defaultModuleGVRs, config.MetricsBuilderConfig)
 	if err != nil {
 		return nil, err
 	}

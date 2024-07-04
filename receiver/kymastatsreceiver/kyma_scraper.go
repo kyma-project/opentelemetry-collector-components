@@ -22,8 +22,8 @@ import (
 type kymaScraper struct {
 	client     dynamic.Interface
 	logger     *zap.Logger
+	moduleGVRs []schema.GroupVersionResource
 	mb         *metadata.MetricsBuilder
-	moduleGVRs []ModuleResourceConfig
 }
 
 type moduleStats struct {
@@ -49,12 +49,12 @@ func (e *fieldNotFoundError) Error() string {
 	return fmt.Sprintf("field not found: %s", e.field)
 }
 
-func newKymaScraper(client dynamic.Interface, settings receiver.Settings, resources []ModuleResourceConfig, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+func newKymaScraper(client dynamic.Interface, settings receiver.Settings, moduleGVRs []schema.GroupVersionResource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
 		client:     client,
 		logger:     settings.Logger,
+		moduleGVRs: moduleGVRs,
 		mb:         metadata.NewMetricsBuilder(mbc, settings),
-		moduleGVRs: resources,
 	}
 
 	return scraperhelper.NewScraper(metadata.Type.String(), ks.scrape)
@@ -86,17 +86,13 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
 	var res []moduleStats
 	for _, gvr := range ks.moduleGVRs {
-		moduleList, err := ks.client.Resource(schema.GroupVersionResource{
-			Group:    gvr.ResourceGroup,
-			Version:  gvr.ResourceVersion,
-			Resource: gvr.ResourceName,
-		}).List(ctx, metav1.ListOptions{})
+		moduleList, err := ks.client.Resource(gvr).List(ctx, metav1.ListOptions{})
 		if err != nil {
 			ks.logger.Error("Error fetching module list",
 				zap.Error(err),
-				zap.String("group", gvr.ResourceGroup),
-				zap.String("version", gvr.ResourceVersion),
-				zap.String("resource", gvr.ResourceName))
+				zap.String("group", gvr.Group),
+				zap.String("version", gvr.Version),
+				zap.String("resource", gvr.Resource))
 			return nil, err
 		}
 

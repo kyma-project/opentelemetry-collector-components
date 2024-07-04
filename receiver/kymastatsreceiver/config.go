@@ -14,14 +14,8 @@ type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
 
-	Modules           []ModuleResourceConfig `mapstructure:"modules"`
+	// Used for unit testing only
 	makeDynamicClient func() (dynamic.Interface, error)
-}
-
-type ModuleResourceConfig struct {
-	ResourceGroup   string `mapstructure:"resource_group"`
-	ResourceName    string `mapstructure:"resource_name"`
-	ResourceVersion string `mapstructure:"resource_version"`
 }
 
 func (cfg *Config) Validate() error {
