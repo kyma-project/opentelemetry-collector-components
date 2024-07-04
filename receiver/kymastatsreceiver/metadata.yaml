@@ -19,15 +19,12 @@ resource_attributes:
     enabled: true
     type: string
   kyma.module.name:
-    description: "The name of the module instance"
+    description: "The module kind"
     enabled: true
     type: string
 attributes:
   state:
     description: The state of the module status.
-    type: string
-  module:
-    description: The kind of the module.
     type: string
   reason:
     description: The reason of the module condition status.
@@ -41,16 +38,16 @@ attributes:
 metrics:
   kyma.module.status.state:
     enabled: true
-    description: "The module status state, including module and state."
+    description: "The module status state, metric value is 1 for last scraped module status state, including state as metric attribute."
     unit: "1"
     gauge:
       value_type: int
-    attributes: ["state", "module"]
+    attributes: ["state"]
 
   kyma.module.status.conditions:
     enabled: true
-    description: "The module status conditions, including module, condition reason, status, and type."
+    description: "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute."
     unit: "1"
     gauge:
       value_type: int
-    attributes: ["module", "reason", "status", "type"]
+    attributes: ["reason", "status", "type"]

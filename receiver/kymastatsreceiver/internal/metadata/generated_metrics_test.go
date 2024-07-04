@@ -70,11 +70,11 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusConditionsDataPoint(ts, 1, "module-val", "reason-val", "status-val", "type-val")
+			mb.RecordKymaModuleStatusConditionsDataPoint(ts, 1, "reason-val", "status-val", "type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaModuleStatusStateDataPoint(ts, 1, "state-val", "module-val")
+			mb.RecordKymaModuleStatusStateDataPoint(ts, 1, "state-val")
 
 			rb := mb.NewResourceBuilder()
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
@@ -106,17 +106,14 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.module.status.conditions"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The module status conditions, including module, condition reason, status, and type.", ms.At(i).Description())
+					assert.Equal(t, "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("module")
-					assert.True(t, ok)
-					assert.EqualValues(t, "module-val", attrVal.Str())
-					attrVal, ok = dp.Attributes().Get("reason")
+					attrVal, ok := dp.Attributes().Get("reason")
 					assert.True(t, ok)
 					assert.EqualValues(t, "reason-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("status")
@@ -130,7 +127,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.module.status.state"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The module status state, including module and state.", ms.At(i).Description())
+					assert.Equal(t, "The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -140,9 +137,6 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("state")
 					assert.True(t, ok)
 					assert.EqualValues(t, "state-val", attrVal.Str())
-					attrVal, ok = dp.Attributes().Get("module")
-					assert.True(t, ok)
-					assert.EqualValues(t, "module-val", attrVal.Str())
 				}
 			}
 		})

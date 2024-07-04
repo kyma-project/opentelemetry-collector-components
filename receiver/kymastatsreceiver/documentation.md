@@ -14,7 +14,7 @@ metrics:
 
 ### kyma.module.status.conditions
 
-The module status conditions, including module, condition reason, status, and type.
+The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values. The metric including condition reason, status, and type as metric attribute.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -24,14 +24,13 @@ The module status conditions, including module, condition reason, status, and ty
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| module | The kind of the module. | Any Str |
 | reason | The reason of the module condition status. | Any Str |
 | status | The status of the module condition. | Any Str |
 | type | The type of the module condition. | Any Str |
 
 ### kyma.module.status.state
 
-The module status state, including module and state.
+The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -42,11 +41,10 @@ The module status state, including module and state.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | state | The state of the module status. | Any Str |
-| module | The kind of the module. | Any Str |
 
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
-| kyma.module.name | The name of the module instance | Any Str | true |
+| kyma.module.name | The module kind | Any Str | true |
