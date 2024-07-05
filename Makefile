@@ -119,7 +119,7 @@ generate: install-tools
 
 .PHONY: genotelkymacol
 genotelkymacol: $(BUILDER)
-	$(BUILDER) --skip-compilation --config cmd/otelkymacol/builder-config.yaml --output-path cmd/otelkymacol
+	$(BUILDER) --skip-compilation --config cmd/otelkymacol/builder-config.yaml
 	$(MAKE) --no-print-directory -C cmd/otelkymacol fmt
 
 # Build the Collector executable.

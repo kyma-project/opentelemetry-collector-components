@@ -2,15 +2,16 @@ package singletonreceivercreator
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
-	"go.opentelemetry.io/collector/consumer/consumertest"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/component/componenttest"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -18,6 +19,7 @@ import (
 	"k8s.io/utils/ptr"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
 func TestSingletonReceiverCreator(t *testing.T) {
@@ -38,18 +40,29 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		},
 	}
 	sink := new(consumertest.MetricsSink)
-	factory := NewFactory()
-	r, err := factory.CreateMetricsReceiver(context.Background(), receivertest.NewNopSettings(), config, sink)
+	// factory := NewFactory()
+	// r, err := factory.CreateMetricsReceiver(context.Background(), receivertest.NewNopSettings(), config, sink)
 	//r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, sink, "host1")
+
+	telemetryBuilder, err := metadata.NewTelemetryBuilder(componenttest.NewNopTelemetrySettings())
+	require.NoError(t, err)
+
+	r := newSingletonReceiverCreator(
+		receivertest.NewNopSettings(),
+		config,
+		&consumertest.MetricsSink{},
+		telemetryBuilder,
+		"host1",
+	)
+
 	fakeClient := fake.NewSimpleClientset()
 	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
 	mh, err := NewMockHost()
-	require.NoError(t, err)
-
 	ctx := context.TODO()
+
 	err = r.Start(ctx, mh)
 	require.NoError(t, err)
 
@@ -91,8 +104,19 @@ func TestUnsupportedAuthType(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, nil, "host1")
-	err := r.Start(context.TODO(), componenttest.NewNopHost())
+
+	telemetryBuilder, err := metadata.NewTelemetryBuilder(componenttest.NewNopTelemetrySettings())
+	require.NoError(t, err)
+
+	r := newSingletonReceiverCreator(
+		receivertest.NewNopSettings(),
+		config,
+		&consumertest.MetricsSink{},
+		telemetryBuilder,
+		"host1",
+	)
+
+	err = r.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
 
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")

@@ -2,7 +2,7 @@ package singletonreceivercreator
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"os"
 
 	"go.opentelemetry.io/collector/component"
@@ -37,12 +37,28 @@ func createDefaultConfig() component.Config {
 	}
 }
 
-func createMetricsReceiver(_ context.Context, params receiver.Settings, cfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
-	hostname, err := os.Hostname()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get hostname: %w", err)
+func createMetricsReceiver(
+	_ context.Context,
+	params receiver.Settings,
+	baseCfg component.Config,
+	consumer consumer.Metrics,
+) (receiver.Metrics, error) {
+	cfg, ok := baseCfg.(*Config)
+	if !ok {
+		return nil, errors.New("invalid configuration")
 	}
-	r := newSingletonReceiverCreator(params, cfg.(*Config), consumer, hostname)
-	r.nextMetricsConsumer = consumer
-	return r, nil
+	hostname, err := os.Hostname()
+
+	telemetryBuilder, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
+	if err != nil {
+		return nil, err
+	}
+
+	return newSingletonReceiverCreator(
+		params,
+		cfg,
+		consumer,
+		telemetryBuilder,
+		hostname,
+	), nil
 }
