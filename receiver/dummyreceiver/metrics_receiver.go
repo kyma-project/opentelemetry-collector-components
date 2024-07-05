@@ -35,7 +35,7 @@ func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nol
 	}
 
 	r.wg.Add(1)
-	go r.startGenerating(ctx, interval)
+	go r.startGenerating(ctx, interval) //nolint:contextcheck // Non-inherited new context
 
 	return nil
 }
