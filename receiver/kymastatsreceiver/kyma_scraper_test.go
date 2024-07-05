@@ -65,12 +65,6 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	// istio custom resource is broken since it has no conditions, thus it should be ignored
-	istioCustom := newUnstructuredObject("Istio", "custom")
-	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
-		"state": "Ready",
-	}, "status")
-
 	client := fake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
 			gvrs[0]: "TelemetryList",
@@ -79,8 +73,6 @@ func TestScrape(t *testing.T) {
 			Object: telemetry,
 		},
 		&unstructured.Unstructured{
-			Object: istioCustom,
-		}, &unstructured.Unstructured{
 			Object: istio,
 		},
 	)
@@ -148,15 +140,17 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name   string
-		status any
+		name               string
+		status             any
+		expectedDataPoints int
 	}{
 		{
 			name: "no status",
 		},
 		{
-			name:   "status not a map",
-			status: "not a map",
+			name:               "status not a map",
+			status:             "not a map",
+			expectedDataPoints: 0,
 		},
 		{
 			name: "no state",
@@ -169,18 +163,21 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 0,
 		},
 		{
 			name: "state not a string",
 			status: map[string]interface{}{
 				"state": map[string]interface{}{},
 			},
+			expectedDataPoints: 0,
 		},
 		{
 			name: "no conditions",
 			status: map[string]interface{}{
 				"state": "Ready",
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "conditions not a list",
@@ -188,6 +185,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				"state":      "Ready",
 				"conditions": "not a list",
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition not a map",
@@ -197,6 +195,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					"not a map",
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition type",
@@ -209,6 +208,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition type not a string",
@@ -222,6 +222,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition status",
@@ -234,6 +235,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition status not a string",
@@ -247,6 +249,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition reason",
@@ -259,6 +262,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition reason not a string",
@@ -272,6 +276,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 	}
 
@@ -304,7 +309,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			metrics, err := r.Scrape(context.Background())
 			require.NoError(t, err)
-			require.Zero(t, metrics.DataPointCount())
+			require.Equal(t, tt.expectedDataPoints, metrics.DataPointCount())
 		})
 	}
 }
