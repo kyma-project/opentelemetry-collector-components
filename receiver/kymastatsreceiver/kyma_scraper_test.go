@@ -41,7 +41,7 @@ func TestScrape(t *testing.T) {
 
 	scheme := runtime.NewScheme()
 
-	telemetry := newUnstructuredObject("Telemetry", "default")
+	telemetry := newUnstructuredObject("Telemetry")
 	unstructured.SetNestedMap(telemetry, map[string]interface{}{
 		"state": "Ready",
 		"conditions": []interface{}{
@@ -53,7 +53,7 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istio := newUnstructuredObject("Istio", "default")
+	istio := newUnstructuredObject("Istio")
 	unstructured.SetNestedMap(istio, map[string]interface{}{
 		"state": "Warning",
 		"conditions": []interface{}{
@@ -115,7 +115,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 	scheme := runtime.NewScheme()
 
 	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
-		Object: newUnstructuredObject("MyKymaModule", "default"),
+		Object: newUnstructuredObject("MyKymaModule"),
 	})
 
 	client.PrependReactor("list", "mykymamodules", func(action clienttesting.Action) (bool, runtime.Object, error) {
@@ -292,7 +292,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				},
 			}
 			scheme := runtime.NewScheme()
-			obj := newUnstructuredObject("MyKymaModule", "default")
+			obj := newUnstructuredObject("MyKymaModule")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
@@ -314,13 +314,13 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	}
 }
 
-func newUnstructuredObject(kind, name string) map[string]interface{} {
+func newUnstructuredObject(kind string) map[string]interface{} {
 	return map[string]interface{}{
 		"apiVersion": moduleGroup + "/" + moduleVersion,
 		"kind":       kind,
 		"metadata": map[string]interface{}{
 			"namespace": moduleNamespace,
-			"name":      name,
+			"name":      "default",
 		},
 	}
 }
