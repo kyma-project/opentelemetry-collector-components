@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
-
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 )
 
 // nopHost mocks a receiver.ReceiverHost for test purposes.
