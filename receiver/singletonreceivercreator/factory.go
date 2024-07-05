@@ -48,6 +48,9 @@ func createMetricsReceiver(
 		return nil, errors.New("invalid configuration")
 	}
 	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
 
 	telemetryBuilder, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
 	if err != nil {
