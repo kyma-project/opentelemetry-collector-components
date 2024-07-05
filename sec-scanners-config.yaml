@@ -5,3 +5,4 @@ whitesource:
   exclude:
     - "**/test/**"
     - "**/*_test.go"
+    - "**/generated_*.go"
