@@ -2,6 +2,7 @@ package dummyreceiver
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -28,6 +29,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 		config:       baseCfg.(*Config),
 		nextConsumer: consumer,
 		settings:     &params,
+		wg:           &sync.WaitGroup{},
 	}, nil
 }
 
