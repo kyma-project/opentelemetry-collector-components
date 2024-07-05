@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component/componenttest"
+	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -14,6 +15,7 @@ import (
 	"k8s.io/utils/ptr"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
 func TestSingletonReceiverCreator(t *testing.T) {
@@ -28,14 +30,24 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
+
+	telemetryBuilder, err := metadata.NewTelemetryBuilder(componenttest.NewNopTelemetrySettings())
+	require.NoError(t, err)
+
+	r := newSingletonReceiverCreator(
+		receivertest.NewNopSettings(),
+		config,
+		&consumertest.MetricsSink{},
+		telemetryBuilder,
+	)
+
 	fakeClient := fake.NewSimpleClientset()
 	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
 
 	ctx := context.TODO()
-	err := r.Start(ctx, componenttest.NewNopHost())
+	err = r.Start(ctx, componenttest.NewNopHost())
 	require.NoError(t, err)
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -61,8 +73,18 @@ func TestUnsupportedAuthType(t *testing.T) {
 		},
 		subreceiverConfig: receiverConfig{},
 	}
-	r := newSingletonReceiverCreator(receivertest.NewNopSettings(), config)
-	err := r.Start(context.TODO(), componenttest.NewNopHost())
+
+	telemetryBuilder, err := metadata.NewTelemetryBuilder(componenttest.NewNopTelemetrySettings())
+	require.NoError(t, err)
+
+	r := newSingletonReceiverCreator(
+		receivertest.NewNopSettings(),
+		config,
+		&consumertest.MetricsSink{},
+		telemetryBuilder,
+	)
+
+	err = r.Start(context.TODO(), componenttest.NewNopHost())
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")
 }

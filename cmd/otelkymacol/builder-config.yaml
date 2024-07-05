@@ -4,6 +4,7 @@ dist:
   description: Local OpenTelemetry Collector Contrib binary, testing only.
   version: 0.0.1-dev
   otelcol_version: 0.104.0
+  output_path: cmd/otelkymacol
 
 receivers:
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
