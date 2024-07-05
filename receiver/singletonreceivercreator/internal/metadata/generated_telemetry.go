@@ -57,25 +57,25 @@ func NewTelemetryBuilder(settings component.TelemetrySettings, options ...teleme
 	}
 	builder.ReceiverSingletonLeaderStatus, err = builder.meter.Int64Gauge(
 		"receiver_singleton_leader_status",
-		metric.WithDescription("Gauge of if the reporting system is leader of the relevant lease, 0 indicates backup, 1 indicates leader."),
+		metric.WithDescription("A gauge of if the reporting system is the leader of the relevant lease, 0 indicates backup, and 1 indicates leader."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
 	builder.ReceiverSingletonLeaseAcquiredTotal, err = builder.meter.Int64Counter(
 		"receiver_singleton_lease_acquired_total",
-		metric.WithDescription("Total number of successful lease acquisitions."),
+		metric.WithDescription("The total number of successful lease acquisitions."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
 	builder.ReceiverSingletonLeaseLostTotal, err = builder.meter.Int64Counter(
 		"receiver_singleton_lease_lost_total",
-		metric.WithDescription("Total number of lease losses."),
+		metric.WithDescription("The total number of lease losses."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
 	builder.ReceiverSingletonLeaseSlowpathTotal, err = builder.meter.Int64Counter(
 		"receiver_singleton_lease_slowpath_total",
-		metric.WithDescription("Total number of slow path exercised in renewing leader leases."),
+		metric.WithDescription("The total number of slow paths exercised in renewing leader leases."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)

@@ -8,7 +8,7 @@ The following telemetry is emitted by this component.
 
 ### receiver_singleton_leader_status
 
-Gauge of if the reporting system is leader of the relevant lease, 0 indicates backup, 1 indicates leader.
+A gauge of if the reporting system is the leader of the relevant lease, 0 indicates backup, and 1 indicates leader.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -16,7 +16,7 @@ Gauge of if the reporting system is leader of the relevant lease, 0 indicates ba
 
 ### receiver_singleton_lease_acquired_total
 
-Total number of successful lease acquisitions.
+The total number of successful lease acquisitions.
 
 | Unit | Metric Type | Value Type | Monotonic |
 | ---- | ----------- | ---------- | --------- |
@@ -24,7 +24,7 @@ Total number of successful lease acquisitions.
 
 ### receiver_singleton_lease_lost_total
 
-Total number of lease losses.
+The total number of lease losses.
 
 | Unit | Metric Type | Value Type | Monotonic |
 | ---- | ----------- | ---------- | --------- |
@@ -32,7 +32,7 @@ Total number of lease losses.
 
 ### receiver_singleton_lease_slowpath_total
 
-Total number of slow path exercised in renewing leader leases.
+The total number of slow paths exercised in renewing leader leases.
 
 | Unit | Metric Type | Value Type | Monotonic |
 | ---- | ----------- | ---------- | --------- |
