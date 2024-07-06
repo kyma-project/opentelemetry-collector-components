@@ -2,7 +2,6 @@ package singletonreceivercreator
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -21,25 +20,6 @@ const (
 	leaseAttrKey         = "lease"
 )
 
-// NewResourceLock creates a new leases resource lock for use in a leader election loop
-func newResourceLock(client kubernetes.Interface, leaderElectionNamespace, lockName string) (resourcelock.Interface, error) {
-	// Leader id, needs to be unique, use pod name in kubernetes case.
-	id, err := os.Hostname()
-	if err != nil {
-		return nil, err
-	}
-
-	return resourcelock.New(
-		resourcelock.LeasesResourceLock,
-		leaderElectionNamespace,
-		lockName,
-		client.CoreV1(),
-		client.CoordinationV1(),
-		resourcelock.ResourceLockConfig{
-			Identity: id,
-		})
-}
-
 // newLeaderElector return  a leader elector object using client-go
 func newLeaderElector(
 	cfg leaderElectionConfig,
@@ -47,11 +27,18 @@ func newLeaderElector(
 	telemetryBuilder *metadata.TelemetryBuilder,
 	onStartedLeading func(context.Context),
 	onStoppedLeading func(),
+	identity string,
 ) (*leaderelection.LeaderElector, error) {
-	namespace := cfg.leaseNamespace
-	lockName := cfg.leaseName
 
-	resourceLock, err := newResourceLock(client, namespace, lockName)
+	resourceLock, err := resourcelock.New(
+		resourcelock.LeasesResourceLock,
+		cfg.leaseNamespace,
+		cfg.leaseName,
+		client.CoreV1(),
+		client.CoordinationV1(),
+		resourcelock.ResourceLockConfig{
+			Identity: identity,
+		})
 	if err != nil {
 		return &leaderelection.LeaderElector{}, err
 	}

@@ -3,6 +3,7 @@ package singletonreceivercreator
 import (
 	"context"
 	"errors"
+	"os"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -46,6 +47,10 @@ func createMetricsReceiver(
 	if !ok {
 		return nil, errors.New("invalid configuration")
 	}
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
 
 	telemetryBuilder, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
 	if err != nil {
@@ -57,5 +62,6 @@ func createMetricsReceiver(
 		cfg,
 		consumer,
 		telemetryBuilder,
+		hostname,
 	), nil
 }

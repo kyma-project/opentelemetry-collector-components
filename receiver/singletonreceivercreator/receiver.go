@@ -20,6 +20,7 @@ type singletonReceiverCreator struct {
 	telemetryBuilder    *metadata.TelemetryBuilder
 
 	host              component.Host
+	identity          string
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
 }
@@ -29,12 +30,14 @@ func newSingletonReceiverCreator(
 	cfg *Config,
 	consumer consumer.Metrics,
 	telemetryBuilder *metadata.TelemetryBuilder,
+	identity string,
 ) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
 		params:              params,
 		cfg:                 cfg,
 		nextMetricsConsumer: consumer,
 		telemetryBuilder:    telemetryBuilder,
+		identity:            identity,
 	}
 }
 
@@ -73,6 +76,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
+		c.identity,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)

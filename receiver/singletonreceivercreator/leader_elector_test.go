@@ -26,7 +26,7 @@ func TestLeaderElector(t *testing.T) {
 	telemetryBuilder, err := metadata.NewTelemetryBuilder(componenttest.NewNopTelemetrySettings())
 	require.NoError(t, err)
 
-	leaderElector, err := newLeaderElector(leConfig, fakeClient, telemetryBuilder, onStartedLeading, onStoppedLeading)
+	leaderElector, err := newLeaderElector(leConfig, fakeClient, telemetryBuilder, onStartedLeading, onStoppedLeading, "host1")
 	require.NoError(t, err)
 	require.NotNil(t, leaderElector)
 }
