@@ -41,7 +41,7 @@ func TestScrape(t *testing.T) {
 
 	scheme := runtime.NewScheme()
 
-	telemetry := newUnstructuredObject("Telemetry", "default")
+	telemetry := newUnstructuredObject("Telemetry")
 	unstructured.SetNestedMap(telemetry, map[string]interface{}{
 		"state": "Ready",
 		"conditions": []interface{}{
@@ -53,7 +53,7 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istio := newUnstructuredObject("Istio", "default")
+	istio := newUnstructuredObject("Istio")
 	unstructured.SetNestedMap(istio, map[string]interface{}{
 		"state": "Warning",
 		"conditions": []interface{}{
@@ -65,12 +65,6 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	// istio custom resource is broken since it has no conditions, thus it should be ignored
-	istioCustom := newUnstructuredObject("Istio", "custom")
-	unstructured.SetNestedMap(istioCustom, map[string]interface{}{
-		"state": "Ready",
-	}, "status")
-
 	client := fake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
 			gvrs[0]: "TelemetryList",
@@ -79,8 +73,6 @@ func TestScrape(t *testing.T) {
 			Object: telemetry,
 		},
 		&unstructured.Unstructured{
-			Object: istioCustom,
-		}, &unstructured.Unstructured{
 			Object: istio,
 		},
 	)
@@ -123,7 +115,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 	scheme := runtime.NewScheme()
 
 	client := fake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
-		Object: newUnstructuredObject("MyKymaModule", "default"),
+		Object: newUnstructuredObject("MyKymaModule"),
 	})
 
 	client.PrependReactor("list", "mykymamodules", func(action clienttesting.Action) (bool, runtime.Object, error) {
@@ -148,8 +140,9 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name   string
-		status any
+		name               string
+		status             any
+		expectedDataPoints int
 	}{
 		{
 			name: "no status",
@@ -181,6 +174,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			status: map[string]interface{}{
 				"state": "Ready",
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "conditions not a list",
@@ -188,6 +182,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				"state":      "Ready",
 				"conditions": "not a list",
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition not a map",
@@ -197,6 +192,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					"not a map",
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition type",
@@ -209,6 +205,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition type not a string",
@@ -222,6 +219,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition status",
@@ -234,6 +232,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition status not a string",
@@ -247,6 +246,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "no condition reason",
@@ -259,6 +259,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "condition reason not a string",
@@ -272,6 +273,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 	}
 
@@ -287,7 +289,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				},
 			}
 			scheme := runtime.NewScheme()
-			obj := newUnstructuredObject("MyKymaModule", "default")
+			obj := newUnstructuredObject("MyKymaModule")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
@@ -304,18 +306,18 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			metrics, err := r.Scrape(context.Background())
 			require.NoError(t, err)
-			require.Zero(t, metrics.DataPointCount())
+			require.Equal(t, tt.expectedDataPoints, metrics.DataPointCount())
 		})
 	}
 }
 
-func newUnstructuredObject(kind, name string) map[string]interface{} {
+func newUnstructuredObject(kind string) map[string]interface{} {
 	return map[string]interface{}{
 		"apiVersion": moduleGroup + "/" + moduleVersion,
 		"kind":       kind,
 		"metadata": map[string]interface{}{
 			"namespace": moduleNamespace,
-			"name":      name,
+			"name":      "default",
 		},
 	}
 }

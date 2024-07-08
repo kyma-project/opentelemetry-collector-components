@@ -108,7 +108,6 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, e
 			}
 
 			res = append(res, *stats)
-
 			// Take only the first valid module custom resource
 			break
 		}
@@ -134,24 +133,42 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 		return nil, &fieldNotFoundError{"state"}
 	}
 
-	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
-	if err != nil {
-		return nil, err
-	}
-	if !found {
-		return nil, &fieldNotFoundError{"conditions"}
-	}
-
 	stats := &moduleStats{
 		state:     state,
 		namespace: module.GetNamespace(),
 		kind:      module.GetKind(),
 	}
 
+	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
+	if err != nil {
+		ks.logger.Warn("Failed to retrieve conditions: conditions are not a slice",
+			zap.Error(err),
+			zap.String("name", module.GetName()),
+			zap.String("namespace", module.GetNamespace()),
+			zap.String("kind", module.GetKind()),
+		)
+		return stats, nil
+	}
+	if !found {
+		ks.logger.Warn("Failed to retrieve conditions: conditions not found",
+			zap.Error(err),
+			zap.String("name", module.GetName()),
+			zap.String("namespace", module.GetNamespace()),
+			zap.String("kind", module.GetKind()),
+		)
+		return stats, nil
+	}
+
 	for _, unstructuredCond := range unstructuredConds {
 		cond, err := ks.unstructuredToCondition(unstructuredCond)
 		if err != nil {
-			return nil, err
+			ks.logger.Error("Error converting unstructured module to stats, condition not supported",
+				zap.Error(err),
+				zap.String("name", module.GetName()),
+				zap.String("namespace", module.GetNamespace()),
+				zap.String("kind", module.GetKind()),
+			)
+			continue
 		}
 		stats.conditions = append(stats.conditions, *cond)
 	}
