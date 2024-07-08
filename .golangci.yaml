@@ -39,10 +39,7 @@ linters:
     - prealloc
     - protogetter
     - tagliatelle
-    - testifylint
     - testpackage
-    - thelper
-    - tparallel
     - varnamelen
     - whitespace
     - wrapcheck
@@ -57,6 +54,8 @@ linters-settings:
     alias:
       - pkg: "k8s.io/apimachinery/pkg/apis/meta/v1"
         alias: metav1
+      - pkg: "k8s.io/client-go/testing"
+        alias: clienttesting
 
   errcheck:
     check-type-assertions: true # Reports type assertions: `a := b.(SomeStruct)`.

@@ -40,6 +40,8 @@ func newReceiverRunner(params receiver.Settings, host component.Host) *receiverR
 }
 
 func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.Metrics) error {
+	r.lock.Lock()
+	defer r.lock.Unlock()
 	factory := r.host.GetFactory(component.KindReceiver, config.id.Type())
 
 	if factory == nil {
@@ -89,6 +91,8 @@ func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.M
 
 // shutdown the given receiver.
 func (r *receiverRunner) shutdown(ctx context.Context) error {
+	r.lock.Lock()
+	defer r.lock.Unlock()
 	if r.receiver != nil {
 		return r.receiver.Shutdown(ctx)
 	}

@@ -1,0 +1,17 @@
+kymastats:
+kymastats/sa:
+  collection_interval: 10s
+  auth_type: "serviceAccount"
+kymastats/k8s:
+  collection_interval: 30s
+  auth_type: "kubeConfig"
+  context: "k8s-context"
+kymastats/invalidauth:
+  collection_interval: 30s
+  auth_type: "123"
+kymastats/invalidinterval:
+  collection_interval: 0s
+  auth_type: "kubeConfig"
+kymastats/none:
+  collection_interval: 60s
+  auth_type: "none"

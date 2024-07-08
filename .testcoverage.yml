@@ -10,20 +10,21 @@ local-prefix: "github.com/kyma-project/opentelemetry-collector-components"
 threshold:
   # (optional; default 0)
   # The minimum coverage that each package should have
-  package: 80
+  package: 90
 
 # Holds regexp rules which will override thresholds for matched files or packages using their paths.
 #
 # First rule from this list that matches file or package is going to apply new threshold to it.
 # If project has multiple rules that match same path, override rules should be listed in order from
 # specific to more general rules.
-override: []
+override:
+  - ^receiver/singletonreceivercreator: 79
+  - ^receiver/dummyreceiver: 89
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics
 exclude:
   # Exclude files or packages matching their paths
-  paths:
-    - ^receiver/singletonreceivercreator/internal/k8sconfig # its not possible to test all methods in the package
+  paths: []
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by

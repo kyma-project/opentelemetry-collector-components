@@ -117,6 +117,7 @@ func TestLoadConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.id.String(), func(t *testing.T) {
+			t.Parallel()
 			factory := NewFactory()
 			cfg := factory.CreateDefaultConfig()
 
