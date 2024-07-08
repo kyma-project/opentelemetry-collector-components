@@ -109,7 +109,6 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, e
 
 			res = append(res, *stats)
 			// Take only the first valid module custom resource
-
 			break
 		}
 	}
@@ -141,8 +140,17 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 	}
 
 	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
-	if err != nil || !found {
-		ks.logger.Error("Error converting unstructured module to stats, no module condition found",
+	if err != nil {
+		ks.logger.Warn("Failed to retrieve conditions: conditions are not a slice",
+			zap.Error(err),
+			zap.String("name", module.GetName()),
+			zap.String("namespace", module.GetNamespace()),
+			zap.String("kind", module.GetKind()),
+		)
+		return stats, nil
+	}
+	if !found {
+		ks.logger.Warn("Failed to retrieve conditions: conditions not found",
 			zap.Error(err),
 			zap.String("name", module.GetName()),
 			zap.String("namespace", module.GetNamespace()),

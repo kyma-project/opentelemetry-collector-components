@@ -148,9 +148,8 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			name: "no status",
 		},
 		{
-			name:               "status not a map",
-			status:             "not a map",
-			expectedDataPoints: 0,
+			name:   "status not a map",
+			status: "not a map",
 		},
 		{
 			name: "no state",
@@ -163,14 +162,12 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
-			expectedDataPoints: 0,
 		},
 		{
 			name: "state not a string",
 			status: map[string]interface{}{
 				"state": map[string]interface{}{},
 			},
-			expectedDataPoints: 0,
 		},
 		{
 			name: "no conditions",
