@@ -2,16 +2,12 @@
 
 ## Release Process
 
-This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with
-Kyma-specific customizations.
+This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with Kyma-specific customizations.
 
-1. Verify that all issues in
-   the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the
-   version are closed.
+1. Verify that all issues in the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the version are closed.
 2. Close the milestone.
 
-3. Create a new [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) for
-   the next version.
+3. Create a new [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) for the next version.
 
 4. In the `opentelemetry-collector-components` repository, create a release branch.
    The name of this branch must follow the `release-x.y` pattern, such as `release-1.0`.
@@ -24,9 +20,7 @@ Kyma-specific customizations.
 
 5. Update `otel-collector/builder-config.yaml` to include all components required in the release and commit the changes.
 
-6. To make sure that the release tags point to the HEAD commit of
-   the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch
-   after the merge was successful.
+6. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
    ```bash
    git rebase upstream/{RELEASE_BRANCH} {RELEASE_BRANCH}
@@ -46,32 +40,24 @@ Kyma-specific customizations.
 
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`).
 
-9. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub
-   action (`GitHub Release`).
-   - After the GitHub action succeeded, the new GitHub release is available
-     under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
-   - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it
-     again:
+9. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
+   - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
+   - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
      ```bash
      git push --delete upstream v{RELEASE_VERSION}
      git push upstream v{RELEASE_VERSION}
      ```
 
-10. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes
-    might appear again in the generated change log. If there are redundant entries, edit the release description and
-    remove them.
+10. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
-Every PR's title must adhere to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification
-for an automatic changelog generation. It is enforced by
-a [semantic-pull-request](https://github.com/marketplace/actions/semantic-pull-request) GitHub Action.
+Every PR's title must adhere to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for an automatic changelog generation. It is enforced by a [semantic-pull-request](https://github.com/marketplace/actions/semantic-pull-request) GitHub Action.
 
 ### Pull Request Title
 
-Because of the squash-and-merge GitHub workflow, each PR results in a single commit after merging into the main
-development branch. The PR's title becomes the commit message and must adhere to the template:
+Because of the squash-and-merge GitHub workflow, each PR results in a single commit after merging into the main development branch. The PR's title becomes the commit message and must adhere to the template:
 
 `type(scope?): subject`
 
@@ -84,8 +70,7 @@ development branch. The PR's title becomes the commit message and must adhere to
 - **deps**: The changes in the external dependencies.
 - **chore**: Anything not covered by the above categories (such as refactoring or artefacts building alternations).
 
-Note that PRs of type `chore` do not appear in the change log for the release. Therefore, exclude maintenance changes
-that are not interesting to consumers of the project by marking them as "chore", for example:
+Note that PRs of type `chore` do not appear in the change log for the release. Therefore, exclude maintenance changes that are not interesting to consumers of the project by marking them as "chore", for example:
 
 - Dotfile changes (.gitignore, .github, and so forth).
 - Changes to development-only dependencies.
@@ -96,11 +81,9 @@ that are not interesting to consumers of the project by marking them as "chore",
 
 The subject must describe the change and follow the recommendations:
 
-- Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood). It must start with a
-  present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
+- Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).
+ It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
 - Start with an uppercase, and not finish with a full stop.
 -
 
-Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization)
-and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology)
-guides.
+Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides. 
