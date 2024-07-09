@@ -34,13 +34,12 @@ func TestCreateMetricsReceiver(t *testing.T) {
 		{
 			name: "valid",
 			cfg: &Config{
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "kubeConfig",
+				},
 				ControllerConfig: scraperhelper.ControllerConfig{
 					CollectionInterval: 10 * time.Second,
 					InitialDelay:       time.Second,
-				},
-
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "kubeConfig",
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 				makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(runtime.NewScheme()), nil },
@@ -80,7 +79,6 @@ func TestCreateTraceReceiver(t *testing.T) {
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
-
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
 			},
@@ -97,7 +95,6 @@ func TestCreateLogsReceiver(t *testing.T) {
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
-
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
 			},
@@ -111,7 +108,6 @@ func TestCreateLogsReceiver(t *testing.T) {
 func TestFactoryBadAuthType(t *testing.T) {
 	factory := NewFactory()
 	cfg := &Config{
-
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: "none",
 		},
@@ -130,7 +126,6 @@ func TestFactoryNoneAuthType(t *testing.T) {
 	t.Setenv("KUBERNETES_SERVICE_PORT", "443")
 	factory := NewFactory()
 	cfg := &Config{
-
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: "none",
 		},
