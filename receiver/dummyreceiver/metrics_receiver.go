@@ -44,6 +44,8 @@ func (r *dummyReceiver) startGenerating(ctx context.Context, interval time.Durat
 	defer r.wg.Done()
 
 	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	
 	for {
 		select {
 		case <-ctx.Done():
