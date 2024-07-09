@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
 env:
 
 jobs:
@@ -28,8 +29,6 @@ jobs:
       - name: prepare envs
         id: prepare-envs
         run: |
-          # just stripping the leading `v` from the tag
-          SEMVER=$( echo ${{ github.ref_name }} | sed 's/^v//' )
           {
           # this creates a multiline string with the envs. 
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
@@ -51,14 +50,13 @@ jobs:
           echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
-          PREFIX=
           previous_version=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags \
-          | grep -E "^refs/tags/${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" \
+          | grep -E "^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$" \
           | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
           | sort -t "." -k1,1n -k2,2n -k3,3n \
           | grep -B 1 ${{ github.ref_name }} | head -1)
           
-          echo "PREVIOUS_TAG=v${previous_version}" >> "$GITHUB_OUTPUT"
+          echo "PREVIOUS_TAG=${previous_version}" >> "$GITHUB_OUTPUT"
 
   build-image:
     needs: envs
