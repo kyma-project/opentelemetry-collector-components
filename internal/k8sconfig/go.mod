@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig
 
-go 1.22
+go 1.22.5
 
 require k8s.io/client-go v0.30.2
 
