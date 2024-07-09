@@ -3,14 +3,8 @@ name: Tag Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 env:
-
-  # BUILD_MODE can be either `PR` or `release`. `PR` uses the code from the current branch using `replace` directive in the builder-config.yaml
-  # `release` uses the code from the specified tag
-  # BUILD_MODE is used to select the correct builder-config-{BUILD_MODE}.yaml in the dockerfile
-
-  BUILD_MODE: release
 
 jobs:
 
@@ -23,7 +17,6 @@ jobs:
       otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
       current-tag: ${{ steps.create-tags.outputs.CURRENT_TAG }}
       previous-tag: ${{ steps.create-tags.outputs.PREVIOUS_TAG }}
-      semver: ${{ steps.prepare-envs.outputs.SEMVER }}
 
     steps:
       - name: Checkout code
@@ -41,12 +34,8 @@ jobs:
           # this creates a multiline string with the envs. 
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
           echo 'build-args<<BUILD_ARGS'
-          echo "BUILD_MODE=${{ env.BUILD_MODE }}"
-          echo "KYMA_OCC_VERSION=$SEMVER"
           cat otel-collector/envs
           echo BUILD_ARGS 
-          
-          echo "SEMVER=$SEMVER"
           } >> "$GITHUB_OUTPUT"
 
       - name: load envs into output
@@ -58,16 +47,16 @@ jobs:
         id: create-tags
         run: |
           # the tag will look similar to: 0.102.1-0.1.0
-          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ steps.prepare-envs.outputs.SEMVER }}' >> "$GITHUB_OUTPUT"
+          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
           
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
-          PREFIX=v
-          previous_version=$((git for-each-ref --sort=creatordate --format '%(refname)' refs/tags && echo refs/tags/v${{ steps.prepare-envs.outputs.SEMVER }}) \
+          PREFIX=
+          previous_version=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags \
           | grep -E "^refs/tags/${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" \
           | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
           | sort -t "." -k1,1n -k2,2n -k3,3n \
-          | grep -B 1 ${{ steps.prepare-envs.outputs.SEMVER }} | head -1)
+          | grep -B 1 ${{ github.ref_name }} | head -1)
           
           echo "PREVIOUS_TAG=v${previous_version}" >> "$GITHUB_OUTPUT"
 

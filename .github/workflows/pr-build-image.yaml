@@ -11,14 +11,6 @@ on:
       - "main"
       - "release-*"
 
-env:
-  # Build mode can be either PR or release. PR uses the code from the current branch using `replace` directive in the builder-config.yaml
-  # Release uses the code from the specified tag
-
-  # BUILD_MODE is used to select the correct builder-config-{BUILD_MODE}.yaml in the dockerfile
-
-  BUILD_MODE: PR
-
 jobs:
 
   envs:
@@ -47,7 +39,6 @@ jobs:
         run: |
           {
           echo 'build-args<<BUILD_ARGS'
-          echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat otel-collector/envs
           echo BUILD_ARGS 
           } >> "$GITHUB_OUTPUT"

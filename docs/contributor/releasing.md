@@ -5,13 +5,12 @@
 This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with Kyma-specific customizations.
 
 1. Verify that all issues in the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the version are closed.
-
 2. Close the milestone.
 
 3. Create a new [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) for the next version.
 
 4. In the `opentelemetry-collector-components` repository, create a release branch.
-   The name of this branch must follow the `release-x.y` pattern, such as `release-1.0`.
+   The name of this branch must follow the `release-x.y` pattern, such as `release-1.0`. As opentelemetry-collector follows the release schedule of the `telemetry-manager` component, the release branch should also have the same name as the `telemetry-manager` release branch.
 
    ```bash
    git fetch upstream
@@ -19,58 +18,38 @@ This release process covers the steps to release new major and minor versions fo
    git push upstream {RELEASE_BRANCH}
    ```
 
-5. Bump the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch with the new versions for the dependent images.
-   Create a PR to `opentelemetry-collector-components/{RELEASE_BRANCH}` with the following changes:
-   - `sec-scanners-config.yaml`:  
-     Update the tag of the `kyma-otel-collector` image with the new module version following the `OTEL_VERSION-OCC_VERSION` pattern. For example, `europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.102.1-0.0.1`.
+5. Update `otel-collector/builder-config.yaml` to include all components required in the release and commit the changes.
 
-6. Merge the PR.
-
-
-7. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
+6. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
    ```bash
    git rebase upstream/{RELEASE_BRANCH} {RELEASE_BRANCH}
    ```
-   
-7. Create tags for every Go module in this repository.
-   For every module in receiver, processor, exporter, and extension directories, create a tag with the new version.
+
+7. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
 
    ```bash
-   git tag {RELATIVE_MODULE_PATH}/v{RELEASE_VERSION}
-   # eg. git tag receiver/dummyreceiver/v1.0.0
+   git tag {RELEASE_VERSION}
    ```
 
-   The create-and-push-tags target in the Makefile helps to create and push tags for all modules.
-   ```bash
-   OCC_VERSION={RELEASE_VERSION} REMOTE={REPOSITORY_REMOTE} make create-and-push-tags
-   # eg. OCC_VERSION=1.0.0 REMOTE=upstream make create-and-push-tags
-   ```
-
-8. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
+8. Push the tag to the upstream repository.
 
    ```bash
-   git tag v{RELEASE_VERSION}
+   git push {REPOSITORY_REMOTE} {RELEASE_VERSION}
    ```
 
-9. Push the tag to the upstream repository.
+   The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`).
 
-   ```bash
-   git push {REPOSITORY_REMOTE} v{RELEASE_VERSION}
-   ```
+9. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
+   - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
+   - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
-   The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`). 
+     ```bash
+     git push --delete upstream v{RELEASE_VERSION}
+     git push upstream v{RELEASE_VERSION}
+     ```
 
-10. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
-    - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
-    - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
-
-      ```bash
-      git push --delete upstream v{RELEASE_VERSION}
-      git push upstream v{RELEASE_VERSION}
-      ```
-
-11. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
+10. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
@@ -102,6 +81,7 @@ Note that PRs of type `chore` do not appear in the change log for the release. T
 
 The subject must describe the change and follow the recommendations:
 
-- Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).  It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
+- Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).
+ It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
 - Start with an uppercase, and not finish with a full stop.
-- Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides.
+- Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides. 
