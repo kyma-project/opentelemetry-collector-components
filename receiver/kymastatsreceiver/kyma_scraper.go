@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -103,28 +104,46 @@ func (ks *kymaScraper) discoverModules() ([]schema.GroupVersionResource, error) 
 		return nil, err
 	}
 
-	for _, group := range groupsList.Groups {
-		if !slices.Contains(ks.moduleGroups, group.Name) {
+	for _, apiGroup := range groupsList.Groups {
+		if !slices.Contains(ks.moduleGroups, apiGroup.Name) {
 			continue
 		}
 
-		ks.logger.Debug("Discovered module group", zap.String("groupVersion", group.PreferredVersion.GroupVersion))
+		groupVersion := apiGroup.PreferredVersion.GroupVersion
 
-		resources, err := ks.discovery.ServerResourcesForGroupVersion(group.PreferredVersion.GroupVersion)
+		ks.logger.Debug("Discovered module group", zap.String("groupVersion", groupVersion))
+
+		resources, err := ks.discovery.ServerResourcesForGroupVersion(groupVersion)
 		if err != nil {
 			return nil, err
 		}
 
+		split := strings.Split(groupVersion, "/")
+		if len(split) != 2 {
+			ks.logger.Error("Error splitting groupVersion",
+				zap.String("groupVersion", groupVersion))
+			continue
+		}
+		group, version := split[0], split[1]
+
 		for _, resource := range resources.APIResources {
+			if strings.Contains(resource.Name, "/") {
+				ks.logger.Debug("Skipping subresource",
+					zap.String("group", group),
+					zap.String("version", version),
+					zap.String("resource", resource.Name))
+				continue
+			}
+
 			moduleGVRs = append(moduleGVRs, schema.GroupVersionResource{
-				Group:    resource.Group,
-				Version:  resource.Version,
+				Group:    split[0],
+				Version:  split[1],
 				Resource: resource.Name,
 			})
 
 			ks.logger.Debug("Discovered module resource",
-				zap.String("group", resource.Group),
-				zap.String("version", resource.Version),
+				zap.String("group", group),
+				zap.String("version", version),
 				zap.String("resource", resource.Name))
 		}
 	}
