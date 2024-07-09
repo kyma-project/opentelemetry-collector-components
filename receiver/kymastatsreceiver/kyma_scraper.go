@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -14,16 +15,18 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
 type kymaScraper struct {
-	client     dynamic.Interface
-	logger     *zap.Logger
-	moduleGVRs []schema.GroupVersionResource
-	mb         *metadata.MetricsBuilder
+	discovery    discovery.DiscoveryInterface
+	dynamic      dynamic.Interface
+	logger       *zap.Logger
+	mb           *metadata.MetricsBuilder
+	moduleGroups []string
 }
 
 type moduleStats struct {
@@ -48,19 +51,30 @@ func (e *fieldNotFoundError) Error() string {
 	return fmt.Sprintf("field not found: %s", e.field)
 }
 
-func newKymaScraper(client dynamic.Interface, settings receiver.Settings, moduleGVRs []schema.GroupVersionResource, mbc metadata.MetricsBuilderConfig) (scraperhelper.Scraper, error) {
+func newKymaScraper(
+	discovery discovery.DiscoveryInterface,
+	dynamic dynamic.Interface,
+	settings receiver.Settings,
+	config *Config,
+) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
-		client:     client,
-		logger:     settings.Logger,
-		moduleGVRs: moduleGVRs,
-		mb:         metadata.NewMetricsBuilder(mbc, settings),
+		discovery:    discovery,
+		dynamic:      dynamic,
+		logger:       settings.Logger,
+		mb:           metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
+		moduleGroups: config.ModuleGroups,
 	}
 
 	return scraperhelper.NewScraper(metadata.Type.String(), ks.scrape)
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	stats, err := ks.collectModuleStats(ctx)
+	moduleGVRs, err := ks.discoverModules()
+	if err != nil {
+		return pmetric.Metrics{}, err
+	}
+
+	stats, err := ks.collectModuleStats(ctx, moduleGVRs)
 	if err != nil {
 		return pmetric.Metrics{}, err
 	}
@@ -82,10 +96,46 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	return ks.mb.Emit(), nil
 }
 
-func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
+func (ks *kymaScraper) discoverModules() ([]schema.GroupVersionResource, error) {
+	var moduleGVRs []schema.GroupVersionResource
+	groupsList, err := ks.discovery.ServerGroups()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, group := range groupsList.Groups {
+		if !slices.Contains(ks.moduleGroups, group.Name) {
+			continue
+		}
+
+		ks.logger.Debug("Discovered module group", zap.String("groupVersion", group.PreferredVersion.GroupVersion))
+
+		resources, err := ks.discovery.ServerResourcesForGroupVersion(group.PreferredVersion.GroupVersion)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, resource := range resources.APIResources {
+			moduleGVRs = append(moduleGVRs, schema.GroupVersionResource{
+				Group:    resource.Group,
+				Version:  resource.Version,
+				Resource: resource.Name,
+			})
+
+			ks.logger.Debug("Discovered module resource",
+				zap.String("group", resource.Group),
+				zap.String("version", resource.Version),
+				zap.String("resource", resource.Name))
+		}
+	}
+
+	return moduleGVRs, nil
+}
+
+func (ks *kymaScraper) collectModuleStats(ctx context.Context, moduleGVRs []schema.GroupVersionResource) ([]moduleStats, error) {
 	var res []moduleStats
-	for _, gvr := range ks.moduleGVRs {
-		moduleList, err := ks.client.Resource(gvr).List(ctx, metav1.ListOptions{})
+	for _, gvr := range moduleGVRs {
+		moduleList, err := ks.dynamic.Resource(gvr).List(ctx, metav1.ListOptions{})
 		if err != nil {
 			ks.logger.Error("Error fetching module list",
 				zap.Error(err),
@@ -141,7 +191,7 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 
 	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
 	if err != nil {
-		ks.logger.Warn("Failed to retrieve conditions: conditions are not a slice",
+		ks.logger.Warn("Error retrieving conditions: conditions are not a slice",
 			zap.Error(err),
 			zap.String("name", module.GetName()),
 			zap.String("namespace", module.GetNamespace()),
@@ -150,7 +200,7 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 		return stats, nil
 	}
 	if !found {
-		ks.logger.Warn("Failed to retrieve conditions: conditions not found",
+		ks.logger.Warn("Error retrieving conditions: conditions not found",
 			zap.Error(err),
 			zap.String("name", module.GetName()),
 			zap.String("namespace", module.GetNamespace()),
