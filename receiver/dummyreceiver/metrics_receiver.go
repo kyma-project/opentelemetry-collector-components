@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -19,6 +20,7 @@ type dummyReceiver struct {
 	settings     *receiver.Settings
 
 	cancel context.CancelFunc
+	wg     *sync.WaitGroup
 }
 
 func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
@@ -32,29 +34,34 @@ func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nol
 
 	}
 
-	ticker := time.NewTicker(interval)
-
-	go func() {
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				md, err := r.generateMetric()
-				if err != nil {
-					r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
-					continue
-				}
-				err = r.nextConsumer.ConsumeMetrics(ctx, md)
-				if err != nil {
-					r.settings.Logger.Error("next consumer failed", zap.Error(err))
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
+	r.wg.Add(1)
+	go r.startGenerating(ctx, interval) //nolint:contextcheck // Non-inherited new context
 
 	return nil
+}
+
+func (r *dummyReceiver) startGenerating(ctx context.Context, interval time.Duration) {
+	defer r.wg.Done()
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			md, err := r.generateMetric()
+			if err != nil {
+				r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
+				continue
+			}
+			err = r.nextConsumer.ConsumeMetrics(ctx, md)
+			if err != nil {
+				r.settings.Logger.Error("next consumer failed", zap.Error(err))
+			}
+		}
+	}
 }
 
 func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
@@ -90,5 +97,6 @@ func (r *dummyReceiver) Shutdown(_ context.Context) error {
 	if r.cancel != nil {
 		r.cancel()
 	}
+	r.wg.Wait()
 	return nil
 }
