@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
-	"strings"
 	"time"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -16,18 +14,20 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
+type moduleDiscoveryClient interface {
+	Discover() ([]schema.GroupVersionResource, error)
+}
+
 type kymaScraper struct {
-	discovery    discovery.DiscoveryInterface
-	dynamic      dynamic.Interface
-	logger       *zap.Logger
-	mb           *metadata.MetricsBuilder
-	moduleGroups []string
+	discovery moduleDiscoveryClient
+	dynamic   dynamic.Interface
+	logger    *zap.Logger
+	mb        *metadata.MetricsBuilder
 }
 
 type moduleStats struct {
@@ -53,24 +53,23 @@ func (e *fieldNotFoundError) Error() string {
 }
 
 func newKymaScraper(
-	discovery discovery.DiscoveryInterface,
+	discovery moduleDiscoveryClient,
 	dynamic dynamic.Interface,
 	settings receiver.Settings,
-	config *Config,
+	mbConfig metadata.MetricsBuilderConfig,
 ) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
-		discovery:    discovery,
-		dynamic:      dynamic,
-		logger:       settings.Logger,
-		mb:           metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
-		moduleGroups: config.ModuleGroups,
+		discovery: discovery,
+		dynamic:   dynamic,
+		logger:    settings.Logger,
+		mb:        metadata.NewMetricsBuilder(mbConfig, settings),
 	}
 
 	return scraperhelper.NewScraper(metadata.Type.String(), ks.scrape)
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	moduleGVRs, err := ks.discoverModules()
+	moduleGVRs, err := ks.discovery.Discover()
 	if err != nil {
 		return pmetric.Metrics{}, err
 	}
@@ -95,60 +94,6 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	}
 
 	return ks.mb.Emit(), nil
-}
-
-func (ks *kymaScraper) discoverModules() ([]schema.GroupVersionResource, error) {
-	var moduleGVRs []schema.GroupVersionResource
-	groupsList, err := ks.discovery.ServerGroups()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, apiGroup := range groupsList.Groups {
-		if !slices.Contains(ks.moduleGroups, apiGroup.Name) {
-			continue
-		}
-
-		groupVersion := apiGroup.PreferredVersion.GroupVersion
-
-		ks.logger.Debug("Discovered module group", zap.String("groupVersion", groupVersion))
-
-		resources, err := ks.discovery.ServerResourcesForGroupVersion(groupVersion)
-		if err != nil {
-			return nil, err
-		}
-
-		split := strings.Split(groupVersion, "/")
-		if len(split) != 2 {
-			ks.logger.Error("Error splitting groupVersion",
-				zap.String("groupVersion", groupVersion))
-			continue
-		}
-		group, version := split[0], split[1]
-
-		for _, resource := range resources.APIResources {
-			if strings.Contains(resource.Name, "/") {
-				ks.logger.Debug("Skipping subresource",
-					zap.String("group", group),
-					zap.String("version", version),
-					zap.String("resource", resource.Name))
-				continue
-			}
-
-			moduleGVRs = append(moduleGVRs, schema.GroupVersionResource{
-				Group:    split[0],
-				Version:  split[1],
-				Resource: resource.Name,
-			})
-
-			ks.logger.Debug("Discovered module resource",
-				zap.String("group", group),
-				zap.String("version", version),
-				zap.String("resource", resource.Name))
-		}
-	}
-
-	return moduleGVRs, nil
 }
 
 func (ks *kymaScraper) collectModuleStats(ctx context.Context, moduleGVRs []schema.GroupVersionResource) ([]moduleStats, error) {

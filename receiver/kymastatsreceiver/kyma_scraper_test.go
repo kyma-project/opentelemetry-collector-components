@@ -13,7 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	discoveryfake "k8s.io/client-go/discovery/fake"
 	dynamicfake "k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 
@@ -25,6 +24,17 @@ const (
 	moduleVersion   = "v1"
 	moduleNamespace = "kyma-system"
 )
+
+type moduleDiscoveryClientStub struct {
+	gvrs []schema.GroupVersionResource
+	err  error
+}
+
+var _ moduleDiscoveryClient = (*moduleDiscoveryClientStub)(nil)
+
+func (s *moduleDiscoveryClientStub) Discover() ([]schema.GroupVersionResource, error) {
+	return s.gvrs, s.err
+}
 
 func TestScrape(t *testing.T) {
 	gvrs := []schema.GroupVersionResource{
@@ -66,7 +76,6 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	discovery := &discoveryfake.FakeDiscovery{}
 	dynamic := dynamicfake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
 			gvrs[0]: "TelemetryList",
@@ -80,13 +89,12 @@ func TestScrape(t *testing.T) {
 	)
 
 	r, err := newKymaScraper(
-		discovery,
+		&moduleDiscoveryClientStub{
+			gvrs: gvrs,
+		},
 		dynamic,
 		receivertest.NewNopSettings(),
-		&Config{
-			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-			ModuleGroups:         []string{moduleGroup},
-		},
+		metadata.DefaultMetricsBuilderConfig(),
 	)
 
 	require.NoError(t, err)
@@ -119,8 +127,6 @@ func TestScrape_CantPullResource(t *testing.T) {
 
 	scheme := runtime.NewScheme()
 
-	discovery := &discoveryfake.FakeDiscovery{}
-
 	dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
 		Object: newUnstructuredObject("MyKymaModule"),
 	})
@@ -130,13 +136,12 @@ func TestScrape_CantPullResource(t *testing.T) {
 	})
 
 	r, err := newKymaScraper(
-		discovery,
+		&moduleDiscoveryClientStub{
+			gvrs: gvrs,
+		},
 		dynamic,
 		receivertest.NewNopSettings(),
-		&Config{
-			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-			ModuleGroups:         []string{moduleGroup},
-		},
+		metadata.DefaultMetricsBuilderConfig(),
 	)
 
 	require.NoError(t, err)
@@ -304,18 +309,15 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
 
-			discovery := &discoveryfake.FakeDiscovery{}
-
 			dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
 			r, err := newKymaScraper(
-				discovery,
+				&moduleDiscoveryClientStub{
+					gvrs: gvrs,
+				},
 				dynamic,
 				receivertest.NewNopSettings(),
-				&Config{
-					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-					ModuleGroups:         []string{moduleGroup},
-				},
+				metadata.DefaultMetricsBuilderConfig(),
 			)
 			require.NoError(t, err)
 

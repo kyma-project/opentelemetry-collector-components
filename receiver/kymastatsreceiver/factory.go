@@ -11,6 +11,7 @@ import (
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/modulediscovery"
 )
 
 var (
@@ -52,10 +53,10 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	}
 
 	scrp, err := newKymaScraper(
-		discovery,
+		modulediscovery.New(discovery, params.Logger, config.ModuleGroups),
 		dynamic,
 		params,
-		config,
+		config.MetricsBuilderConfig,
 	)
 	if err != nil {
 		return nil, err
