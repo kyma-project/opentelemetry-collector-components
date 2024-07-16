@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"go.uber.org/zap"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 )
@@ -26,54 +25,35 @@ func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, moduleGroup
 }
 
 func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
-	groupsList, err := c.discovery.ServerGroups()
+	resourceLists, err := c.discovery.ServerPreferredResources()
 	if err != nil {
-		return nil, fmt.Errorf("failed to discover API groups")
-	}
-
-	var moduleGVRs []schema.GroupVersionResource
-	for _, apiGroup := range groupsList.Groups {
-		if !slices.Contains(c.moduleGroups, apiGroup.Name) {
-			continue
-		}
-
-		c.logger.Debug("Discovered module group", zap.String("groupVersion", apiGroup.PreferredVersion.GroupVersion))
-
-		gvrs, err := c.discoverGroupResources(apiGroup)
-		if err != nil {
-			return nil, err
-		}
-
-		moduleGVRs = append(moduleGVRs, gvrs...)
-	}
-
-	return moduleGVRs, nil
-}
-
-func (c *Client) discoverGroupResources(apiGroup metav1.APIGroup) ([]schema.GroupVersionResource, error) {
-	rawGroupVersion := apiGroup.PreferredVersion.GroupVersion
-
-	resources, err := c.discovery.ServerResourcesForGroupVersion(rawGroupVersion)
-	if err != nil {
-		return nil, fmt.Errorf("failed to discover resources for groupVersion %s: %w", rawGroupVersion, err)
-	}
-
-	groupVersion, err := schema.ParseGroupVersion(rawGroupVersion)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse groupVersion %s: %w", rawGroupVersion, err)
+		return nil, fmt.Errorf("failed to discover preferred resources: %w", err)
 	}
 
 	var gvrs []schema.GroupVersionResource
-	for _, resource := range resources.APIResources {
-		gvr := groupVersion.WithResource(resource.Name)
-		if isSubresource(resource.Name) {
-			c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+	for _, resourceList := range resourceLists {
+		groupVersion, err := schema.ParseGroupVersion(resourceList.GroupVersion)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse groupVersion %s: %w", resourceList.GroupVersion, err)
+		}
+
+		if !slices.Contains(c.moduleGroups, groupVersion.Group) {
 			continue
 		}
 
-		gvrs = append(gvrs, gvr)
+		c.logger.Debug("Discovered module group", zap.Any("groupVersion", groupVersion))
 
-		c.logger.Debug("Discovered module resource", zap.Any("groupVersionResource", gvr))
+		for _, resource := range resourceList.APIResources {
+			gvr := groupVersion.WithResource(resource.Name)
+			if isSubresource(resource.Name) {
+				c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+				continue
+			}
+
+			gvrs = append(gvrs, gvr)
+
+			c.logger.Debug("Discovered module resource", zap.Any("groupVersionResource", gvr))
+		}
 	}
 
 	return gvrs, nil
