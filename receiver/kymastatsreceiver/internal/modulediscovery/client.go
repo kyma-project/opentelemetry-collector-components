@@ -25,6 +25,8 @@ func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, moduleGroup
 }
 
 func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
+	// ServerPreferredResources returns API resources/groups of the preferred (usually, stored) API version.
+	// It guarantees that only version per resource/group is returned.
 	resourceLists, err := c.discovery.ServerPreferredResources()
 	if err != nil {
 		return nil, fmt.Errorf("failed to discover preferred resources: %w", err)

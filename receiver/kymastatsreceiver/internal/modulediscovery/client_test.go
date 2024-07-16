@@ -11,6 +11,15 @@ import (
 	clienttesting "k8s.io/client-go/testing"
 )
 
+type fakeDiscovery struct {
+	discoveryfake.FakeDiscovery
+}
+
+// ServerPreferredResources returns predefined resources (FakeDiscovery returns hard-coded nil,nil for some reason)
+func (fd *fakeDiscovery) ServerPreferredResources() ([]*metav1.APIResourceList, error) {
+	return fd.Resources, nil
+}
+
 func TestDiscover(t *testing.T) {
 	t.Parallel()
 
@@ -20,7 +29,7 @@ func TestDiscover(t *testing.T) {
 		expected  []schema.GroupVersionResource
 	}{
 		{
-			name: "preffered version without subresource",
+			name: "without subresource",
 			resources: []*metav1.APIResourceList{
 				{
 					GroupVersion: "operator.kyma-project.io/v1beta1",
@@ -31,13 +40,6 @@ func TestDiscover(t *testing.T) {
 						{Name: "telemetries/scale"},
 					},
 				},
-				{
-					GroupVersion: "operator.kyma-project.io/v1alpha1",
-					APIResources: []metav1.APIResource{
-						{Name: "telemetries"},
-						{Name: "telemetries/scale"},
-					},
-				},
 			},
 			expected: []schema.GroupVersionResource{
 				{
@@ -52,7 +54,7 @@ func TestDiscover(t *testing.T) {
 				}},
 		},
 		{
-			name: "resource only available in old group version",
+			name: "multiple group versions",
 			resources: []*metav1.APIResourceList{
 				{
 					GroupVersion: "operator.kyma-project.io/v1beta1",
@@ -75,9 +77,34 @@ func TestDiscover(t *testing.T) {
 				},
 				{
 					Group:    "operator.kyma-project.io",
-					Version:  "v1apha1",
+					Version:  "v1alpha1",
 					Resource: "telemetries",
 				}},
+		},
+
+		{
+			name: "unknown group versions",
+			resources: []*metav1.APIResourceList{
+				{
+					GroupVersion: "operator.kyma-project.io/v1beta1",
+					APIResources: []metav1.APIResource{
+						{Name: "istios"},
+					},
+				},
+				{
+					GroupVersion: "telemetry.istio.io/v1alpha1",
+					APIResources: []metav1.APIResource{
+						{Name: "telemetries"},
+					},
+				},
+			},
+			expected: []schema.GroupVersionResource{
+				{
+					Group:    "operator.kyma-project.io",
+					Version:  "v1beta1",
+					Resource: "istios",
+				},
+			},
 		},
 	}
 
@@ -85,9 +112,11 @@ func TestDiscover(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			discovery := discoveryfake.FakeDiscovery{
-				Fake: &clienttesting.Fake{
-					Resources: test.resources,
+			discovery := fakeDiscovery{
+				FakeDiscovery: discoveryfake.FakeDiscovery{
+					Fake: &clienttesting.Fake{
+						Resources: test.resources,
+					},
 				},
 			}
 			sut := New(&discovery, zap.NewNop(), []string{"operator.kyma-project.io"})
