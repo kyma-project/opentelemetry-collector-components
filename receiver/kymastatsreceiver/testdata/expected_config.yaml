@@ -1,17 +1,25 @@
 kymastats:
+  module_groups: ["operator.kyma-project.io"]
 kymastats/sa:
-  collection_interval: 10s
   auth_type: "serviceAccount"
-kymastats/k8s:
-  collection_interval: 30s
+  collection_interval: 10s
+  module_groups: ["operator.kyma-project.io"]
+kymastats/kubeconfig:
   auth_type: "kubeConfig"
   context: "k8s-context"
-kymastats/invalidauth:
   collection_interval: 30s
+  module_groups: ["operator.kyma-project.io"]
+kymastats/invalidauth:
   auth_type: "123"
+  collection_interval: 30s
+  module_groups: ["operator.kyma-project.io"]
 kymastats/invalidinterval:
-  collection_interval: 0s
   auth_type: "kubeConfig"
+  collection_interval: 0s
+  module_groups: ["operator.kyma-project.io"]
 kymastats/none:
-  collection_interval: 60s
   auth_type: "none"
+  collection_interval: 60s
+  module_groups: ["operator.kyma-project.io"]
+kymastats/nomodulegroups:
+  auth_type: "kubeConfig"

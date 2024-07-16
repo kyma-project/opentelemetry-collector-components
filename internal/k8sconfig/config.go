@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 
 	"k8s.io/client-go/kubernetes"
@@ -140,6 +141,24 @@ func MakeDynamicClient(apiConf APIConfig) (dynamic.Interface, error) {
 	}
 
 	client, err := dynamic.NewForConfig(authConf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func MakeDiscoveryClient(apiConf APIConfig) (discovery.DiscoveryInterface, error) {
+	if err := apiConf.Validate(); err != nil {
+		return nil, err
+	}
+
+	authConf, err := CreateRestConfig(apiConf)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := discovery.NewDiscoveryClientForConfig(authConf)
 	if err != nil {
 		return nil, err
 	}

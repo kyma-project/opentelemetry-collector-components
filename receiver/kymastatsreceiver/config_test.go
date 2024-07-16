@@ -30,35 +30,38 @@ func TestLoadConfig(t *testing.T) {
 		expectErr bool
 	}{
 		{
-			id: component.NewIDWithName(metadata.Type, "default"),
+			id: component.NewIDWithName(metadata.Type, ""),
 			expected: &Config{
-				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
 				},
+				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				ModuleGroups:         []string{"operator.kyma-project.io"},
 			},
 		},
 
 		{
-			id: component.NewIDWithName(metadata.Type, "k8s"),
+			id: component.NewIDWithName(metadata.Type, "kubeconfig"),
 			expected: &Config{
-				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
 					Context:  "k8s-context",
 				},
+				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				ModuleGroups:         []string{"operator.kyma-project.io"},
 			},
 		},
 		{
 			id: component.NewIDWithName(metadata.Type, "sa"),
 			expected: &Config{
-				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
 				},
+				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				ModuleGroups:         []string{"operator.kyma-project.io"},
 			},
 		},
 		{
@@ -72,12 +75,17 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "none"),
 			expected: &Config{
-				ControllerConfig: scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "none",
 				},
+				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				ModuleGroups:         []string{"operator.kyma-project.io"},
 			},
+		},
+		{
+			id:        component.NewIDWithName(metadata.Type, "nomodulegroups"),
+			expectErr: true,
 		},
 	}
 

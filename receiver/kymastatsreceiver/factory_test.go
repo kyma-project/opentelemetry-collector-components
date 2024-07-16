@@ -12,8 +12,10 @@ import (
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/discovery"
+	discoveryfake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/dynamic"
-	"k8s.io/client-go/dynamic/fake"
+	dynamicfake "k8s.io/client-go/dynamic/fake"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
@@ -34,16 +36,20 @@ func TestCreateMetricsReceiver(t *testing.T) {
 		{
 			name: "valid",
 			cfg: &Config{
+				APIConfig: k8sconfig.APIConfig{
+					AuthType: "kubeConfig",
+				},
 				ControllerConfig: scraperhelper.ControllerConfig{
 					CollectionInterval: 10 * time.Second,
 					InitialDelay:       time.Second,
 				},
-
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "kubeConfig",
-				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				makeDynamicClient:    func() (dynamic.Interface, error) { return fake.NewSimpleDynamicClient(runtime.NewScheme()), nil },
+				makeDiscoveryClient: func() (discovery.DiscoveryInterface, error) {
+					return &discoveryfake.FakeDiscovery{}, nil
+				},
+				makeDynamicClient: func() (dynamic.Interface, error) {
+					return dynamicfake.NewSimpleDynamicClient(runtime.NewScheme()), nil
+				},
 			},
 		},
 		{
@@ -80,7 +86,6 @@ func TestCreateTraceReceiver(t *testing.T) {
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
-
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
 			},
@@ -97,7 +102,6 @@ func TestCreateLogsReceiver(t *testing.T) {
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
-
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
 			},
@@ -111,7 +115,6 @@ func TestCreateLogsReceiver(t *testing.T) {
 func TestFactoryBadAuthType(t *testing.T) {
 	factory := NewFactory()
 	cfg := &Config{
-
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: "none",
 		},
@@ -130,7 +133,6 @@ func TestFactoryNoneAuthType(t *testing.T) {
 	t.Setenv("KUBERNETES_SERVICE_PORT", "443")
 	factory := NewFactory()
 	cfg := &Config{
-
 		APIConfig: k8sconfig.APIConfig{
 			AuthType: "none",
 		},
