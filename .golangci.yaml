@@ -54,6 +54,10 @@ linters-settings:
     alias:
       - pkg: "k8s.io/apimachinery/pkg/apis/meta/v1"
         alias: metav1
+      - pkg: "k8s.io/client-go/discovery/fake"
+        alias: discoveryfake 
+      - pkg: "k8s.io/client-go/dynamic/fake"
+        alias: dynamicfake 
       - pkg: "k8s.io/client-go/testing"
         alias: clienttesting
 

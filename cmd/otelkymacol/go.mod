@@ -2,7 +2,7 @@
 
 module github.com/kyma-project/opentelemetry-collector-components/cmd/otelkymacol
 
-go 1.22.4
+go 1.22.5
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
@@ -24,7 +24,7 @@ require (
 	go.opentelemetry.io/collector/processor v0.104.0
 	go.opentelemetry.io/collector/processor/batchprocessor v0.104.0
 	go.opentelemetry.io/collector/receiver v0.104.0
-	golang.org/x/sys v0.21.0
+	golang.org/x/sys v0.22.0
 )
 
 require (
