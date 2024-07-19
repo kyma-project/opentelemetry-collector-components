@@ -20,6 +20,7 @@ updates:
     groups:
       otel:
         patterns:
+          - "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/*"
           - "go.opentelemetry.io/otel/*"
           - "go.opentelemetry.io/collector/*"
     labels:
