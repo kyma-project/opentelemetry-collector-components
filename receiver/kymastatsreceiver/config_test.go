@@ -13,6 +13,7 @@ import (
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/modulediscovery"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -37,7 +38,9 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				ModuleGroups:         []string{"operator.kyma-project.io"},
+				Config: modulediscovery.Config{
+					ModuleGroups: []string{"operator.kyma-project.io"},
+				},
 			},
 		},
 
@@ -50,7 +53,9 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				ModuleGroups:         []string{"operator.kyma-project.io"},
+				Config: modulediscovery.Config{
+					ModuleGroups: []string{"operator.kyma-project.io"},
+				},
 			},
 		},
 		{
@@ -61,7 +66,9 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				ModuleGroups:         []string{"operator.kyma-project.io"},
+				Config: modulediscovery.Config{
+					ModuleGroups: []string{"operator.kyma-project.io"},
+				},
 			},
 		},
 		{
@@ -80,7 +87,9 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				ModuleGroups:         []string{"operator.kyma-project.io"},
+				Config: modulediscovery.Config{
+					ModuleGroups: []string{"operator.kyma-project.io"},
+				},
 			},
 		},
 		{
