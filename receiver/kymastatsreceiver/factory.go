@@ -47,7 +47,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 		return nil, err
 	}
 
-	dynamic, err := config.getK8sDynamicClient()
+	dynamic, err := config.getDynamicClient()
 	if err != nil {
 		return nil, err
 	}

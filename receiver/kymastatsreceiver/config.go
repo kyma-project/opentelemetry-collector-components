@@ -49,7 +49,7 @@ func (cfg *Config) getDiscoveryClient() (discovery.DiscoveryInterface, error) {
 	return k8sconfig.MakeDiscoveryClient(cfg.APIConfig)
 }
 
-func (cfg *Config) getK8sDynamicClient() (dynamic.Interface, error) {
+func (cfg *Config) getDynamicClient() (dynamic.Interface, error) {
 	if cfg.makeDynamicClient != nil {
 		return cfg.makeDynamicClient()
 	}
