@@ -10,17 +10,22 @@ import (
 	"k8s.io/client-go/discovery"
 )
 
-type Client struct {
-	discovery    discovery.DiscoveryInterface
-	logger       *zap.Logger
-	moduleGroups []string
+type Config struct {
+	ModuleGroups     []string `mapstructure:"module_groups"`
+	ExludedResources []string `mapstructure:"excluded_resources"`
 }
 
-func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, moduleGroups []string) *Client {
+type Client struct {
+	discovery discovery.DiscoveryInterface
+	logger    *zap.Logger
+	config    Config
+}
+
+func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, config Config) *Client {
 	return &Client{
-		discovery:    discovery,
-		logger:       logger,
-		moduleGroups: moduleGroups,
+		discovery: discovery,
+		logger:    logger,
+		config:    config,
 	}
 }
 
@@ -39,7 +44,7 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 			return nil, fmt.Errorf("failed to parse groupVersion %s: %w", resourceList.GroupVersion, err)
 		}
 
-		if !slices.Contains(c.moduleGroups, groupVersion.Group) {
+		if !slices.Contains(c.config.ModuleGroups, groupVersion.Group) {
 			continue
 		}
 
@@ -47,6 +52,12 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 
 		for _, resource := range resourceList.APIResources {
 			gvr := groupVersion.WithResource(resource.Name)
+
+			if slices.Contains(c.config.ExludedResources, resource.Name) {
+				c.logger.Debug("Skipping excluded resource", zap.Any("groupVersionResource", gvr))
+				continue
+			}
+
 			if isSubresource(resource.Name) {
 				c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
 				continue
