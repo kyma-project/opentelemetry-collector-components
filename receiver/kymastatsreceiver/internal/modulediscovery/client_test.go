@@ -141,7 +141,8 @@ func TestDiscover(t *testing.T) {
 				},
 			}
 			sut := New(&discovery, zap.NewNop(), Config{
-				ModuleGroups: []string{"operator.kyma-project.io"},
+				ExludedResources: test.excludedResources,
+				ModuleGroups:     []string{"operator.kyma-project.io"},
 			})
 
 			gvrs, err := sut.Discover()
