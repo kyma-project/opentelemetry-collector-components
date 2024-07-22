@@ -44,7 +44,7 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 			return nil, fmt.Errorf("failed to parse groupVersion %s: %w", resourceList.GroupVersion, err)
 		}
 
-		if !slices.Contains(c.config.ModuleGroups, groupVersion.Group) {
+		if c.shouldSkipGroup(groupVersion.Group) {
 			continue
 		}
 
@@ -53,23 +53,34 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 		for _, resource := range resourceList.APIResources {
 			gvr := groupVersion.WithResource(resource.Name)
 
-			if slices.Contains(c.config.ExludedResources, resource.Name) {
-				c.logger.Debug("Skipping excluded resource", zap.Any("groupVersionResource", gvr))
-				continue
-			}
-
-			if isSubresource(resource.Name) {
-				c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+			if c.shouldSkipResource(gvr) {
 				continue
 			}
 
 			gvrs = append(gvrs, gvr)
-
 			c.logger.Debug("Discovered module resource", zap.Any("groupVersionResource", gvr))
 		}
 	}
 
 	return gvrs, nil
+}
+
+func (c *Client) shouldSkipGroup(group string) bool {
+	return !slices.Contains(c.config.ModuleGroups, group)
+}
+
+func (c *Client) shouldSkipResource(gvr schema.GroupVersionResource) bool {
+	if slices.Contains(c.config.ExludedResources, gvr.Resource) {
+		c.logger.Debug("Skipping excluded resource", zap.Any("groupVersionResource", gvr))
+		return true
+	}
+
+	if isSubresource(gvr.Resource) {
+		c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+		return true
+	}
+
+	return false
 }
 
 func isSubresource(resourceName string) bool {
