@@ -11,7 +11,10 @@ import (
 )
 
 type Config struct {
-	ModuleGroups     []string `mapstructure:"module_groups"`
+	//ModuleGroups are API groups of Kyma modules to be discovered.
+	ModuleGroups []string `mapstructure:"module_groups"`
+
+	//ExludedResources are API resource names to be excluded when discovering Kyma modules.
 	ExludedResources []string `mapstructure:"excluded_resources"`
 }
 
@@ -29,6 +32,9 @@ func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, config Conf
 	}
 }
 
+// Discover retrieves all GroupVersionResources (GVRs) for Kyma modules
+// that belong to the specified module groups. It selects the preferred versions
+// of these modules, excluding any that are explicitly marked for exclusion.
 func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 	// ServerPreferredResources returns API resources/groups of the preferred (usually, stored) API version.
 	// It guarantees that only version per resource/group is returned.
