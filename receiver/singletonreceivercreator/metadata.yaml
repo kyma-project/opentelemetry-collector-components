@@ -17,27 +17,27 @@ telemetry:
     receiver_singleton_leader_status:
       enabled: true
       description: A gauge of if the reporting system is the leader of the relevant lease, 0 indicates backup, and 1 indicates leader.
-      unit: 1
+      unit: "1"
       gauge:
         value_type: int
     receiver_singleton_lease_acquired_total:
       enabled: true
       description: The total number of successful lease acquisitions.
-      unit: 1
+      unit: "1"
       sum:
         monotonic: true
         value_type: int
     receiver_singleton_lease_lost_total:
       enabled: true
       description: The total number of lease losses.
-      unit: 1
+      unit: "1"
       sum:
         monotonic: true
         value_type: int
     receiver_singleton_lease_slowpath_total:
       enabled: true
       description: The total number of slow paths exercised in renewing leader leases.
-      unit: 1
+      unit: "1"
       sum:
         monotonic: true
         value_type: int
