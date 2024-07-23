@@ -10,20 +10,31 @@ import (
 	"k8s.io/client-go/discovery"
 )
 
-type Client struct {
-	discovery    discovery.DiscoveryInterface
-	logger       *zap.Logger
-	moduleGroups []string
+type Config struct {
+	//ModuleGroups are API groups of Kyma modules to be discovered.
+	ModuleGroups []string `mapstructure:"module_groups"`
+
+	//ExcludedResources are API resource names to be excluded when discovering Kyma modules.
+	ExcludedResources []string `mapstructure:"excluded_resources"`
 }
 
-func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, moduleGroups []string) *Client {
+type Client struct {
+	discovery discovery.DiscoveryInterface
+	logger    *zap.Logger
+	config    Config
+}
+
+func New(discovery discovery.DiscoveryInterface, logger *zap.Logger, config Config) *Client {
 	return &Client{
-		discovery:    discovery,
-		logger:       logger,
-		moduleGroups: moduleGroups,
+		discovery: discovery,
+		logger:    logger,
+		config:    config,
 	}
 }
 
+// Discover retrieves all GroupVersionResources (GVRs) for Kyma modules
+// that belong to the specified module groups. It selects the preferred versions
+// of these modules, excluding any that are explicitly marked for exclusion.
 func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 	// ServerPreferredResources returns API resources/groups of the preferred (usually, stored) API version.
 	// It guarantees that only version per resource/group is returned.
@@ -39,7 +50,7 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 			return nil, fmt.Errorf("failed to parse groupVersion %s: %w", resourceList.GroupVersion, err)
 		}
 
-		if !slices.Contains(c.moduleGroups, groupVersion.Group) {
+		if c.shouldSkipGroup(groupVersion.Group) {
 			continue
 		}
 
@@ -47,18 +58,35 @@ func (c *Client) Discover() ([]schema.GroupVersionResource, error) {
 
 		for _, resource := range resourceList.APIResources {
 			gvr := groupVersion.WithResource(resource.Name)
-			if isSubresource(resource.Name) {
-				c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+
+			if c.shouldSkipResource(gvr) {
 				continue
 			}
 
 			gvrs = append(gvrs, gvr)
-
 			c.logger.Debug("Discovered module resource", zap.Any("groupVersionResource", gvr))
 		}
 	}
 
 	return gvrs, nil
+}
+
+func (c *Client) shouldSkipGroup(group string) bool {
+	return !slices.Contains(c.config.ModuleGroups, group)
+}
+
+func (c *Client) shouldSkipResource(gvr schema.GroupVersionResource) bool {
+	if slices.Contains(c.config.ExcludedResources, gvr.Resource) {
+		c.logger.Debug("Skipping excluded resource", zap.Any("groupVersionResource", gvr))
+		return true
+	}
+
+	if isSubresource(gvr.Resource) {
+		c.logger.Debug("Skipping subresource", zap.Any("groupVersionResource", gvr))
+		return true
+	}
+
+	return false
 }
 
 func isSubresource(resourceName string) bool {

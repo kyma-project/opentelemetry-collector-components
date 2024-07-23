@@ -112,7 +112,7 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context, moduleGVRs []sche
 		for _, module := range moduleList.Items {
 			stats, err := ks.unstructuredToStats(module)
 			if err != nil {
-				ks.logger.Error("Error converting unstructured module to stats",
+				ks.logger.Warn("Error converting unstructured module to stats",
 					zap.Error(err),
 					zap.String("name", module.GetName()),
 					zap.String("namespace", module.GetNamespace()),
@@ -176,7 +176,7 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 	for _, unstructuredCond := range unstructuredConds {
 		cond, err := ks.unstructuredToCondition(unstructuredCond)
 		if err != nil {
-			ks.logger.Error("Error converting unstructured module to stats, condition not supported",
+			ks.logger.Warn("Error converting unstructured module to stats, condition not supported",
 				zap.Error(err),
 				zap.String("name", module.GetName()),
 				zap.String("namespace", module.GetNamespace()),

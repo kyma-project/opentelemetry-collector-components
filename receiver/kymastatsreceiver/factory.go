@@ -53,7 +53,7 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	}
 
 	scrp, err := newKymaScraper(
-		modulediscovery.New(discovery, params.Logger, config.ModuleGroups),
+		modulediscovery.New(discovery, params.Logger, config.Config),
 		dynamic,
 		params,
 		config.MetricsBuilderConfig,

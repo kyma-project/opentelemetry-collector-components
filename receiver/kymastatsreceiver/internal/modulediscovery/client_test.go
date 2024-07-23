@@ -24,9 +24,10 @@ func TestDiscover(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name      string
-		resources []*metav1.APIResourceList
-		expected  []schema.GroupVersionResource
+		name              string
+		resources         []*metav1.APIResourceList
+		excludedResources []string
+		expected          []schema.GroupVersionResource
 	}{
 		{
 			name: "without subresource",
@@ -106,6 +107,26 @@ func TestDiscover(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "excluded resources",
+			resources: []*metav1.APIResourceList{
+				{
+					GroupVersion: "operator.kyma-project.io/v1beta1",
+					APIResources: []metav1.APIResource{
+						{Name: "istios"},
+						{Name: "kymas"},
+					},
+				},
+			},
+			excludedResources: []string{"kymas"},
+			expected: []schema.GroupVersionResource{
+				{
+					Group:    "operator.kyma-project.io",
+					Version:  "v1beta1",
+					Resource: "istios",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -119,7 +140,10 @@ func TestDiscover(t *testing.T) {
 					},
 				},
 			}
-			sut := New(&discovery, zap.NewNop(), []string{"operator.kyma-project.io"})
+			sut := New(&discovery, zap.NewNop(), Config{
+				ExcludedResources: test.excludedResources,
+				ModuleGroups:      []string{"operator.kyma-project.io"},
+			})
 
 			gvrs, err := sut.Discover()
 			require.NoError(t, err)

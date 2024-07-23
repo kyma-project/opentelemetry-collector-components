@@ -9,6 +9,7 @@ import (
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/modulediscovery"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
@@ -16,8 +17,7 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-
-	ModuleGroups []string `mapstructure:"module_groups"`
+	modulediscovery.Config         `mapstructure:",squash"`
 
 	// Used for unit testing only
 	makeDiscoveryClient func() (discovery.DiscoveryInterface, error)
