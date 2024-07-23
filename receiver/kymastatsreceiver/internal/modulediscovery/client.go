@@ -14,8 +14,8 @@ type Config struct {
 	//ModuleGroups are API groups of Kyma modules to be discovered.
 	ModuleGroups []string `mapstructure:"module_groups"`
 
-	//ExludedResources are API resource names to be excluded when discovering Kyma modules.
-	ExludedResources []string `mapstructure:"excluded_resources"`
+	//ExcludedResources are API resource names to be excluded when discovering Kyma modules.
+	ExcludedResources []string `mapstructure:"excluded_resources"`
 }
 
 type Client struct {
@@ -76,7 +76,7 @@ func (c *Client) shouldSkipGroup(group string) bool {
 }
 
 func (c *Client) shouldSkipResource(gvr schema.GroupVersionResource) bool {
-	if slices.Contains(c.config.ExludedResources, gvr.Resource) {
+	if slices.Contains(c.config.ExcludedResources, gvr.Resource) {
 		c.logger.Debug("Skipping excluded resource", zap.Any("groupVersionResource", gvr))
 		return true
 	}
