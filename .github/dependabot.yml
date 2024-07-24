@@ -9,6 +9,7 @@ updates:
       prefix: "chore(dependabot)"
     labels:
       - "area/dependency"
+      - "kind/chore"
 
   - package-ecosystem: "gomod"
     directories:
@@ -23,8 +24,12 @@ updates:
           - "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/*"
           - "go.opentelemetry.io/otel/*"
           - "go.opentelemetry.io/collector/*"
+      k8s:
+        patterns:
+          - "k8s.io/*"
     labels:
       - "area/dependency"
+      - "kind/chore"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -34,5 +39,6 @@ updates:
       prefix: "chore(dependabot)"
     labels:
       - "area/ci"
+      - "kind/chore"
 
   
