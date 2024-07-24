@@ -54,7 +54,7 @@ singleton_receiver_creator/complex_subreceiver:
       resource_attributes:
         container.id:
           enabled: false
-singleton_receiver_creator/authtype_kubeconfig:
+singleton_receiver_creator/auth_type_kubeconfig:
   auth_type: kubeConfig
   leader_election:
     lease_name: foo
