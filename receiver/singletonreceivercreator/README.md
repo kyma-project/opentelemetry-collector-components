@@ -39,8 +39,8 @@ The configuration consists of two parts:
 ### Leader Election Configuration
 | configuration       | description                                                                     | default value      |
 |---------------------|---------------------------------------------------------------------------------|--------------------|
-| **lease_name**      | The name of the lease object.                                                   | singleton-receiver |
-| **lease_namespace** | The namespace of the lease object.                                              | default            |
+| **lease_name**      | The name of the lease object.                                                   | none (required)    |
+| **lease_namespace** | The namespace of the lease object.                                              | none (required)    |
 | **lease_duration**  | The duration of the lease.                                                      | 15s                |
 | **renew_deadline**  | The deadline for renewing the lease. It should be less than the lease duration. | 10s                |
 | **retry_period**    | The period for retrying the leader election.                                    | 2s                 |

@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
@@ -21,34 +20,51 @@ func TestLoadConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		id       component.ID
-		expected component.Config
+		id          component.ID
+		expected    component.Config
+		expectedErr error
 	}{
 		{
-			id: component.NewIDWithName(metadata.Type, "check-default-values"),
+			id: component.NewIDWithName(metadata.Type, "default"),
 			expected: &Config{
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
 				},
 				leaderElectionConfig: leaderElectionConfig{
-					leaseName:      "singleton-receiver",
-					leaseNamespace: "default",
+					leaseName:      "foo",
+					leaseNamespace: "bar",
 					leaseDuration:  defaultLeaseDuration,
 					renewDuration:  defaultRenewDeadline,
 					retryPeriod:    defaultRetryPeriod,
 				},
 				subreceiverConfig: receiverConfig{
-					id: component.MustNewID("otlp"),
-					config: map[string]any{
-						"protocols": map[string]any{
-							"grpc": nil,
-						},
-					},
+					id:     component.MustNewID("dummy"),
+					config: make(map[string]any),
 				},
 			},
 		},
 		{
-			id: component.NewIDWithName(metadata.Type, "check-all-values"),
+			id:          component.NewIDWithName(metadata.Type, "missing_name"),
+			expectedErr: errMissingLeaseName,
+		},
+		{
+			id:          component.NewIDWithName(metadata.Type, "missing_namespace"),
+			expectedErr: errMissingLeaseNamespace,
+		},
+		{
+			id:          component.NewIDWithName(metadata.Type, "zero_lease_duration"),
+			expectedErr: errNonPositiveInterval,
+		},
+		{
+			id:          component.NewIDWithName(metadata.Type, "zero_renew_deadline"),
+			expectedErr: errNonPositiveInterval,
+		},
+		{
+			id:          component.NewIDWithName(metadata.Type, "zero_retry_period"),
+			expectedErr: errNonPositiveInterval,
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "complex_subreceiver"),
 			expected: &Config{
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "serviceAccount",
@@ -81,7 +97,7 @@ func TestLoadConfig(t *testing.T) {
 			},
 		},
 		{
-			id: component.NewIDWithName(metadata.Type, "check-kubeconfig-authtype"),
+			id: component.NewIDWithName(metadata.Type, "auth_type_kubeconfig"),
 			expected: &Config{
 				APIConfig: k8sconfig.APIConfig{
 					AuthType: "kubeConfig",
@@ -125,8 +141,15 @@ func TestLoadConfig(t *testing.T) {
 			require.NoError(t, err)
 			require.NoError(t, sub.Unmarshal(cfg))
 
-			assert.NoError(t, component.ValidateConfig(cfg))
-			assert.Equal(t, tt.expected, cfg)
+			err = component.ValidateConfig(cfg)
+			if tt.expectedErr == nil {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, cfg)
+				return
+			}
+
+			require.Error(t, err)
+			require.ErrorIs(t, err, tt.expectedErr)
 		})
 	}
 }

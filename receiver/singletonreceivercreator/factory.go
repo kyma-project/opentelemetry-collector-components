@@ -27,11 +27,9 @@ func createDefaultConfig() component.Config {
 			AuthType: k8sconfig.AuthTypeServiceAccount,
 		},
 		leaderElectionConfig: leaderElectionConfig{
-			leaseName:      "singleton-receiver",
-			leaseNamespace: "default",
-			leaseDuration:  defaultLeaseDuration,
-			renewDuration:  defaultRenewDeadline,
-			retryPeriod:    defaultRetryPeriod,
+			leaseDuration: defaultLeaseDuration,
+			renewDuration: defaultRenewDeadline,
+			retryPeriod:   defaultRetryPeriod,
 		},
 		subreceiverConfig: receiverConfig{},
 	}

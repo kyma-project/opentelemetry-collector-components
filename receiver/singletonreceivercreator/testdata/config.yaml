@@ -18,21 +18,21 @@ singleton_receiver_creator/zero_lease_duration:
   leader_election:
     lease_name: foo
     lease_namespace: bar
-    lease_duration: 0 
+    lease_duration: 0s
   receiver:
     dummy:
 singleton_receiver_creator/zero_renew_deadline:
   leader_election:
     lease_name: foo
     lease_namespace: bar
-    renew_deadline: 0
+    renew_deadline: 0s
   receiver:
     dummy:
-singleton_receiver_creator/zero_renew_period:
+singleton_receiver_creator/zero_retry_period:
   leader_election:
     lease_name: foo
     lease_namespace: bar
-    retry_period: 0 
+    retry_period: 0s
   receiver:
     dummy:
 singleton_receiver_creator/complex_subreceiver:
