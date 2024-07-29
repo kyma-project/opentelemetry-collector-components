@@ -1,6 +1,7 @@
 package singletonreceivercreator
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -16,6 +17,12 @@ const (
 	subreceiverConfigKey = "receiver"
 
 	leaderElectionConfigKey = "leader_election"
+)
+
+var (
+	errMissingLeaseName      = errors.New(`"leaseName" not specified in config`)
+	errMissingLeaseNamespace = errors.New(`"leaseNamespace" not specified in config`)
+	errNonPositiveInterval   = errors.New("requires positive value")
 )
 
 // Config defines configuration for leader receiver creator.
@@ -44,6 +51,50 @@ type receiverConfig struct {
 	config map[string]any
 }
 
+var _ confmap.Unmarshaler = (*Config)(nil)
+
+func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
+	if componentParser == nil {
+		// Nothing to do if there is no config given.
+		return nil
+	}
+
+	if err := componentParser.Unmarshal(cfg, confmap.WithIgnoreUnused()); err != nil {
+		return err
+	}
+
+	subreceiverConfig, err := componentParser.Sub(subreceiverConfigKey)
+	if err != nil {
+		return fmt.Errorf("unable to extract key %v: %w", subreceiverConfigKey, err)
+	}
+
+	lec, err := componentParser.Sub(leaderElectionConfigKey)
+	if err != nil {
+		return fmt.Errorf("unable to extract key %v: %w", leaderElectionConfigKey, err)
+	}
+
+	cfg.leaderElectionConfig, err = unmarshalLeaderElectionConfig(cfg.leaderElectionConfig, lec.ToStringMap())
+	if err != nil {
+		return fmt.Errorf("failed to create leader election config: %w", err)
+	}
+
+	for subreceiverKey := range subreceiverConfig.ToStringMap() {
+		receiverConfig, err := subreceiverConfig.Sub(subreceiverKey)
+		if err != nil {
+			return fmt.Errorf("unable to extract subreceiver key %v: %w", subreceiverKey, err)
+		}
+
+		cfg.subreceiverConfig, err = newReceiverConfig(subreceiverKey, receiverConfig.ToStringMap())
+		if err != nil {
+			return fmt.Errorf("failed to create subreceiver config: %w", err)
+		}
+
+		return nil
+	}
+
+	return nil
+}
+
 // and its arbitrary config map values.
 func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) {
 	id := component.ID{}
@@ -57,7 +108,7 @@ func newReceiverConfig(name string, cfg map[string]any) (receiverConfig, error) 
 	}, nil
 }
 
-func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
+func unmarshalLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (leaderElectionConfig, error) {
 	if leaseName, ok := cfg["lease_name"].(string); ok {
 		lec.leaseName = leaseName
 	}
@@ -93,52 +144,40 @@ func newLeaderElectionConfig(lec leaderElectionConfig, cfg map[string]any) (lead
 	return lec, nil
 }
 
-var _ confmap.Unmarshaler = (*Config)(nil)
-
-func (cfg *Config) Unmarshal(componentParser *confmap.Conf) error {
-	if componentParser == nil {
-		// Nothing to do if there is no config given.
-		return nil
-	}
-
-	if err := componentParser.Unmarshal(cfg, confmap.WithIgnoreUnused()); err != nil {
+func (cfg *Config) Validate() error {
+	if err := cfg.leaderElectionConfig.validate(); err != nil {
 		return err
 	}
 
-	subreceiverConfig, err := componentParser.Sub(subreceiverConfigKey)
-	if err != nil {
-		return fmt.Errorf("unable to extract key %v: %w", subreceiverConfigKey, err)
-	}
-
-	lec, err := componentParser.Sub(leaderElectionConfigKey)
-	if err != nil {
-		return fmt.Errorf("unable to extract key %v: %w", leaderElectionConfigKey, err)
-	}
-
-	cfg.leaderElectionConfig, err = newLeaderElectionConfig(cfg.leaderElectionConfig, lec.ToStringMap())
-	if err != nil {
-		return fmt.Errorf("failed to create leader election config: %w", err)
-	}
-
-	for subreceiverKey := range subreceiverConfig.ToStringMap() {
-		receiverConfig, err := subreceiverConfig.Sub(subreceiverKey)
-		if err != nil {
-			return fmt.Errorf("unable to extract subreceiver key %v: %w", subreceiverKey, err)
-		}
-
-		cfg.subreceiverConfig, err = newReceiverConfig(subreceiverKey, receiverConfig.ToStringMap())
-		if err != nil {
-			return fmt.Errorf("failed to create subreceiver config: %w", err)
-		}
-
-		return nil
+	if err := cfg.APIConfig.Validate(); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (cfg *Config) Validate() error {
-	return cfg.APIConfig.Validate()
+func (lec *leaderElectionConfig) validate() error {
+	if lec.leaseName == "" {
+		return errMissingLeaseName
+	}
+
+	if lec.leaseNamespace == "" {
+		return errMissingLeaseNamespace
+	}
+
+	if lec.leaseDuration <= 0 {
+		return fmt.Errorf(`"lease_duration": %w`, errNonPositiveInterval)
+	}
+
+	if lec.renewDuration <= 0 {
+		return fmt.Errorf(`"renew_deadline": %w`, errNonPositiveInterval)
+	}
+
+	if lec.retryPeriod <= 0 {
+		return fmt.Errorf(`"retry_period": %w`, errNonPositiveInterval)
+	}
+
+	return nil
 }
 
 func (cfg *Config) getK8sClient() (kubernetes.Interface, error) {

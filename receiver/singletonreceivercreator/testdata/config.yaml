@@ -1,9 +1,41 @@
-singleton_receiver_creator/check-default-values:
+singleton_receiver_creator/default:
+  leader_election:
+    lease_name: foo
+    lease_namespace: bar
   receiver:
-    otlp:
-      protocols:
-        grpc:
-singleton_receiver_creator/check-all-values:
+    dummy:
+singleton_receiver_creator/missing_name:
+  leader_election:
+    lease_namespace: bar
+  receiver:
+    dummy:
+singleton_receiver_creator/missing_namespace:
+  leader_election:
+    lease_name: foo
+  receiver:
+    dummy:
+singleton_receiver_creator/zero_lease_duration:
+  leader_election:
+    lease_name: foo
+    lease_namespace: bar
+    lease_duration: 0s
+  receiver:
+    dummy:
+singleton_receiver_creator/zero_renew_deadline:
+  leader_election:
+    lease_name: foo
+    lease_namespace: bar
+    renew_deadline: 0s
+  receiver:
+    dummy:
+singleton_receiver_creator/zero_retry_period:
+  leader_election:
+    lease_name: foo
+    lease_namespace: bar
+    retry_period: 0s
+  receiver:
+    dummy:
+singleton_receiver_creator/complex_subreceiver:
   auth_type: serviceAccount
   leader_election:
     lease_name: foo
@@ -22,7 +54,7 @@ singleton_receiver_creator/check-all-values:
       resource_attributes:
         container.id:
           enabled: false
-singleton_receiver_creator/check-kubeconfig-authtype:
+singleton_receiver_creator/auth_type_kubeconfig:
   auth_type: kubeConfig
   leader_election:
     lease_name: foo

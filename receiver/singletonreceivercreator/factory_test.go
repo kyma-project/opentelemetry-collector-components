@@ -48,11 +48,9 @@ func TestNewFactory(t *testing.T) {
 						AuthType: "serviceAccount",
 					},
 					leaderElectionConfig: leaderElectionConfig{
-						leaseName:      "singleton-receiver",
-						leaseNamespace: "default",
-						leaseDuration:  defaultLeaseDuration,
-						renewDuration:  defaultRenewDeadline,
-						retryPeriod:    defaultRetryPeriod,
+						leaseDuration: defaultLeaseDuration,
+						renewDuration: defaultRenewDeadline,
+						retryPeriod:   defaultRetryPeriod,
 					},
 					subreceiverConfig: receiverConfig{},
 				}

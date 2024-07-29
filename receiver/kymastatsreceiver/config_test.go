@@ -43,7 +43,6 @@ func TestLoadConfig(t *testing.T) {
 				},
 			},
 		},
-
 		{
 			id: component.NewIDWithName(metadata.Type, "kubeconfig"),
 			expected: &Config{
