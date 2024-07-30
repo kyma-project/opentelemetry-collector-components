@@ -1,0 +1,79 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: k8s.namespace.name
+          value:
+            stringValue: kyma-system
+        - key: kyma.module.name
+          value:
+            stringValue: Telemetry
+    scopeMetrics:
+      - metrics:
+          - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: reason
+                      value:
+                        stringValue: AllFine
+                    - key: status
+                      value:
+                        stringValue: "True"
+                    - key: type
+                      value:
+                        stringValue: TelemetryHealthy
+            name: kyma.module.status.conditions
+            unit: "1"
+          - description: The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: Ready
+            name: kyma.module.status.state
+            unit: "1"
+        scope:
+          name: otelcol/kymastats
+          version: latest
+  - resource:
+      attributes:
+        - key: k8s.namespace.name
+          value:
+            stringValue: kyma-system
+        - key: kyma.module.name
+          value:
+            stringValue: Istio
+    scopeMetrics:
+      - metrics:
+          - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: reason
+                      value:
+                        stringValue: IstiodDown
+                    - key: status
+                      value:
+                        stringValue: "False"
+                    - key: type
+                      value:
+                        stringValue: IstioHealthy
+            name: kyma.module.status.conditions
+            unit: "1"
+          - description: The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: state
+                      value:
+                        stringValue: Warning
+            name: kyma.module.status.state
+            unit: "1"
+        scope:
+          name: otelcol/kymastats
+          version: latest
