@@ -19,15 +19,11 @@ import (
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
-type moduleDiscoveryClient interface {
-	Discover() ([]schema.GroupVersionResource, error)
-}
-
 type kymaScraper struct {
-	discovery moduleDiscoveryClient
-	dynamic   dynamic.Interface
-	logger    *zap.Logger
-	mb        *metadata.MetricsBuilder
+	config  Config
+	dynamic dynamic.Interface
+	logger  *zap.Logger
+	mb      *metadata.MetricsBuilder
 }
 
 type moduleStats struct {
@@ -53,28 +49,22 @@ func (e *fieldNotFoundError) Error() string {
 }
 
 func newKymaScraper(
-	discovery moduleDiscoveryClient,
+	config Config,
 	dynamic dynamic.Interface,
 	settings receiver.Settings,
-	mbConfig metadata.MetricsBuilderConfig,
 ) (scraperhelper.Scraper, error) {
 	ks := kymaScraper{
-		discovery: discovery,
-		dynamic:   dynamic,
-		logger:    settings.Logger,
-		mb:        metadata.NewMetricsBuilder(mbConfig, settings),
+		config:  config,
+		dynamic: dynamic,
+		logger:  settings.Logger,
+		mb:      metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 	}
 
 	return scraperhelper.NewScraper(metadata.Type.String(), ks.scrape)
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	moduleGVRs, err := ks.discovery.Discover()
-	if err != nil {
-		return pmetric.Metrics{}, err
-	}
-
-	stats, err := ks.collectModuleStats(ctx, moduleGVRs)
+	stats, err := ks.collectModuleStats(ctx)
 	if err != nil {
 		return pmetric.Metrics{}, err
 	}
@@ -96,9 +86,10 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	return ks.mb.Emit(), nil
 }
 
-func (ks *kymaScraper) collectModuleStats(ctx context.Context, moduleGVRs []schema.GroupVersionResource) ([]moduleStats, error) {
+func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
 	var res []moduleStats
-	for _, gvr := range moduleGVRs {
+	for _, module := range ks.config.Modules {
+		gvr := schema.GroupVersionResource(module)
 		moduleList, err := ks.dynamic.Resource(gvr).List(ctx, metav1.ListOptions{})
 		if err != nil {
 			ks.logger.Error("Error fetching module list",

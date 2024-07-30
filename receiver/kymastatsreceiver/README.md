@@ -18,12 +18,11 @@ The following settings are required:
 
 - `auth_type` (default = `serviceAccount`): Specifies the authentication method for accessing the Kubernetes API server.
    Options include `none` (no authentication), `serviceAccount` (uses the default service account token assigned to the Pod), or `kubeConfig` (uses credentials from `~/.kube/config`).
-- `module_groups`: A list of API groups to be used for Kyma module resource discovery. The receiver then discovers all resources within these groups, using their preferred versions, except those specified in `excluded_resources`. For each group-version-resource, the first resource instance is selected for status metric generation.
+- `modules`: A list of API group-version-resources of Kyma modules. For each group-version-resource, the status metrics are generated for the first resource instance found.
 
 The following settings are optional:
 
 - `collection_interval` (default = `60s`): The Kyma Stats Receiver monitors Kyma custom resources using the Kubernetes API. It emits the collected metrics only once per collection interval. The `collection_interval` setting determines how frequently these metrics are emitted.
-- `excluded_resources`: A list of API resource names to be excluded from status metrics generation.
 - `metrics`: Enables or disables specific metrics.
 - `resource_attributes`: Enables or disables resource attributes.
 
@@ -41,8 +40,10 @@ Example:
         enabled: true
       kyma.module.status.conditions:
         enabled: true
-    module_groups:
-    - operator.kyma-project.io
+    modules:
+    - group: operator.kyma-project.io
+      version: v1alpha1
+      resource: telemetries
     resource_attributes:
       k8s.namespace.name:
         enabled: true
@@ -51,4 +52,4 @@ Example:
 ```
 
 For the full list of settings exposed for the Kyma Stats Receiver, see the [config.go](./config.go) file.
-For detailed sample configurations , see the [config.yaml](./testdata/expected_config.yaml) file.
+For detailed sample configurations , see the [config.yaml](./testdata/config.yaml) file.

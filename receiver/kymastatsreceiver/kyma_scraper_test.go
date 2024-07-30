@@ -25,19 +25,8 @@ const (
 	moduleNamespace = "kyma-system"
 )
 
-type moduleDiscoveryClientStub struct {
-	gvrs []schema.GroupVersionResource
-	err  error
-}
-
-var _ moduleDiscoveryClient = (*moduleDiscoveryClientStub)(nil)
-
-func (s *moduleDiscoveryClientStub) Discover() ([]schema.GroupVersionResource, error) {
-	return s.gvrs, s.err
-}
-
 func TestScrape(t *testing.T) {
-	gvrs := []schema.GroupVersionResource{
+	modules := []ModuleConfig{
 		{
 			Group:    moduleGroup,
 			Version:  moduleVersion,
@@ -78,8 +67,8 @@ func TestScrape(t *testing.T) {
 
 	dynamic := dynamicfake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
-			gvrs[0]: "TelemetryList",
-			gvrs[1]: "IstioList",
+			schema.GroupVersionResource(modules[0]): "TelemetryList",
+			schema.GroupVersionResource(modules[1]): "IstioList",
 		}, &unstructured.Unstructured{
 			Object: telemetry,
 		},
@@ -89,12 +78,12 @@ func TestScrape(t *testing.T) {
 	)
 
 	r, err := newKymaScraper(
-		&moduleDiscoveryClientStub{
-			gvrs: gvrs,
+		Config{
+			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			Modules:              modules,
 		},
 		dynamic,
 		receivertest.NewNopSettings(),
-		metadata.DefaultMetricsBuilderConfig(),
 	)
 
 	require.NoError(t, err)
@@ -102,7 +91,7 @@ func TestScrape(t *testing.T) {
 	md, err := r.Scrape(context.Background())
 	require.NoError(t, err)
 
-	expectedFile := filepath.Join("testdata", "expected_metrics.yaml")
+	expectedFile := filepath.Join("testdata", "metrics.yaml")
 	expected, err := golden.ReadMetrics(expectedFile)
 
 	require.NoError(t, err)
@@ -117,7 +106,7 @@ func TestScrape(t *testing.T) {
 }
 
 func TestScrape_CantPullResource(t *testing.T) {
-	gvrs := []schema.GroupVersionResource{
+	modules := []ModuleConfig{
 		{
 			Group:    moduleGroup,
 			Version:  moduleVersion,
@@ -136,12 +125,12 @@ func TestScrape_CantPullResource(t *testing.T) {
 	})
 
 	r, err := newKymaScraper(
-		&moduleDiscoveryClientStub{
-			gvrs: gvrs,
+		Config{
+			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			Modules:              modules,
 		},
 		dynamic,
 		receivertest.NewNopSettings(),
-		metadata.DefaultMetricsBuilderConfig(),
 	)
 
 	require.NoError(t, err)
@@ -296,7 +285,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			gvrs := []schema.GroupVersionResource{
+			modules := []ModuleConfig{
 				{
 					Group:    moduleGroup,
 					Version:  moduleVersion,
@@ -312,12 +301,12 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
 			r, err := newKymaScraper(
-				&moduleDiscoveryClientStub{
-					gvrs: gvrs,
+				Config{
+					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+					Modules:              modules,
 				},
 				dynamic,
 				receivertest.NewNopSettings(),
-				metadata.DefaultMetricsBuilderConfig(),
 			)
 			require.NoError(t, err)
 
