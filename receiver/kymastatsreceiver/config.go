@@ -4,12 +4,10 @@ import (
 	"errors"
 
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
-	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/modulediscovery"
 )
 
 // Config represents the receiver config settings within the collector's config.yaml
@@ -17,14 +15,19 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	modulediscovery.Config         `mapstructure:",squash"`
+	Modules                        []ModuleConfig `mapstructure:"modules"`
 
 	// Used for unit testing only
-	makeDiscoveryClient func() (discovery.DiscoveryInterface, error)
-	makeDynamicClient   func() (dynamic.Interface, error)
+	makeDynamicClient func() (dynamic.Interface, error)
 }
 
-var errEmptyModuleGroups = errors.New("empty module groups")
+type ModuleConfig struct {
+	Group    string `mapstructure:"group"`
+	Version  string `mapstructure:"version"`
+	Resource string `mapstructure:"resource"`
+}
+
+var errEmptyModules = errors.New("empty modules")
 
 func (cfg *Config) Validate() error {
 	if err := cfg.APIConfig.Validate(); err != nil {
@@ -35,18 +38,11 @@ func (cfg *Config) Validate() error {
 		return err
 	}
 
-	if len(cfg.ModuleGroups) == 0 {
-		return errEmptyModuleGroups
+	if len(cfg.Modules) == 0 {
+		return errEmptyModules
 	}
 
 	return nil
-}
-
-func (cfg *Config) getDiscoveryClient() (discovery.DiscoveryInterface, error) {
-	if cfg.makeDynamicClient != nil {
-		return cfg.makeDiscoveryClient()
-	}
-	return k8sconfig.MakeDiscoveryClient(cfg.APIConfig)
 }
 
 func (cfg *Config) getDynamicClient() (dynamic.Interface, error) {

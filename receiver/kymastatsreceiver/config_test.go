@@ -13,13 +13,12 @@ import (
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/modulediscovery"
 )
 
 func TestLoadConfig(t *testing.T) {
 	t.Parallel()
 
-	cm, err := confmaptest.LoadConf(filepath.Join("testdata", "expected_config.yaml"))
+	cm, err := confmaptest.LoadConf(filepath.Join("testdata", "config.yaml"))
 	require.NoError(t, err)
 
 	duration := time.Minute
@@ -38,8 +37,12 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Config: modulediscovery.Config{
-					ModuleGroups: []string{"operator.kyma-project.io"},
+				Modules: []ModuleConfig{
+					{
+						Group:    "operator.kyma-project.io",
+						Version:  "v1alpha1",
+						Resource: "telemetries",
+					},
 				},
 			},
 		},
@@ -52,8 +55,12 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Config: modulediscovery.Config{
-					ModuleGroups: []string{"operator.kyma-project.io"},
+				Modules: []ModuleConfig{
+					{
+						Group:    "operator.kyma-project.io",
+						Version:  "v1alpha1",
+						Resource: "telemetries",
+					},
 				},
 			},
 		},
@@ -65,8 +72,12 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Config: modulediscovery.Config{
-					ModuleGroups: []string{"operator.kyma-project.io"},
+				Modules: []ModuleConfig{
+					{
+						Group:    "operator.kyma-project.io",
+						Version:  "v1alpha1",
+						Resource: "telemetries",
+					},
 				},
 			},
 		},
@@ -86,8 +97,12 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Config: modulediscovery.Config{
-					ModuleGroups: []string{"operator.kyma-project.io"},
+				Modules: []ModuleConfig{
+					{
+						Group:    "operator.kyma-project.io",
+						Version:  "v1alpha1",
+						Resource: "telemetries",
+					},
 				},
 			},
 		},

@@ -12,8 +12,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/discovery"
-	discoveryfake "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/dynamic"
 	dynamicfake "k8s.io/client-go/dynamic/fake"
 
@@ -44,9 +42,6 @@ func TestCreateMetricsReceiver(t *testing.T) {
 					InitialDelay:       time.Second,
 				},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				makeDiscoveryClient: func() (discovery.DiscoveryInterface, error) {
-					return &discoveryfake.FakeDiscovery{}, nil
-				},
 				makeDynamicClient: func() (dynamic.Interface, error) {
 					return dynamicfake.NewSimpleDynamicClient(runtime.NewScheme()), nil
 				},
