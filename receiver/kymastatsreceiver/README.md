@@ -32,9 +32,6 @@ Example:
   kymastats:
     auth_type: seviceAccount
     collection_interval: 30s
-    excluded_resources:
-    - kymas
-    - moduletemplates
     metrics:
       kyma.module.status.state:
         enabled: true
