@@ -42,7 +42,14 @@ func newReceiverRunner(params receiver.Settings, host component.Host) *receiverR
 func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.Metrics) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	factory := r.host.GetFactory(component.KindReceiver, config.id.Type())
+	serviceHost, ok := r.host.(interface {
+		GetFactory(kind component.Kind, componentType component.Type) component.Factory
+	})
+
+	if !ok {
+		return fmt.Errorf("host's serviceHost not available")
+	}
+	factory := serviceHost.GetFactory(component.KindReceiver, config.id.Type())
 
 	if factory == nil {
 		return fmt.Errorf("unable to lookup factory for wrapped receiver %q", config.id.String())
