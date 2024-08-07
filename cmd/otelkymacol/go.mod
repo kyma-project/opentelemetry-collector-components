@@ -24,7 +24,7 @@ require (
 	go.opentelemetry.io/collector/processor v0.106.1
 	go.opentelemetry.io/collector/processor/batchprocessor v0.106.1
 	go.opentelemetry.io/collector/receiver v0.106.1
-	golang.org/x/sys v0.22.0
+	golang.org/x/sys v0.23.0
 )
 
 require (
