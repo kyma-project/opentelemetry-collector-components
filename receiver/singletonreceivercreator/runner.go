@@ -24,12 +24,12 @@ type receiverRunner struct {
 	logger      *zap.Logger
 	params      receiver.Settings
 	idNamespace component.ID
-	host        component.Host
+	host        host
 	receiver    component.Component
 	lock        *sync.Mutex
 }
 
-func newReceiverRunner(params receiver.Settings, host component.Host) *receiverRunner {
+func newReceiverRunner(params receiver.Settings, host host) *receiverRunner {
 	return &receiverRunner{
 		logger:      params.Logger,
 		params:      params,
@@ -42,14 +42,8 @@ func newReceiverRunner(params receiver.Settings, host component.Host) *receiverR
 func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.Metrics) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	serviceHost, ok := r.host.(interface {
-		GetFactory(kind component.Kind, componentType component.Type) component.Factory
-	})
 
-	if !ok {
-		return fmt.Errorf("host's serviceHost not available")
-	}
-	factory := serviceHost.GetFactory(component.KindReceiver, config.id.Type())
+	factory := r.host.GetFactory(component.KindReceiver, config.id.Type())
 
 	if factory == nil {
 		return fmt.Errorf("unable to lookup factory for wrapped receiver %q", config.id.String())
