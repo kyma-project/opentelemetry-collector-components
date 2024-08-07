@@ -26,7 +26,7 @@ var mockReceiverConfig = receiverConfig{
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
-func NewMockHost() (component.Host, error) {
+func NewMockHost() (host, error) {
 
 	var factories map[component.Type]receiver.Factory
 	var err error
@@ -70,6 +70,7 @@ func TestLoadReceiverConfig(t *testing.T) {
 	mh, err := NewMockHost()
 	require.NoError(t, err)
 	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
+
 	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 

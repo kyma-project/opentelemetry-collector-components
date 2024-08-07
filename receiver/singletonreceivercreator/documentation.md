@@ -6,7 +6,7 @@
 
 The following telemetry is emitted by this component.
 
-### receiver_singleton_leader_status
+### otelcol_receiver_singleton_leader_status
 
 A gauge of if the reporting system is the leader of the relevant lease, 0 indicates backup, and 1 indicates leader.
 
@@ -14,7 +14,7 @@ A gauge of if the reporting system is the leader of the relevant lease, 0 indica
 | ---- | ----------- | ---------- |
 | 1 | Gauge | Int |
 
-### receiver_singleton_lease_acquired_total
+### otelcol_receiver_singleton_lease_acquired_total
 
 The total number of successful lease acquisitions.
 
@@ -22,7 +22,7 @@ The total number of successful lease acquisitions.
 | ---- | ----------- | ---------- | --------- |
 | 1 | Sum | Int | true |
 
-### receiver_singleton_lease_lost_total
+### otelcol_receiver_singleton_lease_lost_total
 
 The total number of lease losses.
 
@@ -30,7 +30,7 @@ The total number of lease losses.
 | ---- | ----------- | ---------- | --------- |
 | 1 | Sum | Int | true |
 
-### receiver_singleton_lease_slowpath_total
+### otelcol_receiver_singleton_lease_slowpath_total
 
 The total number of slow paths exercised in renewing leader leases.
 
