@@ -3,7 +3,7 @@ dist:
   name: otelkymacol
   description: Local OpenTelemetry Collector Contrib binary, testing only.
   version: 0.0.1-dev
-  otelcol_version: 0.106.1
+  otelcol_version: 0.105.0
   output_path: cmd/otelkymacol
 
 receivers:

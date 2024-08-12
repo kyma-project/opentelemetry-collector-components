@@ -3,6 +3,7 @@
 package main
 
 import (
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/connector"
 	"go.opentelemetry.io/collector/exporter"
 	debugexporter "go.opentelemetry.io/collector/exporter/debugexporter"
@@ -25,6 +26,7 @@ func components() (otelcol.Factories, error) {
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
+	factories.ExtensionModules = make(map[component.Type]string, len(factories.Extensions))
 
 	factories.Receivers, err = receiver.MakeFactoryMap(
 		dummyreceiver.NewFactory(),
@@ -34,6 +36,10 @@ func components() (otelcol.Factories, error) {
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
+	factories.ReceiverModules = make(map[component.Type]string, len(factories.Receivers))
+	factories.ReceiverModules[dummyreceiver.NewFactory().Type()] = "github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1"
+	factories.ReceiverModules[kymastatsreceiver.NewFactory().Type()] = "github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1"
+	factories.ReceiverModules[singletonreceivercreator.NewFactory().Type()] = "github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1"
 
 	factories.Exporters, err = exporter.MakeFactoryMap(
 		debugexporter.NewFactory(),
@@ -41,6 +47,8 @@ func components() (otelcol.Factories, error) {
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
+	factories.ExporterModules = make(map[component.Type]string, len(factories.Exporters))
+	factories.ExporterModules[debugexporter.NewFactory().Type()] = "go.opentelemetry.io/collector/exporter/debugexporter v0.106.1"
 
 	factories.Processors, err = processor.MakeFactoryMap(
 		batchprocessor.NewFactory(),
@@ -48,11 +56,14 @@ func components() (otelcol.Factories, error) {
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
+	factories.ProcessorModules = make(map[component.Type]string, len(factories.Processors))
+	factories.ProcessorModules[batchprocessor.NewFactory().Type()] = "go.opentelemetry.io/collector/processor/batchprocessor v0.106.1"
 
 	factories.Connectors, err = connector.MakeFactoryMap()
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
+	factories.ConnectorModules = make(map[component.Type]string, len(factories.Connectors))
 
 	return factories, nil
 }

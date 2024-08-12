@@ -24,12 +24,12 @@ type receiverRunner struct {
 	logger      *zap.Logger
 	params      receiver.Settings
 	idNamespace component.ID
-	host        host
+	host        component.Host
 	receiver    component.Component
 	lock        *sync.Mutex
 }
 
-func newReceiverRunner(params receiver.Settings, host host) *receiverRunner {
+func newReceiverRunner(params receiver.Settings, host component.Host) *receiverRunner {
 	return &receiverRunner{
 		logger:      params.Logger,
 		params:      params,
@@ -42,7 +42,6 @@ func newReceiverRunner(params receiver.Settings, host host) *receiverRunner {
 func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.Metrics) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-
 	factory := r.host.GetFactory(component.KindReceiver, config.id.Type())
 
 	if factory == nil {
