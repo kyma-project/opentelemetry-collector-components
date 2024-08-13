@@ -2,7 +2,7 @@ name: Build Image
 
 on:
   pull_request_target:
-    types: [ opened, edited, synchronize, reopened, ready_for_review ]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
     branches:
       - "main"
       - "release-*"
@@ -12,7 +12,6 @@ on:
       - "release-*"
 
 jobs:
-
   envs:
     runs-on: ubuntu-latest
     outputs:
@@ -40,7 +39,7 @@ jobs:
           {
           echo 'build-args<<BUILD_ARGS'
           cat otel-collector/envs
-          echo BUILD_ARGS 
+          echo BUILD_ARGS
           } >> "$GITHUB_OUTPUT"
 
       - name: load envs into output
@@ -59,7 +58,7 @@ jobs:
           else
             echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
           fi
-          
+
           echo 'PUSH_TAG="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
           echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
 
@@ -73,12 +72,10 @@ jobs:
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
 
-  list-images:
+  Build-Image-Success:
     needs: build-image
     runs-on: ubuntu-latest
     steps:
       - name: List images
         run: |
           echo "${{ needs.build-image.outputs.images }}"
-
-
