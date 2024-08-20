@@ -24,12 +24,12 @@ type receiverRunner struct {
 	logger      *zap.Logger
 	params      receiver.Settings
 	idNamespace component.ID
-	host        component.Host
+	host        host
 	receiver    component.Component
 	lock        *sync.Mutex
 }
 
-func newReceiverRunner(params receiver.Settings, host component.Host) *receiverRunner {
+func newReceiverRunner(params receiver.Settings, host host) *receiverRunner {
 	return &receiverRunner{
 		logger:      params.Logger,
 		params:      params,

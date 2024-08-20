@@ -26,7 +26,7 @@ var mockReceiverConfig = receiverConfig{
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
-func NewMockHost() (component.Host, error) {
+func NewMockHost() (host, error) {
 
 	var factories map[component.Type]receiver.Factory
 	var err error

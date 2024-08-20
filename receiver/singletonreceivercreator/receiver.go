@@ -19,7 +19,6 @@ type singletonReceiverCreator struct {
 	nextMetricsConsumer consumer.Metrics
 	telemetryBuilder    *metadata.TelemetryBuilder
 
-	host              component.Host
 	identity          string
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
@@ -41,10 +40,18 @@ func newSingletonReceiverCreator(
 	}
 }
 
+// host is an interface that the component.Host passed to singletonreceivercreator's Start function must implement
+type host interface {
+	component.Host
+	GetFactory(kind component.Kind, typ component.Type) component.Factory
+}
+
 // Start leader receiver creator.
-func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host) error {
-	c.host = host
-	// Create a new context as specified in the interface documentation
+func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) error {
+	rcHost, ok := h.(host)
+	if !ok {
+		return fmt.Errorf("the receivercreator is not compatible with the provided component.host")
+	} // Create a new context as specified in the interface documentation
 	ctx := context.Background()
 	ctx, c.cancel = context.WithCancel(ctx)
 
@@ -56,7 +63,7 @@ func (c *singletonReceiverCreator) Start(_ context.Context, host component.Host)
 	}
 
 	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
-	c.subReceiverRunner = newReceiverRunner(c.params, c.host)
+	c.subReceiverRunner = newReceiverRunner(c.params, rcHost)
 
 	leaderElector, err := newLeaderElector(
 		c.cfg.leaderElectionConfig,
