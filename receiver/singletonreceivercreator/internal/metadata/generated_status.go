@@ -8,7 +8,7 @@ import (
 
 var (
 	Type      = component.MustNewType("singleton_receiver_creator")
-	ScopeName = "otelcol/singletonreceivercreator"
+	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator"
 )
 
 const (
