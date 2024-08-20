@@ -8,7 +8,7 @@ import (
 
 var (
 	Type      = component.MustNewType("kymastats")
-	ScopeName = "otelcol/kymastats"
+	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver"
 )
 
 const (

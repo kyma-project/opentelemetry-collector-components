@@ -14,11 +14,11 @@ import (
 )
 
 func Meter(settings component.TelemetrySettings) metric.Meter {
-	return settings.MeterProvider.Meter("otelcol/singletonreceivercreator")
+	return settings.MeterProvider.Meter("github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator")
 }
 
 func Tracer(settings component.TelemetrySettings) trace.Tracer {
-	return settings.TracerProvider.Tracer("otelcol/singletonreceivercreator")
+	return settings.TracerProvider.Tracer("github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator")
 }
 
 // TelemetryBuilder provides an interface for components to report telemetry

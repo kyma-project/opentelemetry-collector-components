@@ -36,7 +36,7 @@ resourceMetrics:
             name: kyma.module.status.state
             unit: "1"
         scope:
-          name: otelcol/kymastats
+          name: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver
           version: latest
   - resource:
       attributes:
@@ -75,5 +75,5 @@ resourceMetrics:
             name: kyma.module.status.state
             unit: "1"
         scope:
-          name: otelcol/kymastats
+          name: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver
           version: latest
