@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	Type = component.MustNewType("singleton_receiver_creator")
+	Type      = component.MustNewType("singleton_receiver_creator")
+	ScopeName = "otelcol/singletonreceivercreator"
 )
 
 const (

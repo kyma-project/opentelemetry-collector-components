@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	Type = component.MustNewType("kymastats")
+	Type      = component.MustNewType("kymastats")
+	ScopeName = "otelcol/kymastats"
 )
 
 const (

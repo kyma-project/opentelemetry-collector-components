@@ -46,7 +46,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.105.0-main
+    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.107.0-main
       imagePullPolicy: Always
       name: collector
       volumeMounts:
@@ -67,7 +67,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.105.0-main
+    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.107.0-main
       imagePullPolicy: Always
       name: collector
       volumeMounts:

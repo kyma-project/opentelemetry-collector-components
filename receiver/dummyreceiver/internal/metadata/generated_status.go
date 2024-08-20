@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	Type = component.MustNewType("dummy")
+	Type      = component.MustNewType("dummy")
+	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 )
 
 const (
