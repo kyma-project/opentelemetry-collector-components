@@ -1,22 +1,47 @@
-name: PR Code checks
+name: PR Code Checks
 
 on:
   pull_request:
     branches:
       - "main"
       - "release-*"
-    paths-ignore:
-      - "docs/**"
-      - "**.md"
   workflow_dispatch:
 
 env:
   GITLEAKS_VERSION: 8.18.2
 
 jobs:
+  # This is a workaround to bypass the limitations of the workflow path filter:
+  # https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks#handling-skipped-but-required-checks
+  check-changed-files:
+    name: Check whether any source code files have been changed
+    outputs:
+      check: ${{ steps.changed-files.outputs.any_modified }}
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        uses: tj-actions/changed-files@6b2903bdce6310cfbddd87c418f253cf29b2dec9
+        id: changed-files
+        with:
+          files_ignore: |
+            docs/**
+            **/*.md
+            OWNERS
+            CODEOWNERS
+
+      - name: List changed files
+        run: echo '${{ steps.changed-files.outputs.all_changed_files }}' >> $GITHUB_STEP_SUMMARY
+
   setup-environment:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    needs: 
+    - check-changed-files
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -40,7 +65,9 @@ jobs:
         run: make install-tools
   lint:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
+    needs: 
+    - setup-environment
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -71,7 +98,9 @@ jobs:
         run: make -j2 golint
   checks:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
+    needs: 
+    - setup-environment
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -107,7 +136,9 @@ jobs:
           git diff --exit-code ':!*go.sum' || (echo 'Generated code is out of date, please run "make generate" and commit the changes in this PR.' && exit 1)
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
+    needs: 
+    - setup-environment
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -139,7 +170,9 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
+    needs: 
+    - setup-environment
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -175,7 +208,10 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [unit-tests, lint]
+    needs: 
+    - unit-tests
+    - lint
+    if: ${{ needs.check-changed-files.outputs.check == 'true' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -216,7 +252,12 @@ jobs:
           PULL_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   PR-Code-Checks-Success:
-    needs: [checks, unit-tests, coverage, build, gitleaks]
+    needs: 
+    - checks
+    - unit-tests
+    - coverage
+    - build
+    - gitleaks
     runs-on: ubuntu-latest
     steps:
       - run: echo "All checks passed"
