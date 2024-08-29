@@ -19,6 +19,7 @@ This release process covers the steps to release new major and minor versions fo
    ```
 
 5. Update `otel-collector/builder-config.yaml` to include all components required in the release and commit the changes.
+    > skip this step if there is no new receiver/processor/exporter is added in the release.
 
 6. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
