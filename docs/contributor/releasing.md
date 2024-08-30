@@ -18,8 +18,6 @@ This release process covers the steps to release new major and minor versions fo
    git push upstream {RELEASE_BRANCH}
    ```
 
-5. Update `otel-collector/builder-config.yaml` to include all components required in the release and commit the changes.
-
 6. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
 
    ```bash
