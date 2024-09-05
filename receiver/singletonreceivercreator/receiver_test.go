@@ -80,10 +80,10 @@ func TestSingletonReceiverCreator(t *testing.T) {
 
 	sink1 := new(consumertest.MetricsSink)
 	sr1 := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, sink1, telemetryBuilder, "host1")
-	mh1, err := NewMockHost()
+	ms1, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr1.Start(context.TODO(), mh1))
+	require.NoError(t, sr1.Start(context.TODO(), ms1))
 
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -100,10 +100,10 @@ func TestSingletonReceiverCreator(t *testing.T) {
 
 	sink2 := new(consumertest.MetricsSink)
 	sr2 := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, sink2, telemetryBuilder, "host2")
-	mh2, err := NewMockHost()
+	ms2, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr2.Start(context.TODO(), mh2))
+	require.NoError(t, sr2.Start(context.TODO(), ms2))
 
 	require.Never(t, func() bool {
 		allMetrics := sink2.AllMetrics()

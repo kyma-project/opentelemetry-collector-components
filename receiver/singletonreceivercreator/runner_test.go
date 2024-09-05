@@ -14,8 +14,9 @@ import (
 )
 
 // nopHost mocks a receiver.ReceiverHost for test purposes.
-type mockHost struct {
-	receivers *receiver.Builder
+type mockSettings struct {
+	ReceiversConfigs   map[component.ID]component.Config
+	ReceiversFactories map[component.Type]receiver.Factory
 }
 
 var mockReceiverConfig = receiverConfig{
@@ -26,7 +27,7 @@ var mockReceiverConfig = receiverConfig{
 }
 
 // NewNopHost returns a new instance of nopHost with proper defaults for most tests.
-func NewMockHost() (host, error) {
+func NewMockSettings() (*mockSettings, error) {
 
 	var factories map[component.Type]receiver.Factory
 	var err error
@@ -40,37 +41,38 @@ func NewMockHost() (host, error) {
 	}
 
 	cfg := map[component.ID]component.Config{component.MustNewID("foo"): struct{}{}}
-	return &mockHost{
-		receivers: receiver.NewBuilder(cfg, factories),
+	return &mockSettings{
+		ReceiversConfigs:   cfg,
+		ReceiversFactories: factories,
 	}, nil
 }
 
-func (mh *mockHost) GetFactory(kind component.Kind, t component.Type) component.Factory {
-	return mh.receivers.Factory(t)
+func (ms *mockSettings) GetFactory(kind component.Kind, t component.Type) component.Factory {
+	return ms.ReceiversFactories[t]
 }
 
-func (mh *mockHost) GetExtensions() map[component.ID]component.Component {
+func (ms *mockSettings) GetExtensions() map[component.ID]component.Component {
 	return nil
 }
 
-func (mh *mockHost) GetExporters() map[component.DataType]map[component.ID]component.Component {
+func (ms *mockSettings) GetExporters() map[component.DataType]map[component.ID]component.Component {
 	return nil
 }
 
 func TestRunnerStart(t *testing.T) {
-	mh, err := NewMockHost()
+	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
+	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
 
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 	require.NoError(t, r.shutdown(context.Background()))
 }
 
 func TestLoadReceiverConfig(t *testing.T) {
-	mh, err := NewMockHost()
+	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
-	factory := mh.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
+	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
+	factory := ms.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 
 	cfg, err := r.loadReceiverConfig(recvrFact, mockReceiverConfig)
@@ -92,11 +94,11 @@ func TestLoadReceiverConfigError(t *testing.T) {
 	}...)
 
 	require.NoError(t, err)
-	mh := &mockHost{
-		receivers: receiver.NewBuilder(nil, factories),
+	ms := &mockSettings{
+		ReceiversFactories: factories,
 	}
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), mh)
+	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
 	err = r.start(mockReceiverConfig, consumertest.NewNop())
 	require.EqualError(t, err, "unable to lookup factory for wrapped receiver \"dummy/name\"")
 }
