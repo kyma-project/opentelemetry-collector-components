@@ -4,12 +4,22 @@ resourceMetrics:
         - key: k8s.namespace.name
           value:
             stringValue: kyma-system
-        - key: kyma.module.name
+        - key: k8s.resource.name
           value:
-            stringValue: Telemetry
+            stringValue: default
+        - key: k8s.resource.group
+          value:
+            stringValue: operator.kyma-project.io
+        - key: k8s.resource.version
+          value:
+            stringValue: v1
+        - key: k8s.resource.kind
+          value:
+            stringValue: telemetries
+
     scopeMetrics:
       - metrics:
-          - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
+          - description: The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
             gauge:
               dataPoints:
                 - asInt: "1"
@@ -23,9 +33,9 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: TelemetryHealthy
-            name: kyma.module.status.conditions
+            name: kyma.resource.status.conditions
             unit: "1"
-          - description: The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
+          - description: The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute.
             gauge:
               dataPoints:
                 - asInt: "1"
@@ -33,46 +43,78 @@ resourceMetrics:
                     - key: state
                       value:
                         stringValue: Ready
-            name: kyma.module.status.state
+            name: kyma.resource.status.state
             unit: "1"
         scope:
           name: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver
           version: latest
   - resource:
       attributes:
-        - key: k8s.namespace.name
+        - key: k8s.resource.name
           value:
-            stringValue: kyma-system
-        - key: kyma.module.name
+            stringValue: pipe-1
+        - key: k8s.resource.group
           value:
-            stringValue: Istio
+            stringValue: telemetry.kyma-project.io
+        - key: k8s.resource.version
+          value:
+            stringValue: v1alpha1
+        - key: k8s.resource.kind
+          value:
+            stringValue: logpipelines
+
     scopeMetrics:
       - metrics:
-          - description: The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
+          - description: The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: reason
+                      value:
+                        stringValue: AgentReady
+                    - key: status
+                      value:
+                        stringValue: "True"
+                    - key: type
+                      value:
+                        stringValue: AgentHealthy
+            name: kyma.resource.status.conditions
+            unit: "1"
+        scope:
+          name: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: k8s.resource.group
+          value:
+            stringValue: telemetry.kyma-project.io
+        - key: k8s.resource.version
+          value:
+            stringValue: v1alpha1
+        - key: k8s.resource.kind
+          value:
+            stringValue: logpipelines
+        - key: k8s.resource.name
+          value:
+            stringValue: pipe-2
+    scopeMetrics:
+      - metrics:
+          - description: The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
             gauge:
               dataPoints:
                 - asInt: "0"
                   attributes:
                     - key: reason
                       value:
-                        stringValue: IstiodDown
+                        stringValue: AgentNotReady
                     - key: status
                       value:
                         stringValue: "False"
                     - key: type
                       value:
-                        stringValue: IstioHealthy
-            name: kyma.module.status.conditions
-            unit: "1"
-          - description: The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
-            gauge:
-              dataPoints:
-                - asInt: "1"
-                  attributes:
-                    - key: state
-                      value:
-                        stringValue: Warning
-            name: kyma.module.status.state
+                        stringValue: AgentHealthy
+            name: kyma.resource.status.conditions
             unit: "1"
         scope:
           name: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver

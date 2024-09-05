@@ -15,19 +15,19 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	Modules                        []ModuleConfig `mapstructure:"modules"`
+	Resources                      []ResourceConfig `mapstructure:"resources"`
 
 	// Used for unit testing only
 	makeDynamicClient func() (dynamic.Interface, error)
 }
 
-type ModuleConfig struct {
+type ResourceConfig struct {
 	Group    string `mapstructure:"group"`
 	Version  string `mapstructure:"version"`
 	Resource string `mapstructure:"resource"`
 }
 
-var errEmptyModules = errors.New("empty modules")
+var errEmptyResources = errors.New("empty resources")
 
 func (cfg *Config) Validate() error {
 	if err := cfg.APIConfig.Validate(); err != nil {
@@ -38,8 +38,8 @@ func (cfg *Config) Validate() error {
 		return err
 	}
 
-	if len(cfg.Modules) == 0 {
-		return errEmptyModules
+	if len(cfg.Resources) == 0 {
+		return errEmptyResources
 	}
 
 	return nil

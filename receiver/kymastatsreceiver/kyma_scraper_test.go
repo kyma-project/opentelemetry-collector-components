@@ -20,28 +20,31 @@ import (
 )
 
 const (
-	moduleGroup     = "operator.kyma-project.io"
-	moduleVersion   = "v1"
-	moduleNamespace = "kyma-system"
+	telemetryResourceGroup     = "operator.kyma-project.io"
+	telemetryResourceVersion   = "v1"
+	telemetryResourceNamespace = "kyma-system"
+
+	logPipelineResourceGroup   = "telemetry.kyma-project.io"
+	logPipelineResourceVersion = "v1alpha1"
 )
 
 func TestScrape(t *testing.T) {
-	modules := []ModuleConfig{
+	resources := []ResourceConfig{
 		{
-			Group:    moduleGroup,
-			Version:  moduleVersion,
+			Group:    telemetryResourceGroup,
+			Version:  telemetryResourceVersion,
 			Resource: "telemetries",
 		},
 		{
-			Group:    moduleGroup,
-			Version:  moduleVersion,
-			Resource: "istios",
+			Group:    logPipelineResourceGroup,
+			Version:  logPipelineResourceVersion,
+			Resource: "logpipelines",
 		},
 	}
 
 	scheme := runtime.NewScheme()
 
-	telemetry := newUnstructuredObject("Telemetry")
+	telemetry := newUnstructuredObject("Telemetry", "telemetry", "default")
 	unstructured.SetNestedMap(telemetry, map[string]interface{}{
 		"state": "Ready",
 		"conditions": []interface{}{
@@ -53,34 +56,48 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	istio := newUnstructuredObject("Istio")
-	unstructured.SetNestedMap(istio, map[string]interface{}{
-		"state": "Warning",
+	pipe1 := newUnstructuredObject("LogPipeline", "logpipeline", "pipe-1")
+	pipe2 := newUnstructuredObject("LogPipeline", "logpipeline", "pipe-2")
+
+	unstructured.SetNestedMap(pipe1, map[string]interface{}{
 		"conditions": []interface{}{
 			map[string]interface{}{
-				"type":   "IstioHealthy",
+				"type":   "AgentHealthy",
+				"status": "True",
+				"reason": "AgentReady",
+			},
+		},
+	}, "status")
+
+	unstructured.SetNestedMap(pipe2, map[string]interface{}{
+		"conditions": []interface{}{
+			map[string]interface{}{
+				"type":   "AgentHealthy",
 				"status": "False",
-				"reason": "IstiodDown",
+				"reason": "AgentNotReady",
 			},
 		},
 	}, "status")
 
 	dynamic := dynamicfake.NewSimpleDynamicClientWithCustomListKinds(scheme,
 		map[schema.GroupVersionResource]string{
-			schema.GroupVersionResource(modules[0]): "TelemetryList",
-			schema.GroupVersionResource(modules[1]): "IstioList",
+			schema.GroupVersionResource(resources[0]): "TelemetryList",
+			schema.GroupVersionResource(resources[1]): "LogPipelineList",
 		}, &unstructured.Unstructured{
 			Object: telemetry,
 		},
 		&unstructured.Unstructured{
-			Object: istio,
+			Object: pipe1,
+		},
+		&unstructured.Unstructured{
+			Object: pipe2,
 		},
 	)
 
 	r, err := newKymaScraper(
 		Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-			Modules:              modules,
+			Resources:            resources,
 		},
 		dynamic,
 		receivertest.NewNopSettings(),
@@ -106,28 +123,28 @@ func TestScrape(t *testing.T) {
 }
 
 func TestScrape_CantPullResource(t *testing.T) {
-	modules := []ModuleConfig{
+	resources := []ResourceConfig{
 		{
-			Group:    moduleGroup,
-			Version:  moduleVersion,
-			Resource: "mykymamodules",
+			Group:    telemetryResourceGroup,
+			Version:  telemetryResourceVersion,
+			Resource: "mykymaresources",
 		},
 	}
 
 	scheme := runtime.NewScheme()
 
 	dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{
-		Object: newUnstructuredObject("MyKymaModule"),
+		Object: newUnstructuredObject("MyKymaResource", "telemetry", "default"),
 	})
 
-	dynamic.PrependReactor("list", "mykymamodules", func(action clienttesting.Action) (bool, runtime.Object, error) {
+	dynamic.PrependReactor("list", "mykymaresources", func(action clienttesting.Action) (bool, runtime.Object, error) {
 		return true, nil, errors.New("error")
 	})
 
 	r, err := newKymaScraper(
 		Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-			Modules:              modules,
+			Resources:            resources,
 		},
 		dynamic,
 		receivertest.NewNopSettings(),
@@ -166,6 +183,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					},
 				},
 			},
+			expectedDataPoints: 1,
 		},
 		{
 			name: "state not a string",
@@ -285,15 +303,15 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			modules := []ModuleConfig{
+			resources := []ResourceConfig{
 				{
-					Group:    moduleGroup,
-					Version:  moduleVersion,
-					Resource: "mykymamodules",
+					Group:    telemetryResourceGroup,
+					Version:  telemetryResourceVersion,
+					Resource: "mykymaresources",
 				},
 			}
 			scheme := runtime.NewScheme()
-			obj := newUnstructuredObject("MyKymaModule")
+			obj := newUnstructuredObject("MyKymaResource", "telemetry", "default")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
 			}
@@ -303,7 +321,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			r, err := newKymaScraper(
 				Config{
 					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-					Modules:              modules,
+					Resources:            resources,
 				},
 				dynamic,
 				receivertest.NewNopSettings(),
@@ -317,13 +335,25 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	}
 }
 
-func newUnstructuredObject(kind string) map[string]interface{} {
-	return map[string]interface{}{
-		"apiVersion": moduleGroup + "/" + moduleVersion,
-		"kind":       kind,
-		"metadata": map[string]interface{}{
-			"namespace": moduleNamespace,
-			"name":      "default",
-		},
+func newUnstructuredObject(kind, resourceType, name string) map[string]interface{} {
+	if resourceType == "telemetry" {
+		return map[string]interface{}{
+			"apiVersion": telemetryResourceGroup + "/" + telemetryResourceVersion,
+			"kind":       kind,
+			"metadata": map[string]interface{}{
+				"namespace": telemetryResourceNamespace,
+				"name":      name,
+			},
+		}
 	}
+	if resourceType == "logpipeline" {
+		return map[string]interface{}{
+			"apiVersion": logPipelineResourceGroup + "/" + logPipelineResourceVersion,
+			"kind":       kind,
+			"metadata": map[string]interface{}{
+				"name": name,
+			},
+		}
+	}
+	return nil
 }

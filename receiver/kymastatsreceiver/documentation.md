@@ -12,25 +12,9 @@ metrics:
     enabled: false
 ```
 
-### kyma.module.status.conditions
+### kyma.resource.status.conditions
 
-The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| reason | The reason of the module condition status. | Any Str |
-| status | The status of the module condition. | Any Str |
-| type | The type of the module condition. | Any Str |
-
-### kyma.module.status.state
-
-The module status state, metric value is 1 for last scraped module status state, including state as metric attribute.
+The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -40,11 +24,30 @@ The module status state, metric value is 1 for last scraped module status state,
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| state | The state of the module status. | Any Str |
+| reason | The reason of the resource condition status. | Any Str |
+| status | The status of the resource condition. | Any Str |
+| type | The type of the resource condition. | Any Str |
+
+### kyma.resource.status.state
+
+The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| state | The state of the resource status. | Any Str |
 
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
-| kyma.module.name | The module kind | Any Str | true |
+| k8s.resource.group | The resource group | Any Str | true |
+| k8s.resource.kind | The resource kind | Any Str | true |
+| k8s.resource.name | The resource name | Any Str | true |
+| k8s.resource.version | The resource version | Any Str | true |
