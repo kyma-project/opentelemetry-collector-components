@@ -13,7 +13,7 @@ import (
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 )
 
-// nopHost mocks a receiver.ReceiverHost for test purposes.
+// mockSettings mocks a ReceiverConfigs and ReceiverFactories for test purposes.
 type mockSettings struct {
 	ReceiversConfigs   map[component.ID]component.Config
 	ReceiversFactories map[component.Type]receiver.Factory
@@ -26,7 +26,7 @@ var mockReceiverConfig = receiverConfig{
 	},
 }
 
-// NewNopHost returns a new instance of nopHost with proper defaults for most tests.
+// NewMockSettings returns a new instance of mockSettings with proper defaults for most tests.
 func NewMockSettings() (*mockSettings, error) {
 
 	var factories map[component.Type]receiver.Factory
