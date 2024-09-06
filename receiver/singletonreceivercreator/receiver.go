@@ -9,6 +9,9 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 
+	"github.com/go-logr/zapr"
+	"k8s.io/klog/v2"
+
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
@@ -61,6 +64,9 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 	if err != nil {
 		return fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
+
+	//leader elector tooling logs to klog without config options, so configure klog globally
+	klog.SetLogger(zapr.NewLogger(c.params.TelemetrySettings.Logger))
 
 	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
 	c.subReceiverRunner = newReceiverRunner(c.params, rcHost)
