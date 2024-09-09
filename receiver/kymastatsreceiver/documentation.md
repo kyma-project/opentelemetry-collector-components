@@ -30,7 +30,7 @@ The resource status conditions. Possible metric values for condition status are 
 
 ### kyma.resource.status.state
 
-The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute.
+The resource status state. Metric value is 1 for last scraped resource status state, including state as metric attribute.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
