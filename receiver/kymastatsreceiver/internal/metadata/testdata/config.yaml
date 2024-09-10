@@ -1,25 +1,37 @@
 default:
 all_set:
   metrics:
-    kyma.module.status.conditions:
+    kyma.resource.status.conditions:
       enabled: true
-    kyma.module.status.state:
+    kyma.resource.status.state:
       enabled: true
   resource_attributes:
     k8s.namespace.name:
       enabled: true
-    kyma.module.name:
+    k8s.resource.group:
+      enabled: true
+    k8s.resource.kind:
+      enabled: true
+    k8s.resource.name:
+      enabled: true
+    k8s.resource.version:
       enabled: true
 none_set:
   metrics:
-    kyma.module.status.conditions:
+    kyma.resource.status.conditions:
       enabled: false
-    kyma.module.status.state:
+    kyma.resource.status.state:
       enabled: false
   resource_attributes:
     k8s.namespace.name:
       enabled: false
-    kyma.module.name:
+    k8s.resource.group:
+      enabled: false
+    k8s.resource.kind:
+      enabled: false
+    k8s.resource.name:
+      enabled: false
+    k8s.resource.version:
       enabled: false
 filter_set_include:
   resource_attributes:
@@ -27,7 +39,19 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
-    kyma.module.name:
+    k8s.resource.group:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.resource.kind:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.resource.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.resource.version:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -37,7 +61,19 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "k8s.namespace.name-val"
-    kyma.module.name:
+    k8s.resource.group:
       enabled: true
       metrics_exclude:
-        - strict: "kyma.module.name-val"
+        - strict: "k8s.resource.group-val"
+    k8s.resource.kind:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.resource.kind-val"
+    k8s.resource.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.resource.name-val"
+    k8s.resource.version:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.resource.version-val"

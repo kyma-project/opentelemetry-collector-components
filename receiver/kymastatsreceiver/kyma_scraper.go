@@ -26,12 +26,18 @@ type kymaScraper struct {
 	mb      *metadata.MetricsBuilder
 }
 
-type moduleStats struct {
+type resourceStats struct {
 	namespace string
-	kind      string
+	name      string
+
+	group   string
+	version string
+	kind    string
 
 	state      string
 	conditions []condition
+
+	hasState bool
 }
 
 type condition struct {
@@ -64,7 +70,7 @@ func newKymaScraper(
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	stats, err := ks.collectModuleStats(ctx)
+	stats, err := ks.collectResourceStats(ctx)
 	if err != nil {
 		return pmetric.Metrics{}, err
 	}
@@ -72,13 +78,23 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	for _, s := range stats {
-		ks.mb.RecordKymaModuleStatusStateDataPoint(now, int64(1), s.state)
+		if s.hasState {
+			ks.mb.RecordKymaResourceStatusStateDataPoint(now, int64(1), s.state)
+		}
 		rb := ks.mb.NewResourceBuilder()
-		rb.SetK8sNamespaceName(s.namespace)
-		rb.SetKymaModuleName(s.kind)
+		if s.namespace != "" {
+			rb.SetK8sNamespaceName(s.namespace)
+		}
+
+		rb.SetK8sResourceName(s.name)
+
+		rb.SetK8sResourceGroup(s.group)
+		rb.SetK8sResourceVersion(s.version)
+		rb.SetK8sResourceKind(s.kind)
+
 		for _, c := range s.conditions {
 			val := conditionStatusToValue(c.status)
-			ks.mb.RecordKymaModuleStatusConditionsDataPoint(now, val, c.reason, c.status, c.condType)
+			ks.mb.RecordKymaResourceStatusConditionsDataPoint(now, val, c.reason, c.status, c.condType)
 		}
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
@@ -86,13 +102,13 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	return ks.mb.Emit(), nil
 }
 
-func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, error) {
-	var res []moduleStats
-	for _, module := range ks.config.Modules {
-		gvr := schema.GroupVersionResource(module)
-		moduleList, err := ks.dynamic.Resource(gvr).List(ctx, metav1.ListOptions{})
+func (ks *kymaScraper) collectResourceStats(ctx context.Context) ([]resourceStats, error) {
+	var res []resourceStats
+	for _, resource := range ks.config.Resources {
+		gvr := schema.GroupVersionResource(resource)
+		resourceList, err := ks.dynamic.Resource(gvr).List(ctx, metav1.ListOptions{})
 		if err != nil {
-			ks.logger.Error("Error fetching module list",
+			ks.logger.Error("Error fetching resource list",
 				zap.Error(err),
 				zap.String("group", gvr.Group),
 				zap.String("version", gvr.Version),
@@ -100,29 +116,30 @@ func (ks *kymaScraper) collectModuleStats(ctx context.Context) ([]moduleStats, e
 			return nil, err
 		}
 
-		for _, module := range moduleList.Items {
-			stats, err := ks.unstructuredToStats(module)
+		for _, r := range resourceList.Items {
+			stats, err := ks.unstructuredToStats(r)
 			if err != nil {
-				ks.logger.Warn("Error converting unstructured module to stats",
+				ks.logger.Warn("Error converting unstructured resource to stats",
 					zap.Error(err),
-					zap.String("name", module.GetName()),
-					zap.String("namespace", module.GetNamespace()),
-					zap.String("kind", module.GetKind()),
+					zap.String("name", r.GetName()),
+					zap.String("namespace", r.GetNamespace()),
+					zap.String("kind", r.GetKind()),
 				)
 				continue
 			}
+			stats.group = gvr.Group
+			stats.version = gvr.Version
+			stats.kind = gvr.Resource
 
 			res = append(res, *stats)
-			// Take only the first valid module custom resource
-			break
 		}
 	}
 
 	return res, nil
 }
 
-func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*moduleStats, error) {
-	status, found, err := unstructured.NestedMap(module.Object, "status")
+func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (*resourceStats, error) {
+	status, found, err := unstructured.NestedMap(resource.Object, "status")
 	if err != nil {
 		return nil, err
 	}
@@ -132,34 +149,46 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 
 	state, found, err := unstructured.NestedString(status, "state")
 	if err != nil {
-		return nil, err
+		ks.logger.Debug("Error retrieving state: state is not a string",
+			zap.Error(err),
+			zap.String("name", resource.GetName()),
+			zap.String("namespace", resource.GetNamespace()),
+			zap.String("kind", resource.GetKind()),
+		)
 	}
 	if !found {
-		return nil, &fieldNotFoundError{"state"}
+		ks.logger.Debug("Error retrieving state: state not found",
+			zap.Error(err),
+			zap.String("name", resource.GetName()),
+			zap.String("namespace", resource.GetNamespace()),
+			zap.String("kind", resource.GetKind()),
+		)
 	}
 
-	stats := &moduleStats{
+	stats := &resourceStats{
 		state:     state,
-		namespace: module.GetNamespace(),
-		kind:      module.GetKind(),
+		hasState:  found,
+		namespace: resource.GetNamespace(),
+		kind:      resource.GetKind(),
+		name:      resource.GetName(),
 	}
 
 	unstructuredConds, found, err := unstructured.NestedSlice(status, "conditions")
 	if err != nil {
-		ks.logger.Warn("Error retrieving conditions: conditions are not a slice",
+		ks.logger.Debug("Error retrieving conditions: conditions are not a slice",
 			zap.Error(err),
-			zap.String("name", module.GetName()),
-			zap.String("namespace", module.GetNamespace()),
-			zap.String("kind", module.GetKind()),
+			zap.String("name", resource.GetName()),
+			zap.String("namespace", resource.GetNamespace()),
+			zap.String("kind", resource.GetKind()),
 		)
 		return stats, nil
 	}
 	if !found {
-		ks.logger.Warn("Error retrieving conditions: conditions not found",
+		ks.logger.Debug("Error retrieving conditions: conditions not found",
 			zap.Error(err),
-			zap.String("name", module.GetName()),
-			zap.String("namespace", module.GetNamespace()),
-			zap.String("kind", module.GetKind()),
+			zap.String("name", resource.GetName()),
+			zap.String("namespace", resource.GetNamespace()),
+			zap.String("kind", resource.GetKind()),
 		)
 		return stats, nil
 	}
@@ -167,11 +196,11 @@ func (ks *kymaScraper) unstructuredToStats(module unstructured.Unstructured) (*m
 	for _, unstructuredCond := range unstructuredConds {
 		cond, err := ks.unstructuredToCondition(unstructuredCond)
 		if err != nil {
-			ks.logger.Warn("Error converting unstructured module to stats, condition not supported",
+			ks.logger.Warn("Error converting unstructured resource to stats, condition not supported",
 				zap.Error(err),
-				zap.String("name", module.GetName()),
-				zap.String("namespace", module.GetNamespace()),
-				zap.String("kind", module.GetKind()),
+				zap.String("name", resource.GetName()),
+				zap.String("namespace", resource.GetNamespace()),
+				zap.String("kind", resource.GetKind()),
 			)
 			continue
 		}

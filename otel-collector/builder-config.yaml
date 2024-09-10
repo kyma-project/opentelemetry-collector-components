@@ -39,6 +39,10 @@ extensions:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage/filestorage vOTEL_CONTRIB_VERSION
 
+connectors:
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/routingconnector vOTEL_CONTRIB_VERSION
+  - gomod: go.opentelemetry.io/collector/connector/forwardconnector vOTEL_VERSION
+
 replaces:
   # a list of "replaces" directives that will be part of the resulting go.mod
   - github.com/go-resty/resty/v2 => github.com/go-resty/resty/v2 v2.12.0

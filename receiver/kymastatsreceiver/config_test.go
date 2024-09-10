@@ -37,7 +37,7 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules: []ModuleConfig{
+				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
 						Version:  "v1alpha1",
@@ -55,7 +55,7 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules: []ModuleConfig{
+				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
 						Version:  "v1alpha1",
@@ -72,7 +72,7 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules: []ModuleConfig{
+				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
 						Version:  "v1alpha1",
@@ -97,7 +97,7 @@ func TestLoadConfig(t *testing.T) {
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
 				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-				Modules: []ModuleConfig{
+				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
 						Version:  "v1alpha1",
@@ -107,7 +107,7 @@ func TestLoadConfig(t *testing.T) {
 			},
 		},
 		{
-			id:        component.NewIDWithName(metadata.Type, "nomodulegroups"),
+			id:        component.NewIDWithName(metadata.Type, "noresourcegroups"),
 			expectErr: true,
 		},
 	}
