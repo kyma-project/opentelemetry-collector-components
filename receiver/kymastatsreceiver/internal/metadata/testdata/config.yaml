@@ -1,37 +1,25 @@
 default:
 all_set:
   metrics:
-    kyma.resource.status.conditions:
+    kyma.module.status.conditions:
       enabled: true
-    kyma.resource.status.state:
+    kyma.module.status.state:
       enabled: true
   resource_attributes:
     k8s.namespace.name:
       enabled: true
-    k8s.resource.group:
-      enabled: true
-    k8s.resource.kind:
-      enabled: true
-    k8s.resource.name:
-      enabled: true
-    k8s.resource.version:
+    kyma.module.name:
       enabled: true
 none_set:
   metrics:
-    kyma.resource.status.conditions:
+    kyma.module.status.conditions:
       enabled: false
-    kyma.resource.status.state:
+    kyma.module.status.state:
       enabled: false
   resource_attributes:
     k8s.namespace.name:
       enabled: false
-    k8s.resource.group:
-      enabled: false
-    k8s.resource.kind:
-      enabled: false
-    k8s.resource.name:
-      enabled: false
-    k8s.resource.version:
+    kyma.module.name:
       enabled: false
 filter_set_include:
   resource_attributes:
@@ -39,19 +27,7 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
-    k8s.resource.group:
-      enabled: true
-      metrics_include:
-        - regexp: ".*"
-    k8s.resource.kind:
-      enabled: true
-      metrics_include:
-        - regexp: ".*"
-    k8s.resource.name:
-      enabled: true
-      metrics_include:
-        - regexp: ".*"
-    k8s.resource.version:
+    kyma.module.name:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -61,19 +37,7 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "k8s.namespace.name-val"
-    k8s.resource.group:
+    kyma.module.name:
       enabled: true
       metrics_exclude:
-        - strict: "k8s.resource.group-val"
-    k8s.resource.kind:
-      enabled: true
-      metrics_exclude:
-        - strict: "k8s.resource.kind-val"
-    k8s.resource.name:
-      enabled: true
-      metrics_exclude:
-        - strict: "k8s.resource.name-val"
-    k8s.resource.version:
-      enabled: true
-      metrics_exclude:
-        - strict: "k8s.resource.version-val"
+        - strict: "kyma.module.name-val"

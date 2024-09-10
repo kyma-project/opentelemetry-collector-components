@@ -14,19 +14,16 @@ func TestResourceBuilder(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, test)
 			rb := NewResourceBuilder(cfg)
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
-			rb.SetK8sResourceGroup("k8s.resource.group-val")
-			rb.SetK8sResourceKind("k8s.resource.kind-val")
-			rb.SetK8sResourceName("k8s.resource.name-val")
-			rb.SetK8sResourceVersion("k8s.resource.version-val")
+			rb.SetKymaModuleName("kyma.module.name-val")
 
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
 			switch test {
 			case "default":
-				assert.Equal(t, 5, res.Attributes().Len())
+				assert.Equal(t, 2, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 5, res.Attributes().Len())
+				assert.Equal(t, 2, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -39,25 +36,10 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.EqualValues(t, "k8s.namespace.name-val", val.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.resource.group")
+			val, ok = res.Attributes().Get("kyma.module.name")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "k8s.resource.group-val", val.Str())
-			}
-			val, ok = res.Attributes().Get("k8s.resource.kind")
-			assert.True(t, ok)
-			if ok {
-				assert.EqualValues(t, "k8s.resource.kind-val", val.Str())
-			}
-			val, ok = res.Attributes().Get("k8s.resource.name")
-			assert.True(t, ok)
-			if ok {
-				assert.EqualValues(t, "k8s.resource.name-val", val.Str())
-			}
-			val, ok = res.Attributes().Get("k8s.resource.version")
-			assert.True(t, ok)
-			if ok {
-				assert.EqualValues(t, "k8s.resource.version-val", val.Str())
+				assert.EqualValues(t, "kyma.module.name-val", val.Str())
 			}
 		})
 	}

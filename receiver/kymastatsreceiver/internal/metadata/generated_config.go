@@ -28,16 +28,16 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for kymastats metrics.
 type MetricsConfig struct {
-	KymaResourceStatusConditions MetricConfig `mapstructure:"kyma.resource.status.conditions"`
-	KymaResourceStatusState      MetricConfig `mapstructure:"kyma.resource.status.state"`
+	KymaModuleStatusConditions MetricConfig `mapstructure:"kyma.module.status.conditions"`
+	KymaModuleStatusState      MetricConfig `mapstructure:"kyma.module.status.state"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
-		KymaResourceStatusConditions: MetricConfig{
+		KymaModuleStatusConditions: MetricConfig{
 			Enabled: true,
 		},
-		KymaResourceStatusState: MetricConfig{
+		KymaModuleStatusState: MetricConfig{
 			Enabled: true,
 		},
 	}
@@ -71,11 +71,8 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 
 // ResourceAttributesConfig provides config for kymastats resource attributes.
 type ResourceAttributesConfig struct {
-	K8sNamespaceName   ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
-	K8sResourceGroup   ResourceAttributeConfig `mapstructure:"k8s.resource.group"`
-	K8sResourceKind    ResourceAttributeConfig `mapstructure:"k8s.resource.kind"`
-	K8sResourceName    ResourceAttributeConfig `mapstructure:"k8s.resource.name"`
-	K8sResourceVersion ResourceAttributeConfig `mapstructure:"k8s.resource.version"`
+	K8sNamespaceName ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
+	KymaModuleName   ResourceAttributeConfig `mapstructure:"kyma.module.name"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -83,16 +80,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sNamespaceName: ResourceAttributeConfig{
 			Enabled: true,
 		},
-		K8sResourceGroup: ResourceAttributeConfig{
-			Enabled: true,
-		},
-		K8sResourceKind: ResourceAttributeConfig{
-			Enabled: true,
-		},
-		K8sResourceName: ResourceAttributeConfig{
-			Enabled: true,
-		},
-		K8sResourceVersion: ResourceAttributeConfig{
+		KymaModuleName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}

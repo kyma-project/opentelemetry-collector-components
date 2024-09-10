@@ -28,31 +28,10 @@ func (rb *ResourceBuilder) SetK8sNamespaceName(val string) {
 	}
 }
 
-// SetK8sResourceGroup sets provided value as "k8s.resource.group" attribute.
-func (rb *ResourceBuilder) SetK8sResourceGroup(val string) {
-	if rb.config.K8sResourceGroup.Enabled {
-		rb.res.Attributes().PutStr("k8s.resource.group", val)
-	}
-}
-
-// SetK8sResourceKind sets provided value as "k8s.resource.kind" attribute.
-func (rb *ResourceBuilder) SetK8sResourceKind(val string) {
-	if rb.config.K8sResourceKind.Enabled {
-		rb.res.Attributes().PutStr("k8s.resource.kind", val)
-	}
-}
-
-// SetK8sResourceName sets provided value as "k8s.resource.name" attribute.
-func (rb *ResourceBuilder) SetK8sResourceName(val string) {
-	if rb.config.K8sResourceName.Enabled {
-		rb.res.Attributes().PutStr("k8s.resource.name", val)
-	}
-}
-
-// SetK8sResourceVersion sets provided value as "k8s.resource.version" attribute.
-func (rb *ResourceBuilder) SetK8sResourceVersion(val string) {
-	if rb.config.K8sResourceVersion.Enabled {
-		rb.res.Attributes().PutStr("k8s.resource.version", val)
+// SetKymaModuleName sets provided value as "kyma.module.name" attribute.
+func (rb *ResourceBuilder) SetKymaModuleName(val string) {
+	if rb.config.KymaModuleName.Enabled {
+		rb.res.Attributes().PutStr("kyma.module.name", val)
 	}
 }
 
