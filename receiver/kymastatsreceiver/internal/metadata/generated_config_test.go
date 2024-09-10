@@ -25,12 +25,15 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaModuleStatusConditions: MetricConfig{Enabled: true},
-					KymaModuleStatusState:      MetricConfig{Enabled: true},
+					KymaResourceStatusConditions: MetricConfig{Enabled: true},
+					KymaResourceStatusState:      MetricConfig{Enabled: true},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					K8sNamespaceName: ResourceAttributeConfig{Enabled: true},
-					KymaModuleName:   ResourceAttributeConfig{Enabled: true},
+					K8sNamespaceName:   ResourceAttributeConfig{Enabled: true},
+					K8sResourceGroup:   ResourceAttributeConfig{Enabled: true},
+					K8sResourceKind:    ResourceAttributeConfig{Enabled: true},
+					K8sResourceName:    ResourceAttributeConfig{Enabled: true},
+					K8sResourceVersion: ResourceAttributeConfig{Enabled: true},
 				},
 			},
 		},
@@ -38,12 +41,15 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaModuleStatusConditions: MetricConfig{Enabled: false},
-					KymaModuleStatusState:      MetricConfig{Enabled: false},
+					KymaResourceStatusConditions: MetricConfig{Enabled: false},
+					KymaResourceStatusState:      MetricConfig{Enabled: false},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					K8sNamespaceName: ResourceAttributeConfig{Enabled: false},
-					KymaModuleName:   ResourceAttributeConfig{Enabled: false},
+					K8sNamespaceName:   ResourceAttributeConfig{Enabled: false},
+					K8sResourceGroup:   ResourceAttributeConfig{Enabled: false},
+					K8sResourceKind:    ResourceAttributeConfig{Enabled: false},
+					K8sResourceName:    ResourceAttributeConfig{Enabled: false},
+					K8sResourceVersion: ResourceAttributeConfig{Enabled: false},
 				},
 			},
 		},
@@ -80,15 +86,21 @@ func TestResourceAttributesConfig(t *testing.T) {
 		{
 			name: "all_set",
 			want: ResourceAttributesConfig{
-				K8sNamespaceName: ResourceAttributeConfig{Enabled: true},
-				KymaModuleName:   ResourceAttributeConfig{Enabled: true},
+				K8sNamespaceName:   ResourceAttributeConfig{Enabled: true},
+				K8sResourceGroup:   ResourceAttributeConfig{Enabled: true},
+				K8sResourceKind:    ResourceAttributeConfig{Enabled: true},
+				K8sResourceName:    ResourceAttributeConfig{Enabled: true},
+				K8sResourceVersion: ResourceAttributeConfig{Enabled: true},
 			},
 		},
 		{
 			name: "none_set",
 			want: ResourceAttributesConfig{
-				K8sNamespaceName: ResourceAttributeConfig{Enabled: false},
-				KymaModuleName:   ResourceAttributeConfig{Enabled: false},
+				K8sNamespaceName:   ResourceAttributeConfig{Enabled: false},
+				K8sResourceGroup:   ResourceAttributeConfig{Enabled: false},
+				K8sResourceKind:    ResourceAttributeConfig{Enabled: false},
+				K8sResourceName:    ResourceAttributeConfig{Enabled: false},
+				K8sResourceVersion: ResourceAttributeConfig{Enabled: false},
 			},
 		},
 	}
