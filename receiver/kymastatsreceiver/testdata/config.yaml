@@ -1,12 +1,12 @@
 kymastats:
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
 kymastats/sa:
   auth_type: "serviceAccount"
   collection_interval: 10s
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
@@ -14,30 +14,30 @@ kymastats/kubeconfig:
   auth_type: "kubeConfig"
   context: "k8s-context"
   collection_interval: 30s
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
 kymastats/invalidauth:
   auth_type: "123"
   collection_interval: 30s
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
 kymastats/invalidinterval:
   auth_type: "kubeConfig"
   collection_interval: 0s
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
 kymastats/none:
   auth_type: "none"
   collection_interval: 60s
-  resources:
+  modules:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
-kymastats/noresources:
+kymastats/nomodules:
   auth_type: "kubeConfig"

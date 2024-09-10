@@ -18,47 +18,35 @@ resource_attributes:
     description: "The name of the namespace that the resource is running in"
     enabled: true
     type: string
-  k8s.resource.name:
-    description: "The resource name"
-    enabled: true
-    type: string
-  k8s.resource.kind:
-    description: "The resource kind"
-    enabled: true
-    type: string
-  k8s.resource.group:
-    description: "The resource group"
-    enabled: true
-    type: string
-  k8s.resource.version:
-    description: "The resource version"
+  kyma.module.name:
+    description: "The module kind"
     enabled: true
     type: string
 attributes:
   state:
-    description: The state of the resource status.
+    description: The state of the module status.
     type: string
   reason:
-    description: The reason of the resource condition status.
+    description: The reason of the module condition status.
     type: string
   status:
-    description: The status of the resource condition.
+    description: The status of the module condition.
     type: string
   type:
-    description: The type of the resource condition.
+    description: The type of the module condition.
     type: string
 metrics:
-  kyma.resource.status.state:
+  kyma.module.status.state:
     enabled: true
-    description: "The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute."
+    description: "The module status state, metric value is 1 for last scraped module status state, including state as metric attribute."
     unit: "1"
     gauge:
       value_type: int
     attributes: ["state"]
 
-  kyma.resource.status.conditions:
+  kyma.module.status.conditions:
     enabled: true
-    description: "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values."
+    description: "The module status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values."
     unit: "1"
     gauge:
       value_type: int
