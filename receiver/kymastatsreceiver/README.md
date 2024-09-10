@@ -18,7 +18,7 @@ The following settings are required:
 
 - `auth_type` (default = `serviceAccount`): Specifies the authentication method for accessing the Kubernetes API server.
    Options include `none` (no authentication), `serviceAccount` (uses the default service account token assigned to the Pod), or `kubeConfig` (uses credentials from `~/.kube/config`).
-- `resources`: A list of API group-version-resources of Kyma resources. For each group-version-resource.
+- `resources`: A list of API group-version-resources of Kyma resources. Status metrics are generated for each group-version-resource.
 
 The following settings are optional:
 
