@@ -9,6 +9,7 @@ linters:
   # Depreacted linters
     - gomnd
     - execinquery
+    - exportloopref
   # Linters to be enabled after fixing the issues
     - intrange
     - cyclop
@@ -55,7 +56,7 @@ linters-settings:
       - pkg: "k8s.io/apimachinery/pkg/apis/meta/v1"
         alias: metav1
       - pkg: "k8s.io/client-go/dynamic/fake"
-        alias: dynamicfake 
+        alias: dynamicfake
       - pkg: "k8s.io/client-go/testing"
         alias: clienttesting
 
