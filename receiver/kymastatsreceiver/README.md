@@ -44,7 +44,7 @@ Example:
     resource_attributes:
       k8s.namespace.name:
         enabled: true
-      kyma.resource.name:
+      k8s.resource.name:
         enabled: true
 ```
 
