@@ -130,7 +130,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["kyma.resource.status.state"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute.", ms.At(i).Description())
+					assert.Equal(t, "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())

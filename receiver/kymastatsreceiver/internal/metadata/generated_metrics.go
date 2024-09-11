@@ -74,7 +74,7 @@ type metricKymaResourceStatusState struct {
 // init fills kyma.resource.status.state metric with initial data.
 func (m *metricKymaResourceStatusState) init() {
 	m.data.SetName("kyma.resource.status.state")
-	m.data.SetDescription("The resource status state, metric value is 1 for last scraped resource status state, including state as metric attribute.")
+	m.data.SetDescription("The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
