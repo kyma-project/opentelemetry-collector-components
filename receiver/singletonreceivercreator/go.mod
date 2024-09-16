@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator
 
-go 1.22.5
+go 1.23.1
 
 require (
 	github.com/go-logr/zapr v1.3.0

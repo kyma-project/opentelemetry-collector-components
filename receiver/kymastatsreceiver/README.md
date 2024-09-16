@@ -6,7 +6,7 @@
 | stability   | alpha: metrics             |
 | Code Owners | kyma-project/observability |
 
-The Kyma Stats Receiver pulls Kyma modules from the API server, creates status metrics, and sends them down the metric pipeline for further processing.
+The Kyma Stats Receiver pulls Kyma resources from the API server, creates status metrics, and sends them down the metric pipeline for further processing.
 
 ## Metrics
 
@@ -18,7 +18,7 @@ The following settings are required:
 
 - `auth_type` (default = `serviceAccount`): Specifies the authentication method for accessing the Kubernetes API server.
    Options include `none` (no authentication), `serviceAccount` (uses the default service account token assigned to the Pod), or `kubeConfig` (uses credentials from `~/.kube/config`).
-- `modules`: A list of API group-version-resources of Kyma modules. For each group-version-resource, the status metrics are generated for the first resource instance found.
+- `resources`: A list of API group-version-resources of Kyma resources. Status metrics are generated for each group-version-resource.
 
 The following settings are optional:
 
@@ -33,18 +33,18 @@ Example:
     auth_type: seviceAccount
     collection_interval: 30s
     metrics:
-      kyma.module.status.state:
+      kyma.resource.status.state:
         enabled: true
-      kyma.module.status.conditions:
+      kyma.resource.status.conditions:
         enabled: true
-    modules:
+    resources:
     - group: operator.kyma-project.io
       version: v1alpha1
       resource: telemetries
     resource_attributes:
       k8s.namespace.name:
         enabled: true
-      kyma.module.name:
+      k8s.resource.name:
         enabled: true
 ```
 
