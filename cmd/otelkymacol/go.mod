@@ -4,8 +4,6 @@ module github.com/kyma-project/opentelemetry-collector-components/cmd/otelkymaco
 
 go 1.23.1
 
-toolchain go1.23.1
-
 require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
 	github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
