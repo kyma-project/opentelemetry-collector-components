@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/trace"
 
 	"go.opentelemetry.io/collector/component"
@@ -34,51 +33,40 @@ type TelemetryBuilder struct {
 	ReceiverSingletonLeaseAcquiredTotal metric.Int64Counter
 	ReceiverSingletonLeaseLostTotal     metric.Int64Counter
 	ReceiverSingletonLeaseSlowpathTotal metric.Int64Counter
-	level                               configtelemetry.Level
+	meters                              map[configtelemetry.Level]metric.Meter
 }
 
 // telemetryBuilderOption applies changes to default builder.
 type telemetryBuilderOption func(*TelemetryBuilder)
 
-// WithLevel sets the current telemetry level for the component.
-func WithLevel(lvl configtelemetry.Level) telemetryBuilderOption {
-	return func(builder *TelemetryBuilder) {
-		builder.level = lvl
-	}
-}
-
 // NewTelemetryBuilder provides a struct with methods to update all internal telemetry
 // for a component
 func NewTelemetryBuilder(settings component.TelemetrySettings, options ...telemetryBuilderOption) (*TelemetryBuilder, error) {
-	builder := TelemetryBuilder{level: configtelemetry.LevelBasic}
+	builder := TelemetryBuilder{meters: map[configtelemetry.Level]metric.Meter{}}
 	for _, op := range options {
 		op(&builder)
 	}
+	builder.meters[configtelemetry.LevelBasic] = LeveledMeter(settings, configtelemetry.LevelBasic)
 	var err, errs error
-	if builder.level >= configtelemetry.LevelBasic {
-		builder.meter = Meter(settings)
-	} else {
-		builder.meter = noop.Meter{}
-	}
-	builder.ReceiverSingletonLeaderStatus, err = builder.meter.Int64Gauge(
+	builder.ReceiverSingletonLeaderStatus, err = builder.meters[configtelemetry.LevelBasic].Int64Gauge(
 		"otelcol_receiver_singleton_leader_status",
 		metric.WithDescription("A gauge of if the reporting system is the leader of the relevant lease, 0 indicates backup, and 1 indicates leader."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
-	builder.ReceiverSingletonLeaseAcquiredTotal, err = builder.meter.Int64Counter(
+	builder.ReceiverSingletonLeaseAcquiredTotal, err = builder.meters[configtelemetry.LevelBasic].Int64Counter(
 		"otelcol_receiver_singleton_lease_acquired_total",
 		metric.WithDescription("The total number of successful lease acquisitions."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
-	builder.ReceiverSingletonLeaseLostTotal, err = builder.meter.Int64Counter(
+	builder.ReceiverSingletonLeaseLostTotal, err = builder.meters[configtelemetry.LevelBasic].Int64Counter(
 		"otelcol_receiver_singleton_lease_lost_total",
 		metric.WithDescription("The total number of lease losses."),
 		metric.WithUnit("1"),
 	)
 	errs = errors.Join(errs, err)
-	builder.ReceiverSingletonLeaseSlowpathTotal, err = builder.meter.Int64Counter(
+	builder.ReceiverSingletonLeaseSlowpathTotal, err = builder.meters[configtelemetry.LevelBasic].Int64Counter(
 		"otelcol_receiver_singleton_lease_slowpath_total",
 		metric.WithDescription("The total number of slow paths exercised in renewing leader leases."),
 		metric.WithUnit("1"),

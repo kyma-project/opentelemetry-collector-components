@@ -10,8 +10,8 @@ require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
 	go.opentelemetry.io/collector/component v0.109.0
 	go.opentelemetry.io/collector/confmap v1.15.0
-	go.opentelemetry.io/collector/confmap/provider/envprovider v1.15.0
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.15.0
+	go.opentelemetry.io/collector/confmap/provider/envprovider v0.109.0
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v0.109.0
 	go.opentelemetry.io/collector/confmap/provider/httpprovider v0.109.0
 	go.opentelemetry.io/collector/confmap/provider/httpsprovider v0.109.0
 	go.opentelemetry.io/collector/confmap/provider/yamlprovider v0.109.0
