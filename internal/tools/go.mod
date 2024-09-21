@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/golangci/golangci-lint v1.60.3
-	github.com/vladopajic/go-test-coverage/v2 v2.10.1
+	github.com/vladopajic/go-test-coverage/v2 v2.10.2
 	go.opentelemetry.io/build-tools/crosslink v0.14.0
 	go.opentelemetry.io/collector/cmd/builder v0.109.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.109.0
@@ -208,7 +208,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
-	golang.org/x/image v0.10.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
