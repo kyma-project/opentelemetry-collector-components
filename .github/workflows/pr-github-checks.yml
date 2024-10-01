@@ -53,11 +53,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Check for do-not-merge/hold label
+      - name: Check for do-not-merge label
         if: always()
         run: |
           gh api --jq '.labels.[].name' /repos/${{ github.repository }}/pulls/${{ github.event.number }} | \
-          grep -q '^do-not-merge\/hold$' && (echo "do-not-merge/hold label detected -> preventing merge by failing the job"; exit 1)
+          grep -q '^do-not-merge/$' && (echo "do-not-merge label detected -> preventing merge by failing the job"; exit 1)
         env:
           GH_TOKEN: ${{ github.token }}
 
