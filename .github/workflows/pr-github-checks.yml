@@ -69,10 +69,3 @@ jobs:
             test
           requireScope: false
           subjectPattern: ^([A-Z].*[^.]|bump .*)$
-
-  PR-Github-Checks-Success:
-    needs: [pr-milestone-check, pr-label-check, pr-title-check]
-    runs-on: ubuntu-latest
-    steps:
-      - name: PR Github Checks Success
-        run: echo "All checks passed"
