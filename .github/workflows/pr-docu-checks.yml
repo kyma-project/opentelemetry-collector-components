@@ -23,9 +23,3 @@ jobs:
         run: |
           md-check-link -q -n 8 -c https://raw.githubusercontent.com/kyma-project/md-check-link/main/.mlc.config.json ./
 
-  PR-Docu-Checks:
-    needs: markdown-link-check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Success
-        run: echo "All checks passed"
