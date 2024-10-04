@@ -72,7 +72,7 @@ jobs:
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
 
-  Build-Image-Success:
+  list-images:
     needs: build-image
     runs-on: ubuntu-latest
     steps:
