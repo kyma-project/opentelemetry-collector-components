@@ -14,6 +14,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/pipeline"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
@@ -66,7 +67,7 @@ func (r *receiverRunner) start(config receiverConfig, metricsConsumer consumer.M
 	var createError error
 
 	if wr.metrics, err = r.createMetricsRuntimeReceiver(receiverFactory, id, cfg, metricsConsumer); err != nil {
-		if errors.Is(err, component.ErrDataTypeIsNotSupported) {
+		if errors.Is(err, pipeline.ErrSignalNotSupported) {
 			r.logger.Info("instantiated receiver doesn't support metrics", zap.String("receiver", config.id.String()), zap.Error(err))
 			wr.metrics = nil
 		} else {
@@ -118,7 +119,7 @@ func (r *receiverRunner) createMetricsRuntimeReceiver(
 	runParams := r.params
 	runParams.Logger = runParams.Logger.With(zap.String("name", id.String()))
 	runParams.ID = id
-	return factory.CreateMetricsReceiver(context.Background(), runParams, cfg, nextConsumer)
+	return factory.CreateMetrics(context.Background(), runParams, cfg, nextConsumer)
 }
 
 var _ component.Component = (*wrappedReceiver)(nil)

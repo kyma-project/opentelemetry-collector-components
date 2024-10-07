@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pipeline"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -57,7 +58,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			factory := NewFactory()
-			metricsReceiver, err := factory.CreateMetricsReceiver(
+			metricsReceiver, err := factory.CreateMetrics(
 				context.Background(),
 				receivertest.NewNopSettings(),
 				tt.cfg,
@@ -77,7 +78,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 
 func TestCreateTraceReceiver(t *testing.T) {
 	factory := NewFactory()
-	traceReceiver, err := factory.CreateTracesReceiver(
+	traceReceiver, err := factory.CreateTraces(
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
@@ -87,13 +88,13 @@ func TestCreateTraceReceiver(t *testing.T) {
 		},
 		nil,
 	)
-	require.ErrorIs(t, err, component.ErrDataTypeIsNotSupported)
+	require.ErrorIs(t, err, pipeline.ErrSignalNotSupported)
 	require.Nil(t, traceReceiver)
 }
 
 func TestCreateLogsReceiver(t *testing.T) {
 	factory := NewFactory()
-	logsReceiver, err := factory.CreateLogsReceiver(
+	logsReceiver, err := factory.CreateLogs(
 		context.Background(),
 		receivertest.NewNopSettings(),
 		&Config{
@@ -103,7 +104,7 @@ func TestCreateLogsReceiver(t *testing.T) {
 		},
 		nil,
 	)
-	require.ErrorIs(t, err, component.ErrDataTypeIsNotSupported)
+	require.ErrorIs(t, err, pipeline.ErrSignalNotSupported)
 	require.Nil(t, logsReceiver)
 }
 
@@ -114,7 +115,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 			AuthType: "none",
 		},
 	}
-	_, err := factory.CreateMetricsReceiver(
+	_, err := factory.CreateMetrics(
 		context.Background(),
 		receivertest.NewNopSettings(),
 		cfg,
@@ -135,7 +136,7 @@ func TestFactoryNoneAuthType(t *testing.T) {
 			CollectionInterval: 10 * time.Second,
 		},
 	}
-	_, err := factory.CreateMetricsReceiver(
+	_, err := factory.CreateMetrics(
 		context.Background(),
 		receivertest.NewNopSettings(),
 		cfg,
