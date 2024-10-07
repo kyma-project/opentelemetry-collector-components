@@ -23,7 +23,7 @@ require (
 	go.opentelemetry.io/collector/processor v0.109.0
 	go.opentelemetry.io/collector/processor/batchprocessor v0.109.0
 	go.opentelemetry.io/collector/receiver v0.109.0
-	golang.org/x/sys v0.25.0
+	golang.org/x/sys v0.26.0
 )
 
 require (
