@@ -30,7 +30,7 @@ func TestNewFactory(t *testing.T) {
 			testFunc: func(t *testing.T) {
 				t.Helper()
 				cfg := createDefaultConfig().(*Config)
-				_, err := NewFactory().CreateMetricsReceiver(
+				_, err := NewFactory().CreateMetrics(
 					context.Background(),
 					receivertest.NewNopSettings(),
 					cfg,

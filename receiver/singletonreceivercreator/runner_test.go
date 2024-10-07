@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/pipeline"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 
@@ -55,7 +56,7 @@ func (ms *mockSettings) GetExtensions() map[component.ID]component.Component {
 	return nil
 }
 
-func (ms *mockSettings) GetExporters() map[component.DataType]map[component.ID]component.Component {
+func (ms *mockSettings) GetExporters() map[pipeline.Signal]map[component.ID]component.Component {
 	return nil
 }
 
