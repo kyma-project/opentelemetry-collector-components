@@ -29,7 +29,6 @@ func newLeaderElector(
 	onStoppedLeading func(),
 	identity string,
 ) (*leaderelection.LeaderElector, error) {
-
 	resourceLock, err := resourcelock.New(
 		resourcelock.LeasesResourceLock,
 		cfg.leaseNamespace,
@@ -44,10 +43,13 @@ func newLeaderElector(
 	}
 
 	leConfig := leaderelection.LeaderElectionConfig{
-		Lock:          resourceLock,
-		LeaseDuration: cfg.leaseDuration,
-		RenewDeadline: cfg.renewDuration,
-		RetryPeriod:   cfg.retryPeriod,
+		// The lock resource name is used as a lease label in leader election metrics.
+		Name:            cfg.leaseName,
+		Lock:            resourceLock,
+		LeaseDuration:   cfg.leaseDuration,
+		RenewDeadline:   cfg.renewDuration,
+		RetryPeriod:     cfg.retryPeriod,
+		ReleaseOnCancel: true,
 		Callbacks: leaderelection.LeaderCallbacks{
 			OnStartedLeading: onStartedLeading,
 			OnStoppedLeading: onStoppedLeading,
