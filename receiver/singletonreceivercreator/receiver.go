@@ -22,7 +22,7 @@ type singletonReceiverCreator struct {
 	nextMetricsConsumer consumer.Metrics
 	telemetryBuilder    *metadata.TelemetryBuilder
 
-	identity          string
+	leaseHolderID     string
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
 }
@@ -32,14 +32,14 @@ func newSingletonReceiverCreator(
 	cfg *Config,
 	consumer consumer.Metrics,
 	telemetryBuilder *metadata.TelemetryBuilder,
-	identity string,
+	leaseHolderID string,
 ) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
 		params:              params,
 		cfg:                 cfg,
 		nextMetricsConsumer: consumer,
 		telemetryBuilder:    telemetryBuilder,
-		identity:            identity,
+		leaseHolderID:       leaseHolderID,
 	}
 }
 
