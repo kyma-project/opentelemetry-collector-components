@@ -20,7 +20,7 @@ const (
 	leaseAttrKey         = "lease"
 )
 
-// newLeaderElector return  a leader elector object using client-go
+// newLeaderElector returns a leader elector object using client-go
 func newLeaderElector(
 	cfg leaderElectionConfig,
 	client kubernetes.Interface,
@@ -56,6 +56,8 @@ func newLeaderElector(
 		},
 	}
 
+	// TODO: Contribute to the leaderelection package to support configuring a metric provider directly,
+	//       eliminating the need for global variables.
 	leaderelection.SetProvider(leaderMetricProvider{
 		telemetryBuilder: telemetryBuilder,
 	})
