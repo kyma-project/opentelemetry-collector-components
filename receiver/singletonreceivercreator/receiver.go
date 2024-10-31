@@ -3,13 +3,11 @@ package singletonreceivercreator
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
-	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/tools/leaderelection"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
@@ -68,8 +66,8 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 		return fmt.Errorf("failed to create leader elector: %w", err)
 	}
 
-	go leaderElector.Run(ctx)
-	go c.pollLeaderElectionStatus(ctx, leaderElector)
+	go c.runLeaderElector(ctx, leaderElector)
+
 	return nil
 }
 
@@ -84,7 +82,7 @@ func (c *singletonReceiverCreator) initLeaderElector() (*leaderelection.LeaderEl
 		client,
 		c.telemetryBuilder,
 		func(ctx context.Context) {
-			c.params.TelemetrySettings.Logger.Info("Elected as leader")
+			c.params.TelemetrySettings.Logger.Info("Leader lease acquired")
 			//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 			if err := c.startSubReceiver(); err != nil {
 				c.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
@@ -92,24 +90,27 @@ func (c *singletonReceiverCreator) initLeaderElector() (*leaderelection.LeaderEl
 		},
 		//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 		func() {
-			c.params.TelemetrySettings.Logger.Info("Lost leadership")
+			c.params.TelemetrySettings.Logger.Info("Leader lease lost")
 			if err := c.stopSubReceiver(); err != nil {
 				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
-		c.identity,
+		c.leaseHolderID,
 	)
 }
 
-func (c *singletonReceiverCreator) pollLeaderElectionStatus(ctx context.Context, leaderElector *leaderelection.LeaderElector) {
-	maxTolerableExpiredLease := 3 * c.cfg.leaderElectionConfig.renewDuration
-	pollingInterval := c.cfg.leaderElectionConfig.renewDuration
-	wait.UntilWithContext(ctx, func(_ context.Context) {
-		err := leaderElector.Check(maxTolerableExpiredLease)
-		if err != nil {
-			c.params.TelemetrySettings.Logger.Error("Leader election status check failed", zap.Error(err))
+func (c *singletonReceiverCreator) runLeaderElector(ctx context.Context, leaderElector *leaderelection.LeaderElector) {
+	// Leader election loop stops if context is canceled or the leader elector loses the lease.
+	// The loop allows continued participation in leader election, even if the lease is lost.
+	for {
+		leaderElector.Run(ctx)
+
+		if ctx.Err() != nil {
+			break
 		}
-	}, pollingInterval)
+
+		c.params.TelemetrySettings.Logger.Info("Leader lease lost. Returning to standby mode...")
+	}
 }
 
 func (c *singletonReceiverCreator) startSubReceiver() error {
