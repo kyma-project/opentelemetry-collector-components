@@ -20,7 +20,7 @@ const (
 	leaseAttrKey         = "lease"
 )
 
-// newLeaderElector return  a leader elector object using client-go
+// newLeaderElector returns a leader elector object using client-go
 func newLeaderElector(
 	cfg leaderElectionConfig,
 	client kubernetes.Interface,
@@ -29,7 +29,6 @@ func newLeaderElector(
 	onStoppedLeading func(),
 	identity string,
 ) (*leaderelection.LeaderElector, error) {
-
 	resourceLock, err := resourcelock.New(
 		resourcelock.LeasesResourceLock,
 		cfg.leaseNamespace,
@@ -44,16 +43,21 @@ func newLeaderElector(
 	}
 
 	leConfig := leaderelection.LeaderElectionConfig{
-		Lock:          resourceLock,
-		LeaseDuration: cfg.leaseDuration,
-		RenewDeadline: cfg.renewDuration,
-		RetryPeriod:   cfg.retryPeriod,
+		// The lock resource name is used as a lease label in leader election metrics.
+		Name:            cfg.leaseName,
+		Lock:            resourceLock,
+		LeaseDuration:   cfg.leaseDuration,
+		RenewDeadline:   cfg.renewDuration,
+		RetryPeriod:     cfg.retryPeriod,
+		ReleaseOnCancel: true,
 		Callbacks: leaderelection.LeaderCallbacks{
 			OnStartedLeading: onStartedLeading,
 			OnStoppedLeading: onStoppedLeading,
 		},
 	}
 
+	// TODO: Contribute to the leaderelection package to support configuring a metric provider directly,
+	//       eliminating the need for global variables.
 	leaderelection.SetProvider(leaderMetricProvider{
 		telemetryBuilder: telemetryBuilder,
 	})

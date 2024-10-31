@@ -1,3 +1,118 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: lease-manager
+  namespace: default
+rules:
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-monitor
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  - namespaces
+  - namespaces/status
+  - nodes
+  - nodes/spec
+  - pods
+  - pods/status
+  - replicationcontrollers
+  - replicationcontrollers/status
+  - resourcequotas
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - daemonsets
+  - deployments
+  - replicasets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+    - autoscaling
+  resources:
+    - horizontalpodautoscalers
+  verbs:
+    - get
+    - list
+    - watch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: collector
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: lease-manager
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: lease-manager
+subjects:
+  - kind: ServiceAccount
+    name: collector
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-monitor
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-monitor
+subjects:
+- kind: ServiceAccount
+  name: collector
+  namespace: default
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -22,7 +137,6 @@ data:
       batch:
     exporters:
       debug:
-        verbosity: detailed
     
     service:
       pipelines:
@@ -39,6 +153,8 @@ kind: Pod
 metadata:
   name: collector-1
   namespace: default
+  labels:
+    app: collector-1
 spec:
   serviceAccountName: collector
   volumes:
@@ -46,7 +162,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.107.0-main
+    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.111.0-main
       imagePullPolicy: Always
       name: collector
       volumeMounts:
@@ -60,6 +176,8 @@ kind: Pod
 metadata:
   name: collector-2
   namespace: default
+  labels:
+    app: collector-2
 spec:
   serviceAccountName: collector
   volumes:
@@ -67,7 +185,7 @@ spec:
       configMap:
         name: collector-config
   containers:
-    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.107.0-main
+    - image: europe-docker.pkg.dev/kyma-project/prod/kyma-otel-collector:0.111.0-main
       imagePullPolicy: Always
       name: collector
       volumeMounts:
