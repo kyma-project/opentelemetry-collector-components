@@ -18,19 +18,14 @@ This release process covers the steps to release new major and minor versions fo
    git push upstream {RELEASE_BRANCH}
    ```
 
-6. To make sure that the release tags point to the HEAD commit of the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, rebase the upstream branch into the local branch after the merge was successful.
-
-   ```bash
-   git rebase upstream/{RELEASE_BRANCH} {RELEASE_BRANCH}
-   ```
-
-7. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
+5. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
 
    ```bash
    git tag {RELEASE_VERSION}
    ```
+   Replace {RELEASE_VERSION} with the new release version, for example, `1.0.0`
 
-8. Push the tag to the upstream repository.
+6. Push the tag to the upstream repository.
 
    ```bash
    git push {REPOSITORY_REMOTE} {RELEASE_VERSION}
@@ -38,7 +33,7 @@ This release process covers the steps to release new major and minor versions fo
 
    The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`).
 
-9. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
+7. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
    - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
    - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
 
@@ -47,7 +42,7 @@ This release process covers the steps to release new major and minor versions fo
      git push upstream v{RELEASE_VERSION}
      ```
 
-10. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
+8. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
