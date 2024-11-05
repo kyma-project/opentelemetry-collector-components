@@ -13,6 +13,7 @@ import (
 	batchprocessor "go.opentelemetry.io/collector/processor/batchprocessor"
 	"go.opentelemetry.io/collector/receiver"
 
+	leaderelector "github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector"
 	dummyreceiver "github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver"
 	kymastatsreceiver "github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver"
 	singletonreceivercreator "github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator"
@@ -22,11 +23,14 @@ func components() (otelcol.Factories, error) {
 	var err error
 	factories := otelcol.Factories{}
 
-	factories.Extensions, err = extension.MakeFactoryMap()
+	factories.Extensions, err = extension.MakeFactoryMap(
+		leaderelector.NewFactory(),
+	)
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
 	factories.ExtensionModules = make(map[component.Type]string, len(factories.Extensions))
+	factories.ExtensionModules[leaderelector.NewFactory().Type()] = "github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector v0.0.1"
 
 	factories.Receivers, err = receiver.MakeFactoryMap(
 		dummyreceiver.NewFactory(),

@@ -14,7 +14,8 @@ var (
 // Config represents the receiver config settings within the collector's config.yaml
 type Config struct {
 	// The number of metrics to generate per interval.
-	Interval string `mapstructure:"interval"`
+	Interval  string                  `mapstructure:"interval"`
+	LeaseName *leaderElectionReceiver `mapstructure:"lease"`
 }
 
 // Validate checks if the receiver configuration is valid

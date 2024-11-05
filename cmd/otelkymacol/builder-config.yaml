@@ -14,6 +14,9 @@ providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.17.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.17.0
 
+extensions:
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector v0.0.1
+
 receivers:
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
@@ -30,3 +33,4 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../../receiver/dummyreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../../receiver/kymastatsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
+  - github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector => ../../extension/leaderelector

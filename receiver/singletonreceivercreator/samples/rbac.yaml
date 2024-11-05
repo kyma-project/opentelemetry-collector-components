@@ -53,7 +53,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - extensions
+  - extension
   resources:
   - daemonsets
   - deployments

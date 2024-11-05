@@ -2,11 +2,13 @@ package dummyreceiver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -14,17 +16,61 @@ import (
 	"go.uber.org/zap"
 )
 
+type leaderElectionReceiver struct {
+	Id component.ID `mapstructure:"name"`
+}
+
 type dummyReceiver struct {
 	config       *Config
 	nextConsumer consumer.Metrics
 	settings     *receiver.Settings
+	startCh      chan struct{}
 
 	cancel context.CancelFunc
 	wg     *sync.WaitGroup
 }
 
-func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
+func (ler *leaderElectionReceiver) getExtensionClient(extensions map[component.ID]component.Component) (component.Component, error) {
+	if ext, found := extensions[ler.Id]; found {
+		return ext, nil
+	}
+	return nil, errors.New("extension not found")
+
+}
+
+func (r *dummyReceiver) onLeaderElection(ctx context.Context) {
+	// Do something
+	r.settings.Logger.Info("I have been invoked!!!")
+}
+
+func (r *dummyReceiver) onLeaderElectionLost() {
+	// Do something
+	r.settings.Logger.Info("I have been stopped!!!")
+}
+
+func (r *dummyReceiver) Start(_ context.Context, host component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
 	r.settings.Logger.Info("Starting dummy receiver", zap.String("interval", r.config.Interval))
+	if r.config.LeaseName != nil {
+		extList := host.GetExtensions()
+		if extList == nil {
+			return errors.New("no extensions found")
+		}
+		r.settings.Logger.Info("Leader election enabled")
+		ext := extList[component.ID(r.config.LeaseName.Id)]
+		if ext == nil {
+			return errors.New("extension not found")
+		}
+		extType := ext.(leaderelector.LeaderElection)
+		extType.SetCallBackFuncs(
+			func(ctx context.Context) {
+				r.onLeaderElection(context.TODO())
+			}, func() {
+				r.onLeaderElectionLost()
+			},
+		)
+		//r.settings.Logger.Info(fmt.Sprintf("Got the signal!!: %v", signal))
+
+	}
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
