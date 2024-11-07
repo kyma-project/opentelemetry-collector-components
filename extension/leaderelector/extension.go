@@ -3,6 +3,7 @@ package leaderelector
 import (
 	"context"
 	"fmt"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
 	"go.uber.org/zap"

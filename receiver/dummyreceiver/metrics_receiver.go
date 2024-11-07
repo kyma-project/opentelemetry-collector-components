@@ -8,12 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
+
+	"github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector"
 )
 
 type leaderElectionReceiver struct {

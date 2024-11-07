@@ -3,6 +3,7 @@ package leaderelector
 import (
 	"context"
 	"fmt"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/leaderelection"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"

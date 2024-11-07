@@ -1,11 +1,13 @@
 package leaderelector
 
 import (
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
-	"go.opentelemetry.io/collector/component"
-	"k8s.io/client-go/kubernetes"
 	"sync"
 	"time"
+
+	"go.opentelemetry.io/collector/component"
+	"k8s.io/client-go/kubernetes"
+
+	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 )
 
 // Config is the configuration struct for your extension.
