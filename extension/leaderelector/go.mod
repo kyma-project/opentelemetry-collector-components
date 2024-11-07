@@ -1,9 +1,9 @@
-module github.com/open-telemetry/opentelemetry-collector-contrib/extension/leaderelector
+module github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector
 
 go 1.23.2
 
 require (
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.112.0
+	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-20241107085850-40cb39402067
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.112.0
 	go.opentelemetry.io/collector/confmap v1.18.0
@@ -76,7 +76,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace (
-	github.com/open-telemetry/opentelemetry-collector-contrib => /Users/D069409/workspace/github.com/open-telemetry/opentelemetry-collector-contrib
-
-)
+replace github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig

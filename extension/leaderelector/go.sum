@@ -215,8 +215,8 @@ github.com/onsi/gomega v0.0.0-20170829124025-dcabb60a477c/go.mod h1:C1qb7wdrVGGV
 github.com/onsi/gomega v1.7.0/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/onsi/gomega v1.19.0 h1:4ieX6qQjPP/BfC3mpsAtIGGlxTWPeA3Inl/7DtXw1tw=
 github.com/onsi/gomega v1.19.0/go.mod h1:LY+I3pBVzYsTBU1AnDwOSxaYi9WoWiqgwooUqq9yPro=
-github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.112.0 h1:JtYfYlQAORuMeOUHGAnRiJuz35zz4me0+ySQ18kJBQQ=
-github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.112.0/go.mod h1:Sw1fPP1MkfGFoq1gnbLap5hdH1aoRUCVF5nrLymHa90=
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.113.0 h1:E/D5TwJyKN19p1FQ0XD5r5G1uH9NH/HVAM0e1hFMwFU=
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.113.0/go.mod h1:FcClDm9XVV5tzUDzmH2Mhe6TfYiZ/3GSAQITnuCjZgg=
 github.com/openshift/api v0.0.0-20210521075222-e273a339932a/go.mod h1:izBmoXbUu3z5kUa4FjZhvekTsyzIWiOoaIgJiZBBMQs=
 github.com/openshift/api v3.9.0+incompatible h1:fJ/KsefYuZAjmrr3+5U9yZIZbTOpVkDDLDLFresAeYs=
 github.com/openshift/api v3.9.0+incompatible/go.mod h1:dh9o4Fs58gpFXGSYfnVxGR9PnV53I8TW84pQaJDdGiY=
