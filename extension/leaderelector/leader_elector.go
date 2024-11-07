@@ -17,8 +17,8 @@ func NewLeaderElector(
 ) (*leaderelection.LeaderElector, error) {
 	resourceLock, err := resourcelock.New(
 		resourcelock.LeasesResourceLock,
-		cfg.leaseNamespace,
-		cfg.leaseName,
+		cfg.LeaseNamespace,
+		cfg.LeaseName,
 		client.CoreV1(),
 		client.CoordinationV1(),
 		resourcelock.ResourceLockConfig{
@@ -31,9 +31,9 @@ func NewLeaderElector(
 
 	leConfig := leaderelection.LeaderElectionConfig{
 		Lock:          resourceLock,
-		LeaseDuration: cfg.leaseDuration,
-		RenewDeadline: cfg.renewDuration,
-		RetryPeriod:   cfg.retryPeriod,
+		LeaseDuration: cfg.LeaseDuration,
+		RenewDeadline: cfg.RenewDuration,
+		RetryPeriod:   cfg.RetryPeriod,
 		Callbacks: leaderelection.LeaderCallbacks{
 			OnStartedLeading: onStartedLeading,
 			OnStoppedLeading: onStoppedLeading,

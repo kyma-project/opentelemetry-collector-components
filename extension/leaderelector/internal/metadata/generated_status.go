@@ -8,7 +8,7 @@ import (
 
 var (
 	Type      = component.MustNewType("leaderelector")
-	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector"
+	ScopeName = "github.com/open-telemetry/opentelemetry-collector-contrib/extension/leaderelector"
 )
 
 const (

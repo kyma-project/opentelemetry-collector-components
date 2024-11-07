@@ -2,7 +2,9 @@ package leaderelector
 
 import (
 	"context"
-	"github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector/internal/metadata"
+	"errors"
+	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
 	"time"
@@ -11,11 +13,9 @@ import (
 // CreateDefaultConfig returns the default configuration for the extension.
 func CreateDefaultConfig() component.Config {
 	return &Config{
-		leaseName:      "my-lease",
-		leaseNamespace: "default",
-		leaseDuration:  15 * time.Second,
-		renewDuration:  10 * time.Second,
-		retryPeriod:    2 * time.Second,
+		LeaseDuration: 15 * time.Second,
+		RenewDuration: 10 * time.Second,
+		RetryPeriod:   2 * time.Second,
 		// Set default values for your configuration
 	}
 }
@@ -26,18 +26,32 @@ func CreateExtension(
 	set extension.Settings,
 	cfg component.Config,
 ) (extension.Extension, error) {
+	baseCfg, ok := cfg.(*Config)
+	if !ok {
+		return nil, errors.New("Invalid config, cannot create extension leaderelector")
+	}
+	fmt.Printf("Creating leaderelector extension with config: %+v\n", baseCfg)
+
+	// Initialize k8s client in factory as doing it in extension.Start()
+	// should cause race condition as http Proxy gets shared.
+	client, err := k8sconfig.MakeClient(baseCfg.APIConfig)
+	if err != nil {
+		return nil, errors.New("Failed to create k8s client")
+	}
+
 	return &leaderElectionExtension{
-		config: cfg.(*Config),
+		config: baseCfg,
 		logger: set.Logger,
+		client: client,
 	}, nil
 }
 
 // NewFactory creates a new factory for your extension.
 func NewFactory() extension.Factory {
 	return extension.NewFactory(
-		metadata.Type,
+		component.MustNewType("leaderelector"),
 		CreateDefaultConfig,
 		CreateExtension,
-		metadata.ExtensionStability,
+		component.StabilityLevelDevelopment,
 	)
 }

@@ -3,10 +3,10 @@ package leaderelector
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
 	"go.uber.org/zap"
-
-	"go.opentelemetry.io/collector/component"
+	"k8s.io/client-go/kubernetes"
 )
 
 type LeaderElection interface {
@@ -30,13 +30,14 @@ type leaderElectionExtension struct {
 	onStoppedLeading func()
 	iamLeader        bool
 	cancel           context.CancelFunc
+	client           kubernetes.Interface
 }
 
 // If the receiver sets a callback function then it would be invoked when the leader wins the election
 // additionally set iamLeader to true
 func (lee *leaderElectionExtension) startedLeading(ctx context.Context) {
 	lee.iamLeader = true
-	if &lee.onStoppedLeading != nil {
+	if lee.onStartedLeading != nil {
 		lee.onStartedLeading(ctx)
 	}
 }
@@ -45,7 +46,7 @@ func (lee *leaderElectionExtension) startedLeading(ctx context.Context) {
 // additionally set iamLeader to false
 func (lee *leaderElectionExtension) stoppedLeading() {
 	lee.iamLeader = false
-	if &lee.onStoppedLeading != nil {
+	if lee.onStoppedLeading != nil {
 		lee.onStoppedLeading()
 	}
 }
@@ -57,27 +58,24 @@ func (lee *leaderElectionExtension) AmILeader() bool {
 // Start begins the extension's processing.
 func (lee *leaderElectionExtension) Start(_ context.Context, host component.Host) error {
 	// Implement your start logic here
-	lee.logger.Info("I am starting!!")
-	client, err := lee.config.getK8sClient()
-
-	if err != nil {
-		return fmt.Errorf("failed to create Kubernetes client: %w", err)
-	}
+	lee.logger.Info("I am starting Leader Election!!")
 
 	ctx := context.Background()
 	ctx, lee.cancel = context.WithCancel(ctx)
 
 	// Create the leader elector
-	leaderElector, err := NewLeaderElector(lee.config, client, lee.startedLeading, lee.stoppedLeading, "testID")
+	leaderElector, err := NewLeaderElector(lee.config, lee.client, lee.startedLeading, lee.stoppedLeading, "testID")
 	if err != nil {
 		lee.logger.Error("Failed to create leader elector", zap.Error(err))
 		return err
 	}
+
 	go func() {
 		for {
 			leaderElector.Run(ctx)
 		}
 	}()
+
 	return nil
 }
 
