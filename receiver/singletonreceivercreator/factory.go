@@ -13,6 +13,10 @@ import (
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
 
+const (
+	leaseHolderIDEnvVar = "LEASE_HOLDER_ID"
+)
+
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		metadata.Type,
@@ -45,9 +49,16 @@ func createMetricsReceiver(
 	if !ok {
 		return nil, errors.New("invalid configuration")
 	}
-	hostname, err := os.Hostname()
-	if err != nil {
-		return nil, err
+
+	// Set leaseHolderID for local development
+	leaseHolderID := os.Getenv(leaseHolderIDEnvVar)
+	if leaseHolderID == "" {
+		// If running in a Pod, the hostname will be the pod name
+		var err error
+		leaseHolderID, err = os.Hostname()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	telemetryBuilder, err := metadata.NewTelemetryBuilder(params.TelemetrySettings)
@@ -60,6 +71,6 @@ func createMetricsReceiver(
 		cfg,
 		consumer,
 		telemetryBuilder,
-		hostname,
+		leaseHolderID,
 	), nil
 }

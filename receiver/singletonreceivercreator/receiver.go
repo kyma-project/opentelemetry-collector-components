@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
+	"k8s.io/client-go/tools/leaderelection"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator/internal/metadata"
 )
@@ -19,7 +20,7 @@ type singletonReceiverCreator struct {
 	nextMetricsConsumer consumer.Metrics
 	telemetryBuilder    *metadata.TelemetryBuilder
 
-	identity          string
+	leaseHolderID     string
 	subReceiverRunner *receiverRunner
 	cancel            context.CancelFunc
 }
@@ -29,14 +30,14 @@ func newSingletonReceiverCreator(
 	cfg *Config,
 	consumer consumer.Metrics,
 	telemetryBuilder *metadata.TelemetryBuilder,
-	identity string,
+	leaseHolderID string,
 ) *singletonReceiverCreator {
 	return &singletonReceiverCreator{
 		params:              params,
 		cfg:                 cfg,
 		nextMetricsConsumer: consumer,
 		telemetryBuilder:    telemetryBuilder,
-		identity:            identity,
+		leaseHolderID:       leaseHolderID,
 	}
 }
 
@@ -57,20 +58,31 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 
 	c.params.TelemetrySettings.Logger.Info("Starting singleton election receiver...")
 
-	client, err := c.cfg.getK8sClient()
-	if err != nil {
-		return fmt.Errorf("failed to create Kubernetes client: %w", err)
-	}
-
 	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
 	c.subReceiverRunner = newReceiverRunner(c.params, rcHost)
 
-	leaderElector, err := newLeaderElector(
+	leaderElector, err := c.initLeaderElector()
+	if err != nil {
+		return fmt.Errorf("failed to create leader elector: %w", err)
+	}
+
+	go c.runLeaderElector(ctx, leaderElector)
+
+	return nil
+}
+
+func (c *singletonReceiverCreator) initLeaderElector() (*leaderelection.LeaderElector, error) {
+	client, err := c.cfg.getK8sClient()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
+	}
+
+	return newLeaderElector(
 		c.cfg.leaderElectionConfig,
 		client,
 		c.telemetryBuilder,
 		func(ctx context.Context) {
-			c.params.TelemetrySettings.Logger.Info("Elected as leader")
+			c.params.TelemetrySettings.Logger.Info("Leader lease acquired")
 			//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 			if err := c.startSubReceiver(); err != nil {
 				c.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
@@ -78,20 +90,27 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 		},
 		//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 		func() {
-			c.params.TelemetrySettings.Logger.Info("Lost leadership")
+			c.params.TelemetrySettings.Logger.Info("Leader lease lost")
 			if err := c.stopSubReceiver(); err != nil {
 				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
-		c.identity,
+		c.leaseHolderID,
 	)
-	if err != nil {
-		return fmt.Errorf("failed to create leader elector: %w", err)
-	}
+}
 
-	//nolint:contextcheck // Create a new context as specified in the interface documentation
-	go leaderElector.Run(ctx)
-	return nil
+func (c *singletonReceiverCreator) runLeaderElector(ctx context.Context, leaderElector *leaderelection.LeaderElector) {
+	// Leader election loop stops if context is canceled or the leader elector loses the lease.
+	// The loop allows continued participation in leader election, even if the lease is lost.
+	for {
+		leaderElector.Run(ctx)
+
+		if ctx.Err() != nil {
+			break
+		}
+
+		c.params.TelemetrySettings.Logger.Info("Leader lease lost. Returning to standby mode...")
+	}
 }
 
 func (c *singletonReceiverCreator) startSubReceiver() error {
