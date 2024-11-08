@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -41,10 +42,18 @@ func CreateExtension(
 		return nil, errors.New("Failed to create k8s client")
 	}
 
+	// Set leaseHolderID for local development
+
+	leaseHolderID, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
+
 	return &leaderElectionExtension{
-		config: baseCfg,
-		logger: set.Logger,
-		client: client,
+		config:        baseCfg,
+		logger:        set.Logger,
+		client:        client,
+		leaseHolderID: leaseHolderID,
 	}, nil
 }
 

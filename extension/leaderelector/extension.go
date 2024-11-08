@@ -32,6 +32,7 @@ type leaderElectionExtension struct {
 	iamLeader        bool
 	cancel           context.CancelFunc
 	client           kubernetes.Interface
+	leaseHolderID    string
 }
 
 // If the receiver sets a callback function then it would be invoked when the leader wins the election
@@ -65,7 +66,7 @@ func (lee *leaderElectionExtension) Start(_ context.Context, host component.Host
 	ctx, lee.cancel = context.WithCancel(ctx)
 
 	// Create the leader elector
-	leaderElector, err := NewLeaderElector(lee.config, lee.client, lee.startedLeading, lee.stoppedLeading, "testID")
+	leaderElector, err := NewLeaderElector(lee.config, lee.client, lee.startedLeading, lee.stoppedLeading, lee.leaseHolderID)
 	if err != nil {
 		lee.logger.Error("Failed to create leader elector", zap.Error(err))
 		return err
