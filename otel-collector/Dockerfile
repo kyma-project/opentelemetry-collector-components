@@ -8,6 +8,7 @@ RUN apk --update add ca-certificates git
 
 ADD receiver /receiver/
 ADD internal /internal/
+ADD extension /extension/
 WORKDIR /app
 COPY otel-collector/builder-config.yaml builder-config.yaml
 

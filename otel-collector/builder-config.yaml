@@ -46,6 +46,8 @@ extensions:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage/filestorage vOTEL_CONTRIB_VERSION
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector v0.0.1
+
 
 connectors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/routingconnector vOTEL_CONTRIB_VERSION
@@ -58,3 +60,4 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../receiver/singletonreceivercreator
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../receiver/kymastatsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../internal/k8sconfig
+  - github.com/kyma-project/opentelemetry-collector-components/extension/leaderelector => ../extension/leaderelector
