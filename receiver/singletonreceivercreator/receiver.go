@@ -60,12 +60,12 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 
 	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
 	c.subReceiverRunner = newReceiverRunner(c.params, rcHost)
-
+	//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 	leaderElector, err := c.initLeaderElector()
 	if err != nil {
 		return fmt.Errorf("failed to create leader elector: %w", err)
 	}
-
+	//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 	go c.runLeaderElector(ctx, leaderElector)
 
 	return nil
