@@ -66,7 +66,7 @@ func newKymaScraper(
 		mb:      metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 	}
 
-	return scraperhelper.NewScraper(metadata.Type, ks.scrape)
+	return scraperhelper.NewScraperWithoutType(ks.scrape)
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {

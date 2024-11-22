@@ -27,4 +27,4 @@ COPY --from=build --chmod=755 /app/kyma-otelcol /
 
 USER 65532:65532
 
-ENTRYPOINT ["/kyma-otelcol", "--feature-gates=+component.UseLocalHostAsDefaultHost"]
+ENTRYPOINT ["/kyma-otelcol"]
