@@ -27,6 +27,9 @@ updates:
       k8s:
         patterns:
           - "k8s.io/*"
+      testify:
+        patterns:
+          - "github.com/stretchr/testify"
     labels:
       - "area/dependency"
       - "kind/chore"
