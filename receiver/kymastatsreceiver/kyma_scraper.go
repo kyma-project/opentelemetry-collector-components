@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.opentelemetry.io/collector/scraper"
 	"time"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver"
-	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -58,7 +58,7 @@ func newKymaScraper(
 	config Config,
 	dynamic dynamic.Interface,
 	settings receiver.Settings,
-) (scraperhelper.Scraper, error) {
+) (scraper.Metrics, error) {
 	ks := kymaScraper{
 		config:  config,
 		dynamic: dynamic,
@@ -66,7 +66,7 @@ func newKymaScraper(
 		mb:      metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 	}
 
-	return scraperhelper.NewScraperWithoutType(ks.scrape)
+	return scraper.NewMetrics(ks.scrape)
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
