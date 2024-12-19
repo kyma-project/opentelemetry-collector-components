@@ -2,6 +2,7 @@ package dummyreceiver
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 
@@ -25,8 +26,13 @@ func createDefaultConfig() component.Config {
 }
 
 func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg component.Config, consumer consumer.Metrics) (receiver.Metrics, error) {
+	cfg, ok := baseCfg.(*Config)
+	if !ok {
+		return nil, errors.New("invalid configuration")
+	}
+
 	return &dummyReceiver{
-		config:       baseCfg.(*Config),
+		config:       cfg,
 		nextConsumer: consumer,
 		settings:     &params,
 		wg:           &sync.WaitGroup{},
