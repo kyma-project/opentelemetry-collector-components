@@ -33,6 +33,7 @@ processors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor vOTEL_CONTRIB_VERSION
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetection vOTEL_CONTRIB_VERSION
 
 exporters:
   - gomod: go.opentelemetry.io/collector/exporter/debugexporter vOTEL_VERSION
