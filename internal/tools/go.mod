@@ -8,7 +8,7 @@ require (
 	go.opentelemetry.io/build-tools/crosslink v0.15.0
 	go.opentelemetry.io/collector/cmd/builder v0.116.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.116.0
-	golang.org/x/tools v0.28.0
+	golang.org/x/tools v0.29.0
 )
 
 require (
@@ -218,9 +218,9 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20241108190413-2d47ceb2692f // indirect
 	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/grpc v1.68.1 // indirect
