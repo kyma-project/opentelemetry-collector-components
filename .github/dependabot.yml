@@ -21,7 +21,7 @@ updates:
     groups:
       otel:
         patterns:
-          - "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/*"
+          - "github.com/open-telemetry/opentelemetry-collector-contrib/*"
           - "go.opentelemetry.io/otel/*"
           - "go.opentelemetry.io/collector/*"
       k8s:
