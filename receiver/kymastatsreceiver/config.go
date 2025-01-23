@@ -3,7 +3,7 @@ package kymastatsreceiver
 import (
 	"errors"
 
-	"go.opentelemetry.io/collector/receiver/scraperhelper"
+	"go.opentelemetry.io/collector/scraper/scraperhelper"
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
