@@ -11,11 +11,11 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.118.0
 	go.opentelemetry.io/collector/component v0.118.0
 	go.opentelemetry.io/collector/confmap v1.24.0
-	go.opentelemetry.io/collector/confmap/provider/envprovider v1.22.0
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.22.0
-	go.opentelemetry.io/collector/confmap/provider/httpprovider v1.22.0
-	go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.22.0
-	go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.22.0
+	go.opentelemetry.io/collector/confmap/provider/envprovider v1.24.0
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.24.0
+	go.opentelemetry.io/collector/confmap/provider/httpprovider v1.24.0
+	go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.24.0
+	go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.24.0
 	go.opentelemetry.io/collector/connector v0.118.0
 	go.opentelemetry.io/collector/exporter v0.118.0
 	go.opentelemetry.io/collector/exporter/debugexporter v0.118.0
