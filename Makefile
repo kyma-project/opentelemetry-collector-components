@@ -5,6 +5,10 @@ CMD?=
 OTEL_VERSION=main
 OTEL_STABLE_VERSION=main
 
+#set `$(FIND)` to `g$(FIND)` on MacOS if it exists
+FIND := $(shell command -v gfind 2> /dev/null || echo find)
+
+
 VERSION=$(shell git describe --always --match "v[0-9]*" HEAD)
 
 MOD_NAME=github.com/kyma-project/opentelemetry-collector-components
@@ -12,18 +16,18 @@ MOD_NAME=github.com/kyma-project/opentelemetry-collector-components
 GROUP ?= all
 FOR_GROUP_TARGET=for-$(GROUP)-target
 
-FIND_MOD_ARGS=-type f -name "go.mod"
+$(FIND)_MOD_ARGS=-type f -name "go.mod"
 TO_MOD_DIR=dirname {} \; | sort | grep -E '^./'
 EX_COMPONENTS=-not -path "./receiver/*" -not -path "./processor/*" -not -path "./exporter/*" -not -path "./extension/*" -not -path "./connector/*"
 EX_INTERNAL=-not -path "./internal/*"
 EX_CMD=-not -path "./cmd/*"
 
 # NONROOT_MODS includes ./* dirs (excludes . dir)
-NONROOT_MODS := $(shell find . $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
+NONROOT_MODS := $(shell $(FIND) . $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
 
-RECEIVER_MODS := $(shell find ./receiver/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
-CMD_MODS := $(shell find ./cmd/* $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) )
-OTHER_MODS := $(shell find . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $(FIND_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
+RECEIVER_MODS := $(shell $(FIND) ./receiver/* $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
+CMD_MODS := $(shell $(FIND) ./cmd/* $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
+OTHER_MODS := $(shell $(FIND) . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
 ALL_MODS := $(RECEIVER_MODS) $(CMD_MODS) $(OTHER_MODS)
 
 
@@ -135,9 +139,9 @@ crosslink: $(CROSSLINK)
 .PHONY: clean
 clean:
 	@echo "Removing coverage files"
-	find . -type f -name 'coverage.txt' -delete
-	find . -type f -name 'coverage.html' -delete
-	find . -type f -name 'coverage.out' -delete
+	$(FIND) . -type f -name 'coverage.txt' -delete
+	$(FIND) . -type f -name 'coverage.html' -delete
+	$(FIND) . -type f -name 'coverage.out' -delete
 
 .PHONY: checks
 checks:
