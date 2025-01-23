@@ -44,26 +44,10 @@ jobs:
         run: "./hack/scripts/check_artifacts_existence.sh ${{ inputs.release_version }}"
 
       # create a branch for the release and push it to the repository
+      - name: Create release branch (dry-run)
+        if: ${{ inputs.dry_run == true }}
+        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d"
+
       - name: Create release branch
         if: ${{ inputs.dry_run == false }}
-        run: |
-          git checkout -b release-${{ inputs.release_version }}
-          git push origin release-${{ inputs.release_version }}
-
-      - name: Create release branch
-        if: ${{ inputs.dry_run == true }}
-        run: |
-          git checkout -b release-${{ inputs.release_version }}-dry-run
-          git push origin release-${{ inputs.release_version }}-dry-run
-
-      - name: Create the release tag
-        if: ${{ inputs.dry_run == false }}
-        run: |
-          git tag ${{ inputs.release_version }}
-          git push origin ${{ inputs.release_version }}
-
-      - name: Create the release tag
-        if: ${{ inputs.dry_run == true }}
-        run: |
-          git tag dry-run-${{ inputs.release_version }}
-          git push origin dry-run-${{ inputs.release_version }}
+        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin"
