@@ -7,7 +7,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
-	"go.opentelemetry.io/collector/receiver/scraperhelper"
+	"go.opentelemetry.io/collector/scraper/scraperhelper"
 
 	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
@@ -54,5 +54,5 @@ func createMetricsReceiver(_ context.Context, params receiver.Settings, baseCfg 
 	if err != nil {
 		return nil, err
 	}
-	return scraperhelper.NewScraperControllerReceiver(&config.ControllerConfig, params, consumer, scraperhelper.AddScraper(metadata.Type, scrp))
+	return scraperhelper.NewMetricsController(&config.ControllerConfig, params, consumer, scraperhelper.AddScraper(metadata.Type, scrp))
 }

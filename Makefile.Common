@@ -52,7 +52,7 @@ BUILD_TYPE?=release
 
 ALL_PKG_DIRS := $(shell $(GOCMD) list -f '{{ .Dir }}' ./... | sort)
 
-ALL_SRC := $(shell find $(ALL_PKG_DIRS) -name '*.go' \
+ALL_SRC := $(shell gfind $(ALL_PKG_DIRS) -name '*.go' \
                                 -not -path '*/third_party/*' \
                                 -not -path '*/local/*' \
                                 -type f | sort)
