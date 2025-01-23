@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "labels": ["area/dependency", "kind/chore"],
+  "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "commitMessageAction": "Bump",
   "gomod": {
