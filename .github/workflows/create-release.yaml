@@ -1,0 +1,53 @@
+name: "Create release"
+run-name: "Create release ${{ inputs.release_version }}"
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version (i.e. x.y.z)"
+        default: ""
+        required: true
+      dry-run:
+        type: boolean
+        description: "Creates a dry-run branch and tag. This will not trigger the actual release process."
+        default: true
+
+jobs:
+  # check if tag is a valid semantic version
+  # check that no release already exists with that name
+  validate-release:
+    name: Validate release
+    runs-on: ubuntu-latest
+    steps:
+      # checkout code including all history
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Check if that release tag is correctly formatted
+        run: "./hack/scripts/check_release_tag.sh ${{ inputs.release_version }}"
+
+      - name: Check if release tag already exists
+        run: |
+          if [ $(git tag -l ${{ inputs.release_version }}) ]; then
+            echo "::error ::Tag ${{ inputs.release_version }} already exists"
+            exit 1
+          fi
+
+      - name: Check for existing artifacts from previous release runs
+        run: "./hack/scripts/check_artifacts_existence.sh ${{ inputs.release_version }}"
+
+      # create a branch for the release and push it to the repository
+      - name: Create release branch (dry-run)
+        if: ${{ inputs.dry_run == true }}
+        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d"
+
+      - name: Create release branch
+        if: ${{ inputs.dry_run == false }}
+        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin"
