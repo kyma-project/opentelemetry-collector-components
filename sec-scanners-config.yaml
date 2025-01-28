@@ -1,8 +1,13 @@
 module-name: opentelemetry-collector-components
+kind: kyma
+protecode: []
 whitesource:
   language: golang-mod
-  subprojects: false
   exclude:
     - "**/test/**"
     - "**/*_test.go"
     - "**/generated_*.go"
+checkmarx-one:
+    preset: go-default
+    exclude:
+        - '**/*_test.go'
