@@ -25,7 +25,7 @@ require (
 	go.uber.org/zap v1.27.0
 	k8s.io/apimachinery v0.32.1
 	k8s.io/client-go v0.32.1
-	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738
+	k8s.io/utils v0.0.0-20241210054802-24370beab758
 )
 
 require (
