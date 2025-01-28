@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-00010101000000-000000000000
+	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-20250128143644-90ef44f445ee
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.118.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.118.0
 	github.com/stretchr/testify v1.10.0
