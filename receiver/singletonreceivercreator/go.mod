@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-00010101000000-000000000000
-	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.0-00010101000000-000000000000
+	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.0-20250124155405-826555e2bdfd
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.118.0
 	go.opentelemetry.io/collector/component/componenttest v0.118.0
