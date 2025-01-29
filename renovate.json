@@ -7,9 +7,6 @@
   ],
   "labels": ["area/dependency", "kind/chore"],
   "commitMessageAction": "Bump",
-  "gomod": {
-    "enabled": true
-  },
   "kustomize": {
     "enabled": false
   },
@@ -22,5 +19,21 @@
   "github-actions": {
     "enabled": false
   },
-  "postUpdateOptions": ["gomodTidy"]
+  "golang": {
+    "postUpdateOptions": ["gomodTidy"],
+    "packageRules": [
+      {
+        "matchDatasources": ["golang-version"],
+        "enabled": true
+      },
+      {
+        "matchUpdateTypes": ["digest"],
+        "schedule": "every month",
+        "enabled": false
+      },
+      {
+        "matchLanguages": ["go"]
+      }
+    ]
+  }
 }
