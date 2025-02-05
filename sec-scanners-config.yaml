@@ -1,7 +1,7 @@
 module-name: opentelemetry-collector-components
 kind: kyma
-protecode: []
-whitesource:
+bdba: []
+mend:
   language: golang-mod
   exclude:
     - "**/test/**"
