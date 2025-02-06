@@ -22,29 +22,40 @@
   "github-actions": {
     "enabled": false
   },
-  "golang": {
-    "postUpdateOptions": [
-      "gomodTidy"
-    ],
-    "packageRules": [
-      {
-        "matchDatasources": [
-          "golang-version"
-        ],
-        "enabled": true
-      },
-      {
-        "matchUpdateTypes": [
-          "digest"
-        ],
-        "schedule": "every month",
-        "enabled": false
-      },
-      {
-        "matchLanguages": [
-          "go"
-        ]
-      }
-    ]
-  }
+  "packageRules": [
+    {
+      "matchCategories": [
+        "golang"
+      ],
+      "postUpdateOptions": [
+        "gomodTidy"
+      ],
+      "matchDatasources": [
+        "golang-version"
+      ],
+      "enabled": true
+    },
+    {
+      "matchCategories": [
+        "golang"
+      ],
+      "postUpdateOptions": [
+        "gomodTidy"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "schedule": "every month",
+      "enabled": false
+    },
+    {
+      "matchCategories": [
+        "golang",
+        "go"
+      ],
+      "postUpdateOptions": [
+        "gomodTidy"
+      ]
+    }
+  ]
 }
