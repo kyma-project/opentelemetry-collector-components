@@ -1,7 +1,6 @@
-ARG GOLANG_VERSION
 
-FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} as build
-ARG OTEL_VERSION
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.6-alpine3.21 as build
+ARG OTEL_VERSION=0.118.0
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
 RUN apk --update add ca-certificates git

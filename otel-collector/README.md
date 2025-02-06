@@ -17,17 +17,10 @@ This mode relies on a released version of the OCC repository.
 ## Build locally
 
 1. The build mode defaults to `PR`. To change this, set the **BUILD_MODE** variable to either `PR` or `release`.
-
-2. To build the image locally, enter the versions taken from the `envs` file in the respective command, and run it in the repository root folder:
-
-   For PR mode, use:
-
-       docker build -f otel-collector/Dockerfile --build-arg GOLANG_VERSION={XXX} --build-arg='OTEL_VERSION={XXX}' --build-arg OTEL_CONTRIB_VERSION={XXX} .
-
-   For release mode, use:
-
-       docker build -f otel-collector/Dockerfile --build-arg BUILD_MODE=release --build-arg GOLANG_VERSION={XXX} --build-arg OTEL_VERSION={XXX} --build-arg OTEL_CONTRIB_VERSION={XXX} .
-
-3. If your build was successful, the Docker command updates its status output to:
+1. To build the image locally, run it in the repository root folder:
+    ```sh
+    docker build -f otel-collector/Dockerfile .
+    ```
+1. If your build was successful, the Docker command updates its status output to:
 
        Building {X}s (18/18) FINISHED

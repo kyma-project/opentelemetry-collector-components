@@ -5,13 +5,16 @@
     ":semanticCommitTypeAll(chore)",
     ":semanticCommitScopeDisabled"
   ],
-  "labels": ["area/dependency", "kind/chore"],
+  "labels": [
+    "area/dependency",
+    "kind/chore"
+  ],
   "commitMessageAction": "Bump",
   "kustomize": {
     "enabled": false
   },
   "dockerfile": {
-    "enabled": false
+    "enabled": true
   },
   "helm-values": {
     "enabled": false
@@ -20,19 +23,27 @@
     "enabled": false
   },
   "golang": {
-    "postUpdateOptions": ["gomodTidy"],
+    "postUpdateOptions": [
+      "gomodTidy"
+    ],
     "packageRules": [
       {
-        "matchDatasources": ["golang-version"],
+        "matchDatasources": [
+          "golang-version"
+        ],
         "enabled": true
       },
       {
-        "matchUpdateTypes": ["digest"],
+        "matchUpdateTypes": [
+          "digest"
+        ],
         "schedule": "every month",
         "enabled": false
       },
       {
-        "matchLanguages": ["go"]
+        "matchLanguages": [
+          "go"
+        ]
       }
     ]
   }
