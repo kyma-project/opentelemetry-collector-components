@@ -17,7 +17,7 @@ This mode relies on a released version of the OCC repository.
 ## Build locally
 
 1. The build mode defaults to `PR`. To change this, set the **BUILD_MODE** variable to either `PR` or `release`.
-1. To build the image locally, run it in the repository root folder:
+1. To build the image locally, run the following command in the repository root folder:
     ```sh
     docker build -f otel-collector/Dockerfile .
     ```
