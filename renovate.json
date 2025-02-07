@@ -14,7 +14,7 @@
     "enabled": false
   },
   "dockerfile": {
-    "enabled": false
+    "enabled": true
   },
   "helm-values": {
     "enabled": false

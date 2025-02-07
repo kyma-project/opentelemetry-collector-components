@@ -1,16 +1,6 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 version: 2
 updates:
-  - package-ecosystem: "docker"
-    directory: "/otel-collector"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: "chore(dependabot)"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-
   - package-ecosystem: "gomod"
     directories:
       - "cmd/*"
