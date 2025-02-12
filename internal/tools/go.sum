@@ -494,8 +494,8 @@ go.opentelemetry.io/build-tools v0.17.0 h1:mCOZ3YQswjcetUeoMTijn2QPVzwx02Gk1WD20
 go.opentelemetry.io/build-tools v0.17.0/go.mod h1:ZhuNyO/aAkGEFTfNhH7Nhv7fIWpxIOp8t7XshpPWiOU=
 go.opentelemetry.io/build-tools/crosslink v0.17.0 h1:Ivjwh4qp4L+ivRccBOMPIXAVESBMbhbJFEJUGwKsiCM=
 go.opentelemetry.io/build-tools/crosslink v0.17.0/go.mod h1:rZRgZZ9uBe2IvR4fJY1kGIWIwiSLm+IvjFsSiPXGq4Q=
-go.opentelemetry.io/collector/cmd/builder v0.118.0 h1:BG4V9g/P4R5eBCAC52EKuj77YcnDwlB9ptbFZqQv4Pk=
-go.opentelemetry.io/collector/cmd/builder v0.118.0/go.mod h1:dbzO6Gh1jW7IDLpxk1XMZXM1C3BaDRY4xppmx6cyTgM=
+go.opentelemetry.io/collector/cmd/builder v0.119.0 h1:ruXswautUmNocS+s7H8Vx/fVUjAqVNt/U80Ae/2Zo8U=
+go.opentelemetry.io/collector/cmd/builder v0.119.0/go.mod h1:dbzO6Gh1jW7IDLpxk1XMZXM1C3BaDRY4xppmx6cyTgM=
 go.opentelemetry.io/collector/cmd/mdatagen v0.118.0 h1:xQFvnY93L1oQD5yXcJvb0EGXWDrHbufGOGLpkb6uHvA=
 go.opentelemetry.io/collector/cmd/mdatagen v0.118.0/go.mod h1:pEpmLTbKjx3Az/U/mW2wzxDWd0MxCTVTDdGYfHw2EeE=
 go.opentelemetry.io/collector/component v0.118.0 h1:sSO/ObxJ+yH77Z4DmT1mlSuxhbgUmY1ztt7xCA1F/8w=
