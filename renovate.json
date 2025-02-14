@@ -45,16 +45,16 @@
       "enabled": false
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0/",
-      "automerge": true
-    },
-    {
       "matchSourceUrls": [
         "https://github.com/open-telemetry/opentelemetry-collector-contrib",
         "https://github.com/open-telemetry/opentelemetry-collector"
       ],
       "groupName": "opentelemetry"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
     }
   ]
 }
