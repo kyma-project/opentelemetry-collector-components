@@ -461,11 +461,9 @@ go.opentelemetry.io/collector/receiver/receivertest v0.119.0 h1:thZkyftPCNit/m2b
 go.opentelemetry.io/collector/receiver/receivertest v0.119.0/go.mod h1:DZM70vofnquGkQiTfT5ZSFZlohxANl9XOrVq9h5IKnc=
 go.opentelemetry.io/collector/receiver/xreceiver v0.119.0 h1:ZcTO+h+r9TyR1XgMhA7FTSTV9RF+z/IDPrcRIg1l56U=
 go.opentelemetry.io/collector/receiver/xreceiver v0.119.0/go.mod h1:AkoWhnYFMygK7Tlzez398ti20NqydX8wxPVWU86+baE=
-go.opentelemetry.io/collector/scraper v0.118.0 h1:944QgQVZ7PM0L9WIwgRPY0LbbHX5qsk2x4uxDO1IOAQ=
-go.opentelemetry.io/collector/scraper v0.118.0/go.mod h1:wIa4bIqiU9bkeg3v5QQybwz1+K5DjrP1Afc13Kt22Cw=
+go.opentelemetry.io/collector/scraper v0.119.0 h1:fn9tcIFPkBzmqCYAOqYu8Ly1ygER/EzNIpf+2taUPVs=
 go.opentelemetry.io/collector/scraper v0.119.0/go.mod h1:svo1G6dWv7lLdagaa+aOq6bpSJ8F6vOxYHDkH7uNypg=
-go.opentelemetry.io/collector/scraper/scraperhelper v0.118.0 h1:kZu4TgGGSWlNP9ogVr3pVQGX6J/P8ooPj8wMH5+aWyQ=
-go.opentelemetry.io/collector/scraper/scraperhelper v0.118.0/go.mod h1:NKOcwL580ycua1HQ9K3OUucBsMsVL5DbvOJxGtg4chs=
+go.opentelemetry.io/collector/scraper/scraperhelper v0.119.0 h1:uRSZcOHRUgXwW4hkseXOhRmHBg5SW9rvDjG0XoBeWbs=
 go.opentelemetry.io/collector/scraper/scraperhelper v0.119.0/go.mod h1:EmnOapVu/TaKsbqvo928UmphG0JcNuHZcJwPAHMD9/k=
 go.opentelemetry.io/collector/semconv v0.119.0 h1:xo+V3a7hnK0I6fxAWCXT8BIT1PCBYd4emolhoKSDUlI=
 go.opentelemetry.io/collector/semconv v0.119.0/go.mod h1:N6XE8Q0JKgBN2fAhkUQtqK9LT7rEGR6+Wu/Rtbal1iI=
