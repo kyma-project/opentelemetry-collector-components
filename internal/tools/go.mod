@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/golangci/golangci-lint v1.63.4
 	github.com/vladopajic/go-test-coverage/v2 v2.11.4
-	go.opentelemetry.io/build-tools/crosslink v0.17.0
+	go.opentelemetry.io/build-tools/crosslink v0.18.0
 	go.opentelemetry.io/collector/cmd/builder v0.118.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.118.0
 	golang.org/x/tools v0.29.0
@@ -179,7 +179,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.2.0 // indirect
@@ -203,7 +203,7 @@ require (
 	gitlab.com/bosi/decorder v0.4.2 // indirect
 	go-simpler.org/musttag v0.13.0 // indirect
 	go-simpler.org/sloglint v0.7.2 // indirect
-	go.opentelemetry.io/build-tools v0.17.0 // indirect
+	go.opentelemetry.io/build-tools v0.18.0 // indirect
 	go.opentelemetry.io/collector/component v0.118.0 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.118.0 // indirect
 	go.opentelemetry.io/collector/confmap v1.24.0 // indirect
