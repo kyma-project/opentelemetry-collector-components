@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    ":semanticCommits",
     ":semanticCommitTypeAll(chore)",
     ":semanticCommitScopeDisabled"
   ],
@@ -9,7 +10,12 @@
     "area/dependency",
     "kind/chore"
   ],
-  "commitMessageAction": "Bump",
+  "gomod": {
+    "postUpdateOptions": [
+      "gomodTidy"
+    ],
+    "enabled": true
+  },
   "kustomize": {
     "enabled": false
   },
@@ -30,17 +36,26 @@
       "postUpdateOptions": [
         "gomodTidy"
       ],
-      "matchDatasources": [
-        "golang-version"
-      ],
       "enabled": true
     },
     {
-      "matchCategories": [
-        "golang"
+      "matchDatasources": [
+        "golang-version"
       ],
-      "postUpdateOptions": [
-        "gomodTidy"
+      "rangeStrategy": "bump"
+    },
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchDepTypes": [
+        "indirect"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "gomod"
       ],
       "matchUpdateTypes": [
         "digest"
@@ -49,13 +64,23 @@
       "enabled": false
     },
     {
-      "matchCategories": [
-        "golang",
-        "go"
-      ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ]
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
     }
-  ]
+  ],
+    "customManagers": [
+        {
+            "customType": "regex",
+            "fileMatch": [
+                "^\\.env$"
+            ],
+            "matchStrings": [
+                "ENV_ISTIO_VERSION=(?<currentValue>\\d+?\\.\\d+?\\.\\d+?)"
+            ],
+            "datasourceTemplate": "github-releases",
+            "versioningTemplate": "semver",
+            "depNameTemplate": "kyma-project/istio"
+        }
+    ]
 }
