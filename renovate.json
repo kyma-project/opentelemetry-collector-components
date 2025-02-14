@@ -6,14 +6,9 @@
     ":semanticCommitTypeAll(chore)",
     ":semanticCommitScopeDisabled"
   ],
-  "labels": [
-    "area/dependency",
-    "kind/chore"
-  ],
+  "labels": ["area/dependency", "kind/chore"],
   "gomod": {
-    "postUpdateOptions": [
-      "gomodTidy"
-    ],
+    "postUpdateOptions": ["gomodTidy"],
     "enabled": true
   },
   "kustomize": {
@@ -30,36 +25,22 @@
   },
   "packageRules": [
     {
-      "matchCategories": [
-        "golang"
-      ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ],
+      "matchCategories": ["golang"],
+      "postUpdateOptions": ["gomodTidy"],
       "enabled": true
     },
     {
-      "matchDatasources": [
-        "golang-version"
-      ],
+      "matchDatasources": ["golang-version"],
       "rangeStrategy": "bump"
     },
     {
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "indirect"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["indirect"],
       "enabled": false
     },
     {
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchUpdateTypes": [
-        "digest"
-      ],
+      "matchManagers": ["gomod"],
+      "matchUpdateTypes": ["digest"],
       "schedule": "every month",
       "enabled": false
     },
@@ -67,6 +48,13 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "matchSourceUrls": [
+        "https://github.com/open-telemetry/opentelemetry-collector-contrib",
+        "https://github.com/open-telemetry/opentelemetry-collector"
+      ],
+      "groupName": "opentelemetry"
     }
   ]
 }
