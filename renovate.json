@@ -21,7 +21,7 @@
     "enabled": false
   },
   "github-actions": {
-    "enabled": false
+    "enabled": true
   },
   "packageRules": [
     {
