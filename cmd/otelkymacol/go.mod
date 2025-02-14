@@ -118,8 +118,8 @@ require (
 	go.opentelemetry.io/collector/processor/xprocessor v0.119.0 // indirect
 	go.opentelemetry.io/collector/receiver/receivertest v0.119.0 // indirect
 	go.opentelemetry.io/collector/receiver/xreceiver v0.119.0 // indirect
-	go.opentelemetry.io/collector/scraper v0.118.0 // indirect
-	go.opentelemetry.io/collector/scraper/scraperhelper v0.118.0 // indirect
+	go.opentelemetry.io/collector/scraper v0.119.0 // indirect
+	go.opentelemetry.io/collector/scraper/scraperhelper v0.119.0 // indirect
 	go.opentelemetry.io/collector/semconv v0.119.0 // indirect
 	go.opentelemetry.io/collector/service v0.119.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otelzap v0.9.0 // indirect
