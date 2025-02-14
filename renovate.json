@@ -2,14 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    ":semanticCommits",
     ":semanticCommitTypeAll(chore)",
     ":semanticCommitScopeDisabled"
   ],
-  "labels": [
-    "area/dependency",
-    "kind/chore"
-  ],
-  "commitMessageAction": "Bump",
+  "labels": ["area/dependency", "kind/chore"],
+  "gomod": {
+    "postUpdateOptions": ["gomodTidy"],
+    "enabled": true
+  },
   "kustomize": {
     "enabled": false
   },
@@ -24,38 +25,36 @@
   },
   "packageRules": [
     {
-      "matchCategories": [
-        "golang"
-      ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ],
-      "matchDatasources": [
-        "golang-version"
-      ],
+      "matchCategories": ["golang"],
+      "postUpdateOptions": ["gomodTidy"],
       "enabled": true
     },
     {
-      "matchCategories": [
-        "golang"
-      ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ],
-      "matchUpdateTypes": [
-        "digest"
-      ],
+      "matchDatasources": ["golang-version"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["indirect"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchUpdateTypes": ["digest"],
       "schedule": "every month",
       "enabled": false
     },
     {
-      "matchCategories": [
-        "golang",
-        "go"
+      "matchSourceUrls": [
+        "https://github.com/open-telemetry/opentelemetry-collector-contrib",
+        "https://github.com/open-telemetry/opentelemetry-collector"
       ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ]
+      "groupName": "opentelemetry"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
     }
   ]
 }
