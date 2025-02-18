@@ -1,5 +1,5 @@
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.6-alpine3.21 as build
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.0-alpine3.21 as build
 ARG OTEL_VERSION
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
