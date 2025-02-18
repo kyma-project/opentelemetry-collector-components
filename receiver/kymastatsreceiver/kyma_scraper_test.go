@@ -1,7 +1,6 @@
 package kymastatsreceiver
 
 import (
-	"context"
 	"errors"
 	"path/filepath"
 	"testing"
@@ -105,7 +104,7 @@ func TestScrape(t *testing.T) {
 
 	require.NoError(t, err)
 
-	md, err := r.ScrapeMetrics(context.Background())
+	md, err := r.ScrapeMetrics(t.Context())
 	require.NoError(t, err)
 
 	expectedFile := filepath.Join("testdata", "metrics.yaml")
@@ -152,7 +151,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 
 	require.NoError(t, err)
 
-	_, err = r.ScrapeMetrics(context.Background())
+	_, err = r.ScrapeMetrics(t.Context())
 	require.Error(t, err)
 
 }
@@ -328,7 +327,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			metrics, err := r.ScrapeMetrics(context.Background())
+			metrics, err := r.ScrapeMetrics(t.Context())
 			require.NoError(t, err)
 			require.Equal(t, tt.expectedDataPoints, metrics.DataPointCount())
 		})

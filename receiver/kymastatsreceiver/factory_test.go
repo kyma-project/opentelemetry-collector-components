@@ -1,7 +1,6 @@
 package kymastatsreceiver
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -59,7 +58,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			factory := NewFactory()
 			metricsReceiver, err := factory.CreateMetrics(
-				context.Background(),
+				t.Context(),
 				receivertest.NewNopSettings(),
 				tt.cfg,
 				consumertest.NewNop(),
@@ -79,7 +78,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 func TestCreateTraceReceiver(t *testing.T) {
 	factory := NewFactory()
 	traceReceiver, err := factory.CreateTraces(
-		context.Background(),
+		t.Context(),
 		receivertest.NewNopSettings(),
 		&Config{
 			APIConfig: k8sconfig.APIConfig{
@@ -95,7 +94,7 @@ func TestCreateTraceReceiver(t *testing.T) {
 func TestCreateLogsReceiver(t *testing.T) {
 	factory := NewFactory()
 	logsReceiver, err := factory.CreateLogs(
-		context.Background(),
+		t.Context(),
 		receivertest.NewNopSettings(),
 		&Config{
 			APIConfig: k8sconfig.APIConfig{
@@ -116,7 +115,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 		},
 	}
 	_, err := factory.CreateMetrics(
-		context.Background(),
+		t.Context(),
 		receivertest.NewNopSettings(),
 		cfg,
 		consumertest.NewNop(),
@@ -137,7 +136,7 @@ func TestFactoryNoneAuthType(t *testing.T) {
 		},
 	}
 	_, err := factory.CreateMetrics(
-		context.Background(),
+		t.Context(),
 		receivertest.NewNopSettings(),
 		cfg,
 		consumertest.NewNop(),
