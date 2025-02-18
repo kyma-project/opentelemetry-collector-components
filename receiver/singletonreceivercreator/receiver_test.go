@@ -1,7 +1,6 @@
 package singletonreceivercreator
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -83,7 +82,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	ms1, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr1.Start(t.Context())
+	require.NoError(t, sr1.Start(t.Context(), ms1))
 
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -103,7 +102,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	ms2, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr2.Start(t.Context())
+	require.NoError(t, sr2.Start(t.Context(), ms2))
 
 	require.Never(t, func() bool {
 		allMetrics := sink2.AllMetrics()
