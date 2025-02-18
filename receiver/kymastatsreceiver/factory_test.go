@@ -1,7 +1,6 @@
 package kymastatsreceiver
 
 import (
-	"context"
 	"testing"
 	"time"
 
