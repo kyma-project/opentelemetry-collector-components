@@ -1,7 +1,6 @@
 package singletonreceivercreator
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -31,7 +30,7 @@ func TestNewFactory(t *testing.T) {
 				t.Helper()
 				cfg := createDefaultConfig().(*Config)
 				_, err := NewFactory().CreateMetrics(
-					context.Background(),
+					t.Context(),
 					receivertest.NewNopSettings(),
 					cfg,
 					consumertest.NewNop(),

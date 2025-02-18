@@ -44,7 +44,7 @@ func TestUnsupportedAuthType(t *testing.T) {
 		"host1",
 	)
 
-	err = r.Start(context.TODO(), componenttest.NewNopHost())
+	err = r.Start(t.Context(), componenttest.NewNopHost())
 	require.Error(t, err)
 
 	require.Contains(t, err.Error(), "failed to create Kubernetes client: invalid authType for kubernetes: foo")
@@ -69,7 +69,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 		},
 	}
 
-	ctx := context.TODO()
+	ctx := t.Context()
 	fakeClient := fake.NewSimpleClientset()
 	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
@@ -83,7 +83,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	ms1, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr1.Start(context.TODO(), ms1))
+	require.NoError(t, sr1.Start(t.Context())
 
 	require.Eventually(t, func() bool {
 		lease, err := fakeClient.CoordinationV1().Leases("default").Get(ctx, "my-foo-lease-1", metav1.GetOptions{})
@@ -103,7 +103,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	ms2, err := NewMockSettings()
 	require.NoError(t, err)
 
-	require.NoError(t, sr2.Start(context.TODO(), ms2))
+	require.NoError(t, sr2.Start(t.Context())
 
 	require.Never(t, func() bool {
 		allMetrics := sink2.AllMetrics()
