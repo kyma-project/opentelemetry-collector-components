@@ -465,10 +465,10 @@ go.opentelemetry.io/collector/receiver/receivertest v0.120.0 h1:Op9yCT0kGvqPF0BB
 go.opentelemetry.io/collector/receiver/receivertest v0.120.0/go.mod h1:lpFA4FzcHWki7rLzsNncYmDZ4f7Eik8JY1Mmsaw5uMw=
 go.opentelemetry.io/collector/receiver/xreceiver v0.120.0 h1:+gHYd9rTBRKSQfWsTzV2wlwfaVL/LZSz5wu4sygZH7w=
 go.opentelemetry.io/collector/receiver/xreceiver v0.120.0/go.mod h1:dkHpL1QqLi/G+60VZnfFpZQf9qoxDVnp6G9FuAcMgfk=
-go.opentelemetry.io/collector/scraper v0.119.0 h1:fn9tcIFPkBzmqCYAOqYu8Ly1ygER/EzNIpf+2taUPVs=
-go.opentelemetry.io/collector/scraper v0.119.0/go.mod h1:svo1G6dWv7lLdagaa+aOq6bpSJ8F6vOxYHDkH7uNypg=
-go.opentelemetry.io/collector/scraper/scraperhelper v0.119.0 h1:uRSZcOHRUgXwW4hkseXOhRmHBg5SW9rvDjG0XoBeWbs=
-go.opentelemetry.io/collector/scraper/scraperhelper v0.119.0/go.mod h1:EmnOapVu/TaKsbqvo928UmphG0JcNuHZcJwPAHMD9/k=
+go.opentelemetry.io/collector/scraper v0.120.0 h1:CikAMYQWZOMs7Th7OOkVOSdicGidJorpltKCbTMq3GA=
+go.opentelemetry.io/collector/scraper v0.120.0/go.mod h1:7EMf0bDMUaxT/jYXQ5Sb50jtrGi1+GZMVsfDn0hTwSo=
+go.opentelemetry.io/collector/scraper/scraperhelper v0.120.0 h1:8TbJHaoQhzVxQgh4OBvNOTzSa9VZDZXRI3qG9psbHDI=
+go.opentelemetry.io/collector/scraper/scraperhelper v0.120.0/go.mod h1:762dmPH6IUMvb+nROo/hh9JfcwZozutX9Etrtpzc67g=
 go.opentelemetry.io/collector/semconv v0.120.0 h1:iG9N78c2IZN4XOH7ZSdAQJBbaHDTuPnTlbQjKV9uIPY=
 go.opentelemetry.io/collector/semconv v0.120.0/go.mod h1:te6VQ4zZJO5Lp8dM2XIhDxDiL45mwX0YAQQWRQ0Qr9U=
 go.opentelemetry.io/collector/service v0.120.0 h1:7E0ILhOYP72qZBNmprsJxLFozEuXlF0Evy5e4HinTJI=
