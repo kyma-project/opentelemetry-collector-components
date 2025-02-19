@@ -1,7 +1,6 @@
 package dummyreceiver
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -17,16 +16,16 @@ func TestReceiveMetrics(t *testing.T) {
 	cfg := &Config{
 		Interval: "1s",
 	}
-	mr, err := createMetricsReceiver(context.Background(), receivertest.NewNopSettings(), cfg, sink)
+	mr, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(), cfg, sink)
 	require.NoError(t, err)
 
-	err = mr.Start(context.Background(), componenttest.NewNopHost())
+	err = mr.Start(t.Context(), componenttest.NewNopHost())
 	require.NoError(t, err)
 
 	require.Eventually(t, func() bool {
 		allMetrics := sink.AllMetrics()
 		return len(allMetrics) > 0
 	}, 5*time.Second, 1*time.Second)
-	err = mr.Shutdown(context.Background())
+	err = mr.Shutdown(t.Context())
 	require.NoError(t, err)
 }

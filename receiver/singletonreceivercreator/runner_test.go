@@ -1,7 +1,6 @@
 package singletonreceivercreator
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -66,7 +65,7 @@ func TestRunnerStart(t *testing.T) {
 	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
 
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
-	require.NoError(t, r.shutdown(context.Background()))
+	require.NoError(t, r.shutdown(t.Context()))
 }
 
 func TestLoadReceiverConfig(t *testing.T) {
