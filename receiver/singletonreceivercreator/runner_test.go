@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/otelcol"
 	"go.opentelemetry.io/collector/pipeline"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receivertest"
@@ -31,8 +32,7 @@ func NewMockSettings() (*mockSettings, error) {
 
 	var factories map[component.Type]receiver.Factory
 	var err error
-
-	factories, err = receiver.MakeFactoryMap([]receiver.Factory{
+	factories, err = otelcol.MakeFactoryMap[receiver.Factory]([]receiver.Factory{
 		dummyreceiver.NewFactory(),
 	}...)
 
@@ -62,7 +62,7 @@ func (ms *mockSettings) GetExporters() map[pipeline.Signal]map[component.ID]comp
 func TestRunnerStart(t *testing.T) {
 	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
+	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
 
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 	require.NoError(t, r.shutdown(t.Context()))
@@ -71,7 +71,7 @@ func TestRunnerStart(t *testing.T) {
 func TestLoadReceiverConfig(t *testing.T) {
 	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
+	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
 	factory := ms.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 
@@ -89,7 +89,7 @@ func TestLoadReceiverConfigError(t *testing.T) {
 	var factories map[component.Type]receiver.Factory
 	var err error
 
-	factories, err = receiver.MakeFactoryMap([]receiver.Factory{
+	factories, err = otelcol.MakeFactoryMap([]receiver.Factory{
 		receiver.NewFactory(component.MustNewType("foo"), func() component.Config { return &struct{}{} }),
 	}...)
 
@@ -98,7 +98,7 @@ func TestLoadReceiverConfigError(t *testing.T) {
 		ReceiversFactories: factories,
 	}
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettings(), ms)
+	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
 	err = r.start(mockReceiverConfig, consumertest.NewNop())
 	require.EqualError(t, err, "unable to lookup factory for wrapped receiver \"dummy/name\"")
 }
