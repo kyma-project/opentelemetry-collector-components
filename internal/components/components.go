@@ -18,7 +18,7 @@ func Components() (otelcol.Factories, error) {
 	receivers := []receiver.Factory{
 		dummyreceiver.NewFactory(),
 	}
-	factories.Receivers, err = receiver.MakeFactoryMap(receivers...)
+	factories.Receivers, err = otelcol.MakeFactoryMap(receivers...)
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
@@ -26,7 +26,7 @@ func Components() (otelcol.Factories, error) {
 	exporters := []exporter.Factory{
 		debugexporter.NewFactory(),
 	}
-	factories.Exporters, err = exporter.MakeFactoryMap(exporters...)
+	factories.Exporters, err = otelcol.MakeFactoryMap(exporters...)
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
@@ -34,7 +34,7 @@ func Components() (otelcol.Factories, error) {
 	processors := []processor.Factory{
 		batchprocessor.NewFactory(),
 	}
-	factories.Processors, err = processor.MakeFactoryMap(processors...)
+	factories.Processors, err = otelcol.MakeFactoryMap(processors...)
 	if err != nil {
 		return otelcol.Factories{}, err
 	}
