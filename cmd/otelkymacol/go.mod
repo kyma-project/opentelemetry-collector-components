@@ -2,7 +2,7 @@
 
 module github.com/kyma-project/opentelemetry-collector-components/cmd/otelkymacol
 
-go 1.24.0
+go 1.24.1
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
