@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/receiver/dummy
 go 1.24.1
 
 require (
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.120.0
 	go.opentelemetry.io/collector/component/componenttest v0.120.0
