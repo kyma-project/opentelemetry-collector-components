@@ -15,7 +15,7 @@ import (
 )
 
 func NewSettings(tt *componenttest.Telemetry) receiver.Settings {
-	set := receivertest.NewNopSettingsWithType(receivertest.NopType)
+	set := receivertest.NewNopSettings(receivertest.NopType)
 	set.ID = component.NewID(component.MustNewType("singleton_receiver_creator"))
 	set.TelemetrySettings = tt.NewTelemetrySettings()
 	return set
