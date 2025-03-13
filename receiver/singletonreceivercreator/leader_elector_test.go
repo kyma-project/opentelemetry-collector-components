@@ -12,7 +12,7 @@ import (
 )
 
 func TestLeaderElector(t *testing.T) {
-	fakeClient := fake.NewSimpleClientset()
+	fakeClient := fake.NewClientset()
 	onStartedLeading := func(ctx context.Context) {}
 	onStoppedLeading := func() {}
 	leConfig := leaderElectionConfig{

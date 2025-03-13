@@ -62,7 +62,7 @@ func (ms *mockSettings) GetExporters() map[pipeline.Signal]map[component.ID]comp
 func TestRunnerStart(t *testing.T) {
 	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
+	r := newReceiverRunner(receivertest.NewNopSettings(receivertest.NopType), ms)
 
 	require.NoError(t, r.start(mockReceiverConfig, consumertest.NewNop()))
 	require.NoError(t, r.shutdown(t.Context()))
@@ -71,7 +71,7 @@ func TestRunnerStart(t *testing.T) {
 func TestLoadReceiverConfig(t *testing.T) {
 	ms, err := NewMockSettings()
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
+	r := newReceiverRunner(receivertest.NewNopSettings(receivertest.NopType), ms)
 	factory := ms.GetFactory(component.KindReceiver, component.MustNewType("dummy"))
 	recvrFact := factory.(receiver.Factory)
 
@@ -98,7 +98,7 @@ func TestLoadReceiverConfigError(t *testing.T) {
 		ReceiversFactories: factories,
 	}
 	require.NoError(t, err)
-	r := newReceiverRunner(receivertest.NewNopSettingsWithType(receivertest.NopType), ms)
+	r := newReceiverRunner(receivertest.NewNopSettings(receivertest.NopType), ms)
 	err = r.start(mockReceiverConfig, consumertest.NewNop())
 	require.EqualError(t, err, "unable to lookup factory for wrapped receiver \"dummy/name\"")
 }
