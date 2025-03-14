@@ -128,7 +128,7 @@ genotelkymacol: $(BUILDER)
 
 # Build the Collector executable.
 .PHONY: otelkymacol
-otelkymacol:
+otelkymacol: genotelkymacol
 	cd ./cmd/otelkymacol && GO111MODULE=on CGO_ENABLED=0 $(GOCMD) build -trimpath -o ../../bin/otelkymacol_$(GOOS)_$(GOARCH)$(EXTENSION) -tags $(GO_BUILD_TAGS) .
 
 .PHONY: crosslink
