@@ -30,3 +30,7 @@ integration-coverage.html
 go.work*
 
 /result
+
+# generated files of local builder setup
+cmd/otelkymacol/*.go
+cmd/otelkymacol/go.*
