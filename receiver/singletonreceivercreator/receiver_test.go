@@ -36,7 +36,7 @@ func TestUnsupportedAuthType(t *testing.T) {
 	require.NoError(t, err)
 
 	r := newSingletonReceiverCreator(
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 		config,
 		&consumertest.MetricsSink{},
 		telemetryBuilder,
@@ -69,7 +69,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	}
 
 	ctx := t.Context()
-	fakeClient := fake.NewSimpleClientset()
+	fakeClient := fake.NewClientset()
 	config.makeClient = func() (kubernetes.Interface, error) {
 		return fakeClient, nil
 	}
@@ -78,7 +78,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	require.NoError(t, err)
 
 	sink1 := new(consumertest.MetricsSink)
-	sr1 := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, sink1, telemetryBuilder, "host1")
+	sr1 := newSingletonReceiverCreator(receivertest.NewNopSettings(metadata.Type), config, sink1, telemetryBuilder, "host1")
 	ms1, err := NewMockSettings()
 	require.NoError(t, err)
 
@@ -98,7 +98,7 @@ func TestSingletonReceiverCreator(t *testing.T) {
 	}, 5*time.Second, 1*time.Second)
 
 	sink2 := new(consumertest.MetricsSink)
-	sr2 := newSingletonReceiverCreator(receivertest.NewNopSettings(), config, sink2, telemetryBuilder, "host2")
+	sr2 := newSingletonReceiverCreator(receivertest.NewNopSettings(metadata.Type), config, sink2, telemetryBuilder, "host2")
 	ms2, err := NewMockSettings()
 	require.NoError(t, err)
 

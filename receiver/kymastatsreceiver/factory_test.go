@@ -59,7 +59,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 			factory := NewFactory()
 			metricsReceiver, err := factory.CreateMetrics(
 				t.Context(),
-				receivertest.NewNopSettings(),
+				receivertest.NewNopSettings(metadata.Type),
 				tt.cfg,
 				consumertest.NewNop(),
 			)
@@ -79,7 +79,7 @@ func TestCreateTraceReceiver(t *testing.T) {
 	factory := NewFactory()
 	traceReceiver, err := factory.CreateTraces(
 		t.Context(),
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 		&Config{
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
@@ -95,7 +95,7 @@ func TestCreateLogsReceiver(t *testing.T) {
 	factory := NewFactory()
 	logsReceiver, err := factory.CreateLogs(
 		t.Context(),
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 		&Config{
 			APIConfig: k8sconfig.APIConfig{
 				AuthType: "kubeConfig",
@@ -116,7 +116,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 	}
 	_, err := factory.CreateMetrics(
 		t.Context(),
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 		cfg,
 		consumertest.NewNop(),
 	)
@@ -137,7 +137,7 @@ func TestFactoryNoneAuthType(t *testing.T) {
 	}
 	_, err := factory.CreateMetrics(
 		t.Context(),
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 		cfg,
 		consumertest.NewNop(),
 	)

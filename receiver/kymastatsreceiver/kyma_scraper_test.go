@@ -99,7 +99,7 @@ func TestScrape(t *testing.T) {
 			Resources:            resources,
 		},
 		dynamic,
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 	)
 
 	require.NoError(t, err)
@@ -146,7 +146,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 			Resources:            resources,
 		},
 		dynamic,
-		receivertest.NewNopSettings(),
+		receivertest.NewNopSettings(metadata.Type),
 	)
 
 	require.NoError(t, err)
@@ -323,7 +323,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 					Resources:            resources,
 				},
 				dynamic,
-				receivertest.NewNopSettings(),
+				receivertest.NewNopSettings(metadata.Type),
 			)
 			require.NoError(t, err)
 

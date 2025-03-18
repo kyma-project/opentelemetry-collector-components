@@ -8,6 +8,8 @@ import (
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver/internal/metadata"
 )
 
 func TestReceiveMetrics(t *testing.T) {
@@ -16,7 +18,7 @@ func TestReceiveMetrics(t *testing.T) {
 	cfg := &Config{
 		Interval: "1s",
 	}
-	mr, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(), cfg, sink)
+	mr, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(metadata.Type), cfg, sink)
 	require.NoError(t, err)
 
 	err = mr.Start(t.Context(), componenttest.NewNopHost())
