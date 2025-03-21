@@ -26,9 +26,10 @@ EX_CMD=-not -path "./cmd/*"
 NONROOT_MODS := $(shell $(FIND) . $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
 
 RECEIVER_MODS := $(shell $(FIND) ./receiver/* $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
+PROCESSOR_MODS := $(shell $(FIND) ./processor/* $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
 CMD_MODS := $(shell $(FIND) ./cmd/* $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) )
 OTHER_MODS := $(shell $(FIND) . $(EX_COMPONENTS) $(EX_INTERNAL) $(EX_CMD) $($(FIND)_MOD_ARGS) -exec $(TO_MOD_DIR) ) $(PWD)
-ALL_MODS := $(RECEIVER_MODS) $(CMD_MODS) $(OTHER_MODS)
+ALL_MODS := $(RECEIVER_MODS) $(PROCESSOR_MODS) $(CMD_MODS) $(OTHER_MODS)
 
 
 .DEFAULT_GOAL := all
@@ -38,6 +39,7 @@ all-modules:
 
 all-groups:
 	@echo "receiver: $(RECEIVER_MODS)"
+	@echo "processor: $(PROCESSOR_MODS)"
 	@echo "cmd: $(CMD_MODS)"
 	@echo "other: $(OTHER_MODS)"
 
