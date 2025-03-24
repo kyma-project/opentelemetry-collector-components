@@ -23,16 +23,14 @@ var defaultKeys = []string{
 }
 
 type serviceEnrichmentProcessor struct {
-	config Config
 	logger *zap.Logger
 	keys   []string
 }
 
-func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
+func newServiceEnrichmentProcessor(logger *zap.Logger, cfg *Config) *serviceEnrichmentProcessor {
 	keys := cfg.CustomLabels
 	keys = append(append(keys, cfg.CustomLabels...), defaultKeys...)
 	return &serviceEnrichmentProcessor{
-		config: cfg,
 		logger: logger,
 		keys:   keys,
 	}
