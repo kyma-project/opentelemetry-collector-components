@@ -40,7 +40,7 @@ func TestProcessLogs(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			logger := zap.NewNop()
-			config := &Config{
+			config := Config{
 				CustomLabels: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
