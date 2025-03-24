@@ -7,11 +7,11 @@ dist:
 # The ocb binary has an identified bug caused by the fact that some of the providers have been marked stable and the default providers in the ocb binary still use the unstable version.
 #  In order to fix this explicitly add the default providers in otel builder config
 providers:
-  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.27.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.27.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v1.27.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.27.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.27.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.28.1
+  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.28.1
+  - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v1.28.1
+  - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.28.1
+  - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.28.1
 
 receivers:
   - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver vOTEL_VERSION
