@@ -1,6 +1,7 @@
 package serviceenrichmentprocessor
 
 import (
+	"go.uber.org/zap"
 	"testing"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -87,7 +88,15 @@ func TestFetchFirstAvailableServiceName(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			got := fetchFirstAvailableServiceName(tc.attr)
+			logger := zap.NewNop()
+			config := &Config{
+				CustomLabels: []string{
+					"kyma.kubernetes_io_app_name",
+					"kyma.app_name",
+				},
+			}
+			sep := newServiceEnrichmentProcessor(logger, config)
+			got := sep.fetchFirstAvailableServiceName(tc.attr)
 			if got != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got)
 			}
@@ -141,7 +150,14 @@ func TestSetServiceName(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			sep := serviceEnrichmentProcessor{}
+			logger := zap.NewNop()
+			config := &Config{
+				CustomLabels: []string{
+					"kyma.kubernetes_io_app_name",
+					"kyma.app_name",
+				},
+			}
+			sep := newServiceEnrichmentProcessor(logger, config)
 			sep.setServiceName(tc.attr)
 			got, _ := tc.attr.Get("service.name")
 			if got.AsString() != tc.expected {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/pdata/plog"
+	"go.uber.org/zap"
 	"testing"
 )
 
@@ -38,7 +39,14 @@ func TestProcessLogs(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			sep := serviceEnrichmentProcessor{}
+			logger := zap.NewNop()
+			config := &Config{
+				CustomLabels: []string{
+					"kyma.kubernetes_io_app_name",
+					"kyma.app_name",
+				},
+			}
+			sep := newServiceEnrichmentProcessor(logger, config)
 			res, err := sep.processLogs(context.TODO(), tc.logs)
 			require.NoError(t, err)
 			for i := 0; i < res.ResourceLogs().Len(); i++ {

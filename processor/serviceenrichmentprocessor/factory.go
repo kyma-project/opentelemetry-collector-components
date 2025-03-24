@@ -23,7 +23,9 @@ func NewFactory() processor.Factory {
 	)
 }
 
-type Config struct{}
+type Config struct {
+	CustomLabels []string `mapstructure:"custom_labels"`
+}
 
 func createDefaultConfig() component.Config { return Config{} }
 
@@ -33,7 +35,7 @@ func createLogsServiceEnrichment(
 	cfg component.Config,
 	nextConsumer consumer.Logs,
 ) (processor.Logs, error) {
-	proc := &serviceEnrichmentProcessor{set.Logger}
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
 	return processorhelper.NewLogs(
 		ctx,
 		set,
@@ -49,7 +51,7 @@ func createTracesProcessor(
 	cfg component.Config,
 	nextConsumer consumer.Traces,
 ) (processor.Traces, error) {
-	proc := &serviceEnrichmentProcessor{set.Logger}
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
 	return processorhelper.NewTraces(
 		ctx,
 		set,
@@ -65,7 +67,7 @@ func createMetricsProcessor(
 	cfg component.Config,
 	nextConsumer consumer.Metrics,
 ) (processor.Metrics, error) {
-	proc := &serviceEnrichmentProcessor{set.Logger}
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
 	return processorhelper.NewMetrics(
 		ctx,
 		set,
