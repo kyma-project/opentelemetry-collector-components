@@ -38,7 +38,7 @@ func createLogsServiceEnrichment(
 	//if !ok {
 	//	return nil, errors.New("invalid configuration")
 	//}
-	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewLogs(
 		ctx,
 		set,
@@ -58,7 +58,7 @@ func createTracesProcessor(
 	//if !ok {
 	//	return nil, errors.New("invalid configuration")
 	//}
-	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewTraces(
 		ctx,
 		set,
@@ -78,7 +78,7 @@ func createMetricsProcessor(
 	//if !ok {
 	//	return nil, errors.New("invalid configuration")
 	//}
-	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(*Config))
+	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewMetrics(
 		ctx,
 		set,

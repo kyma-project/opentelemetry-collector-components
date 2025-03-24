@@ -27,7 +27,7 @@ type serviceEnrichmentProcessor struct {
 	keys   []string
 }
 
-func newServiceEnrichmentProcessor(logger *zap.Logger, cfg *Config) *serviceEnrichmentProcessor {
+func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
 	keys := cfg.CustomLabels
 	keys = append(append(keys, cfg.CustomLabels...), defaultKeys...)
 	return &serviceEnrichmentProcessor{
