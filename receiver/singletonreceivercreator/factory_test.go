@@ -22,7 +22,7 @@ func TestNewFactory(t *testing.T) {
 				t.Helper()
 				factory := NewFactory()
 				ft := factory.Type()
-				require.EqualValues(t, metadata.Type, ft)
+				require.Equal(t, metadata.Type, ft)
 			},
 		}, {
 			desc: "creates a new factory and CreateMetricsReceiver returns no error",
