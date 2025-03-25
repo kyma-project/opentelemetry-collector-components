@@ -31,7 +31,7 @@ func TestNewFactory(t *testing.T) {
 				cfg := createDefaultConfig().(*Config)
 				_, err := NewFactory().CreateMetrics(
 					t.Context(),
-					receivertest.NewNopSettings(),
+					receivertest.NewNopSettings(metadata.Type),
 					cfg,
 					consumertest.NewNop(),
 				)
