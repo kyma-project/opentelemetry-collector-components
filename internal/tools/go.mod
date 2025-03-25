@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/internal/tools
 go 1.24.1
 
 require (
-	github.com/golangci/golangci-lint/v2 v2.0.0
+	github.com/golangci/golangci-lint/v2 v2.0.1
 	github.com/vladopajic/go-test-coverage/v2 v2.12.0
 	go.opentelemetry.io/build-tools/crosslink v0.18.0
 	go.opentelemetry.io/collector/cmd/builder v0.120.0
