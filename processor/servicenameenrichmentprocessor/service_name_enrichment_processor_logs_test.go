@@ -1,7 +1,6 @@
 package servicenameenrichmentprocessor
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -45,29 +44,27 @@ func TestProcessLogs(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			sink := new(consumertest.LogsSink)
-			//logger := zap.NewNop()
 			config := Config{
 				CustomLabels: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
 				},
 			}
-			//sep := newServiceEnrichmentProcessor(logger, config)
-			//res, err := sep.processLogs(context.TODO(), tc.logs)
-			//require.NoError(t, err)
 
 			factory := NewFactory()
 			cm, err := factory.CreateLogs(
-				context.TODO(),
+				t.Context(),
 				processortest.NewNopSettingsWithType(metadata.Type),
 				config,
 				sink,
 			)
-			err = cm.Start(context.Background(), componenttest.NewNopHost())
+			require.NoError(t, err)
 			require.NotNil(t, cm)
+
+			err = cm.Start(t.Context(), componenttest.NewNopHost())
 			require.NoError(t, err)
 
-			cErr := cm.ConsumeLogs(context.TODO(), tc.logs)
+			cErr := cm.ConsumeLogs(t.Context(), tc.logs)
 			require.NoError(t, cErr)
 
 			got := sink.AllLogs()

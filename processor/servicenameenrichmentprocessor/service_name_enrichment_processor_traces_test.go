@@ -1,7 +1,6 @@
 package servicenameenrichmentprocessor
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -46,28 +45,27 @@ func TestProcessTraces(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sink := new(consumertest.TracesSink)
 
-			//logger := zap.NewNop()
 			config := Config{
 				CustomLabels: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
 				},
 			}
-			//sep := newServiceEnrichmentProcessor(logger, config)
-			//res, err := sep.processTraces(context.TODO(), tc.traces)
 
 			factory := NewFactory()
 			cm, err := factory.CreateTraces(
-				context.TODO(),
+				t.Context(),
 				processortest.NewNopSettingsWithType(metadata.Type),
 				config,
 				sink,
 			)
-			err = cm.Start(context.Background(), componenttest.NewNopHost())
 			require.NotNil(t, cm)
 			require.NoError(t, err)
 
-			cErr := cm.ConsumeTraces(context.TODO(), tc.traces)
+			err = cm.Start(t.Context(), componenttest.NewNopHost())
+			require.NoError(t, err)
+
+			cErr := cm.ConsumeTraces(t.Context(), tc.traces)
 			require.NoError(t, cErr)
 
 			got := sink.AllTraces()

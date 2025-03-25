@@ -3,9 +3,8 @@ package servicenameenrichmentprocessor
 import (
 	"testing"
 
-	"go.uber.org/zap"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.uber.org/zap"
 )
 
 func TestFetchFirstAvailableServiceName(t *testing.T) {

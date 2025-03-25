@@ -12,9 +12,7 @@ import (
 )
 
 var unknownServiceRegex = regexp.MustCompile("^unknown_service(:.+)?$")
-var defaultKeys = []string{
-	//"kyma.kubernetes_io_app_name",
-	//"kyma.app_name",
+var defaultPriority = []string{
 	"k8s.deployment.name",
 	"k8s.daemonset.name",
 	"k8s.statefulset.name",
@@ -29,7 +27,7 @@ type serviceEnrichmentProcessor struct {
 
 func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
 	keys := cfg.CustomLabels
-	keys = append(append(keys, cfg.CustomLabels...), defaultKeys...)
+	keys = append(append(keys, cfg.CustomLabels...), defaultPriority...)
 	return &serviceEnrichmentProcessor{
 		logger: logger,
 		keys:   keys,
