@@ -1,4 +1,4 @@
-package servicenameenrichmentprocessor
+package serviceenrichmentprocessor
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/processor/processortest"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor/internal/metadata"
 )
 
 func TestProcessLogs(t *testing.T) {
