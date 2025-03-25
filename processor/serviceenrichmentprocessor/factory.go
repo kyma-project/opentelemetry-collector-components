@@ -40,7 +40,7 @@ func createLogsServiceEnrichment(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
+	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewLogs(
 		ctx,
 		set,
@@ -60,7 +60,7 @@ func createTracesProcessor(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
+	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewTraces(
 		ctx,
 		set,
@@ -80,7 +80,7 @@ func createMetricsProcessor(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
+	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewMetrics(
 		ctx,
 		set,
