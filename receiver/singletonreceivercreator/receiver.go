@@ -56,9 +56,9 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 	ctx := context.Background()
 	ctx, c.cancel = context.WithCancel(ctx)
 
-	c.params.TelemetrySettings.Logger.Info("Starting singleton election receiver...")
+	c.params.Logger.Info("Starting singleton election receiver...")
 
-	c.params.TelemetrySettings.Logger.Debug("Creating leader elector...")
+	c.params.Logger.Debug("Creating leader elector...")
 	c.subReceiverRunner = newReceiverRunner(c.params, rcHost)
 	//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation0
 	leaderElector, err := c.initLeaderElector()
@@ -82,17 +82,17 @@ func (c *singletonReceiverCreator) initLeaderElector() (*leaderelection.LeaderEl
 		client,
 		c.telemetryBuilder,
 		func(ctx context.Context) {
-			c.params.TelemetrySettings.Logger.Info("Leader lease acquired")
+			c.params.Logger.Info("Leader lease acquired")
 			//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 			if err := c.startSubReceiver(); err != nil {
-				c.params.TelemetrySettings.Logger.Error("Failed to start subreceiver", zap.Error(err))
+				c.params.Logger.Error("Failed to start subreceiver", zap.Error(err))
 			}
 		},
 		//nolint:contextcheck // no context passed, as this follows the same pattern as the upstream implementation
 		func() {
-			c.params.TelemetrySettings.Logger.Info("Leader lease lost")
+			c.params.Logger.Info("Leader lease lost")
 			if err := c.stopSubReceiver(); err != nil {
-				c.params.TelemetrySettings.Logger.Error("Failed to stop subreceiver", zap.Error(err))
+				c.params.Logger.Error("Failed to stop subreceiver", zap.Error(err))
 			}
 		},
 		c.leaseHolderID,
