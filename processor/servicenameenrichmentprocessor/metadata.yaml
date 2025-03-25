@@ -1,4 +1,4 @@
-type: service_enrichment
+type: service_name_enrichment
 
 status:
   class: processor

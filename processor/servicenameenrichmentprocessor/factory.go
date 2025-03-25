@@ -1,7 +1,8 @@
-package serviceenrichmentprocessor
+package servicenameenrichmentprocessor
 
 import (
 	"context"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/processor"
@@ -34,10 +35,6 @@ func createLogsServiceEnrichment(
 	cfg component.Config,
 	nextConsumer consumer.Logs,
 ) (processor.Logs, error) {
-	//config, ok := cfg.(*Config)
-	//if !ok {
-	//	return nil, errors.New("invalid configuration")
-	//}
 	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewLogs(
 		ctx,
@@ -54,10 +51,6 @@ func createTracesProcessor(
 	cfg component.Config,
 	nextConsumer consumer.Traces,
 ) (processor.Traces, error) {
-	//config, ok := cfg.(*Config)
-	//if !ok {
-	//	return nil, errors.New("invalid configuration")
-	//}
 	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewTraces(
 		ctx,
@@ -74,10 +67,6 @@ func createMetricsProcessor(
 	cfg component.Config,
 	nextConsumer consumer.Metrics,
 ) (processor.Metrics, error) {
-	//config, ok := cfg.(*Config)
-	//if !ok {
-	//	return nil, errors.New("invalid configuration")
-	//}
 	proc := newServiceEnrichmentProcessor(set.Logger, cfg.(Config))
 	return processorhelper.NewMetrics(
 		ctx,

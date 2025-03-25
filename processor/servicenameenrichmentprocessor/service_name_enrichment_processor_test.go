@@ -1,8 +1,9 @@
-package serviceenrichmentprocessor
+package servicenameenrichmentprocessor
 
 import (
-	"go.uber.org/zap"
 	"testing"
+
+	"go.uber.org/zap"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 )
