@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/collector/processor"
 	"go.opentelemetry.io/collector/processor/processorhelper"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor/internal/metadata"
 )
 
 var processorCapabilities = consumer.Capabilities{MutatesData: true}
@@ -40,7 +40,7 @@ func createLogsServiceEnrichment(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceEnrichmentProcessor(set.Logger, config)
+	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewLogs(
 		ctx,
 		set,
@@ -60,7 +60,7 @@ func createTracesProcessor(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceEnrichmentProcessor(set.Logger, config)
+	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewTraces(
 		ctx,
 		set,
@@ -80,7 +80,7 @@ func createMetricsProcessor(
 	if !ok {
 		return nil, fmt.Errorf("invalid configuration")
 	}
-	proc := newServiceEnrichmentProcessor(set.Logger, config)
+	proc := newServiceNameEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewMetrics(
 		ctx,
 		set,

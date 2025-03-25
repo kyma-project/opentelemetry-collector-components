@@ -20,21 +20,21 @@ var defaultPriority = []string{
 	"k8s.pod.name",
 }
 
-type serviceEnrichmentProcessor struct {
+type serviceNameEnrichmentProcessor struct {
 	logger *zap.Logger
 	keys   []string
 }
 
-func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
+func newServiceNameEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceNameEnrichmentProcessor {
 	keys := cfg.CustomLabels
 	keys = append(append(keys, cfg.CustomLabels...), defaultPriority...)
-	return &serviceEnrichmentProcessor{
+	return &serviceNameEnrichmentProcessor{
 		logger: logger,
 		keys:   keys,
 	}
 }
 
-func (sep *serviceEnrichmentProcessor) processTraces(ctx context.Context, td ptrace.Traces) (ptrace.Traces, error) {
+func (sep *serviceNameEnrichmentProcessor) processTraces(ctx context.Context, td ptrace.Traces) (ptrace.Traces, error) {
 	res := td.ResourceSpans()
 	for i := 0; i < res.Len(); i++ {
 		attr := res.At(i).Resource().Attributes()
@@ -43,7 +43,7 @@ func (sep *serviceEnrichmentProcessor) processTraces(ctx context.Context, td ptr
 	return td, nil
 }
 
-func (sep *serviceEnrichmentProcessor) processMetrics(ctx context.Context, md pmetric.Metrics) (pmetric.Metrics, error) {
+func (sep *serviceNameEnrichmentProcessor) processMetrics(ctx context.Context, md pmetric.Metrics) (pmetric.Metrics, error) {
 	res := md.ResourceMetrics()
 	for i := 0; i < res.Len(); i++ {
 		attr := res.At(i).Resource().Attributes()
@@ -52,7 +52,7 @@ func (sep *serviceEnrichmentProcessor) processMetrics(ctx context.Context, md pm
 	return md, nil
 }
 
-func (sep *serviceEnrichmentProcessor) processLogs(ctx context.Context, ld plog.Logs) (plog.Logs, error) {
+func (sep *serviceNameEnrichmentProcessor) processLogs(ctx context.Context, ld plog.Logs) (plog.Logs, error) {
 	res := ld.ResourceLogs()
 	for i := 0; i < res.Len(); i++ {
 		attr := res.At(i).Resource().Attributes()
@@ -62,7 +62,7 @@ func (sep *serviceEnrichmentProcessor) processLogs(ctx context.Context, ld plog.
 	return ld, nil
 }
 
-func (sep *serviceEnrichmentProcessor) setServiceName(attr pcommon.Map) {
+func (sep *serviceNameEnrichmentProcessor) setServiceName(attr pcommon.Map) {
 	svcName, ok := attr.Get("service.name")
 
 	// If service name is set and not unknown return early
@@ -75,7 +75,7 @@ func (sep *serviceEnrichmentProcessor) setServiceName(attr pcommon.Map) {
 	attr.PutStr("service.name", svcNameToSet)
 }
 
-func (sep *serviceEnrichmentProcessor) fetchFirstAvailableServiceName(attr pcommon.Map) string {
+func (sep *serviceNameEnrichmentProcessor) fetchFirstAvailableServiceName(attr pcommon.Map) string {
 	for _, key := range sep.keys {
 		if svcName, ok := attr.Get(key); ok {
 			return svcName.AsString()

@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/processor/processortest"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor/internal/metadata"
 )
 
 func TestProcessMetrics(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor
+module github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor
 
 go 1.24
 

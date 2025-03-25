@@ -95,7 +95,7 @@ func TestFetchFirstAvailableServiceName(t *testing.T) {
 					"kyma.app_name",
 				},
 			}
-			sep := newServiceEnrichmentProcessor(logger, config)
+			sep := newServiceNameEnrichmentProcessor(logger, config)
 			got := sep.fetchFirstAvailableServiceName(tc.attr)
 			if got != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got)
@@ -157,7 +157,7 @@ func TestSetServiceName(t *testing.T) {
 					"kyma.app_name",
 				},
 			}
-			sep := newServiceEnrichmentProcessor(logger, config)
+			sep := newServiceNameEnrichmentProcessor(logger, config)
 			sep.setServiceName(tc.attr)
 			got, _ := tc.attr.Get("service.name")
 			if got.AsString() != tc.expected {
