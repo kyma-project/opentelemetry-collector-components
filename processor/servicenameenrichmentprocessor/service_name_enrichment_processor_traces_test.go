@@ -55,7 +55,7 @@ func TestProcessTraces(t *testing.T) {
 			factory := NewFactory()
 			cm, err := factory.CreateTraces(
 				t.Context(),
-				processortest.NewNopSettingsWithType(metadata.Type),
+				processortest.NewNopSettings(metadata.Type),
 				config,
 				sink,
 			)

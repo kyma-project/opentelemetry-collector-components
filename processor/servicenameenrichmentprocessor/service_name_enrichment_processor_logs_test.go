@@ -54,7 +54,7 @@ func TestProcessLogs(t *testing.T) {
 			factory := NewFactory()
 			cm, err := factory.CreateLogs(
 				t.Context(),
-				processortest.NewNopSettingsWithType(metadata.Type),
+				processortest.NewNopSettings(metadata.Type),
 				config,
 				sink,
 			)
