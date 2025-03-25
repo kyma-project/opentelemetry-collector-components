@@ -109,12 +109,12 @@ func (c *singletonReceiverCreator) runLeaderElector(ctx context.Context, leaderE
 			break
 		}
 
-		c.params.TelemetrySettings.Logger.Info("Leader lease lost. Returning to standby mode...")
+		c.params.Logger.Info("Leader lease lost. Returning to standby mode...")
 	}
 }
 
 func (c *singletonReceiverCreator) startSubReceiver() error {
-	c.params.TelemetrySettings.Logger.Info("Starting wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	c.params.Logger.Info("Starting wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
 	if err := c.subReceiverRunner.start(
 		receiverConfig{
 			id:     c.cfg.subreceiverConfig.id,
@@ -128,7 +128,7 @@ func (c *singletonReceiverCreator) startSubReceiver() error {
 }
 
 func (c *singletonReceiverCreator) stopSubReceiver() error {
-	c.params.TelemetrySettings.Logger.Info("Stopping wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
+	c.params.Logger.Info("Stopping wrapped receiver", zap.String("name", c.cfg.subreceiverConfig.id.String()))
 	// if we don't get the lease then the wrapped receiver is not set
 	if c.subReceiverRunner != nil {
 		return c.subReceiverRunner.shutdown(context.Background())
