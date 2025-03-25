@@ -6,10 +6,20 @@ on:
     branches:
       - "main"
       - "release-*"
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "OWNERS"
+      - "CODEOWNERS"
   push:
     branches:
       - "main"
       - "release-*"
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "OWNERS"
+      - "CODEOWNERS"
 
 permissions:
   id-token: write
