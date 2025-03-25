@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	Type      = component.MustNewType("service_name_enrichment")
-	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor"
+	Type      = component.MustNewType("service_enrichment")
+	ScopeName = "github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor"
 )
 
 const (

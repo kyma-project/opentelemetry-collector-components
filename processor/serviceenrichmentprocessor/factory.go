@@ -1,4 +1,4 @@
-package servicenameenrichmentprocessor
+package serviceenrichmentprocessor
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/collector/processor"
 	"go.opentelemetry.io/collector/processor/processorhelper"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/servicenameenrichmentprocessor/internal/metadata"
+	"github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor/internal/metadata"
 )
 
 var processorCapabilities = consumer.Capabilities{MutatesData: true}

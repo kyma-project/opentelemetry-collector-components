@@ -1,4 +1,4 @@
-package servicenameenrichmentprocessor
+package serviceenrichmentprocessor
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-# Service Name Enrichment Processor
+# Service Enrichment Processor
 
 The processor enriches the resource attribute `service_name` if it is not present. The processor follows a default priority
 ```yaml
