@@ -9,8 +9,7 @@ The processor enriches the resource attribute `service_name` if it is not presen
 	- "k8s.pod.name",
 ```
 
-Additionally one can define additional keys which would be prepended to the default priority. The keys added would follow the
-priority in which they are defined.
+Additionally, you can define additional keys, which are prepended to the default priority. The added keys follow the priority in which they are defined.
 
 ## Configuration
 
