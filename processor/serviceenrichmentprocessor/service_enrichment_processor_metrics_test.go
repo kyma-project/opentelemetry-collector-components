@@ -96,7 +96,7 @@ func TestProcessMetrics(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			config := Config{
-				resourceAttributes: []string{
+				ResourceAttributes: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
 				},

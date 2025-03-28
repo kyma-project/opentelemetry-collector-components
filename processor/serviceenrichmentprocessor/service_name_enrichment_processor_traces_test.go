@@ -98,7 +98,7 @@ func TestProcessTraces(t *testing.T) {
 			sink := new(consumertest.TracesSink)
 
 			config := Config{
-				resourceAttributes: []string{
+				ResourceAttributes: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
 				},
