@@ -90,7 +90,7 @@ func TestProcessLogs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sink := new(consumertest.LogsSink)
 			config := Config{
-				CustomLabels: []string{
+				additionalResourceAttributes: []string{
 					"kyma.kubernetes_io_app_name",
 					"kyma.app_name",
 				},
