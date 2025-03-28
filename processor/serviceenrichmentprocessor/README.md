@@ -6,7 +6,7 @@
 | Code Owners | kyma-project/observability  |
 
 The processor enriches the [service resource attributes](https://opentelemetry.io/docs/specs/semconv/resource/#service) if they are not present. The processor follows a default priority. Currently it
-has been implemented to enrich the service name based on the following attribute keys priority:
+has been implemented to enrich the `service.name` based on the following attribute keys priority:
 ```yaml
     - "k8s.deployment.name",
     - "k8s.daemonset.name",
