@@ -96,7 +96,7 @@ func TestFetchFirstAvailableServiceName(t *testing.T) {
 				},
 			}
 			sep := newServiceEnrichmentProcessor(logger, config)
-			got := sep.fetchFirstAvailableServiceName(tc.attr)
+			got := sep.resolveServiceName(tc.attr)
 			if got != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got)
 			}

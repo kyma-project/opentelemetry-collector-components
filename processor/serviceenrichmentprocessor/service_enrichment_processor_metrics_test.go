@@ -85,6 +85,13 @@ func TestProcessMetrics(t *testing.T) {
 			}),
 			expectedServiceName: "unknown_service:",
 		},
+		{
+			name: "metrics with service name set to unknown_service:",
+			metrics: metricsWithResourceAttrs(map[string]string{
+				"service.name": "unknown_service:java",
+			}),
+			expectedServiceName: "unknown_service:java",
+		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {

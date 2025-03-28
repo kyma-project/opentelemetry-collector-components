@@ -11,7 +11,10 @@ import (
 	"go.uber.org/zap"
 )
 
-const unknownService = "unknown_service"
+const (
+	unknownService          = "unknown_service"
+	serviceNameAttributeKey = "service.name"
+)
 
 var unknownServiceRegex = regexp.MustCompile("^unknown_service(:.+)?$")
 
@@ -68,23 +71,37 @@ func (sep *serviceEnrichmentProcessor) processLogs(_ context.Context, logs plog.
 }
 
 func (sep *serviceEnrichmentProcessor) enrichServiceName(attr pcommon.Map) {
-	serviceName, exists := attr.Get("service.name")
-
-	// If service name is set and not unknown return early
-	if exists && serviceName.AsString() != "" && !unknownServiceRegex.MatchString(serviceName.AsString()) {
+	if skipServiceNameEnrichment(attr) {
 		return
 	}
 
-	// fetch the first svcName available
-	svcNameToSet := sep.fetchFirstAvailableServiceName(attr)
-	attr.PutStr("service.name", svcNameToSet)
+	attr.PutStr(serviceNameAttributeKey, sep.resolveServiceName(attr))
 }
 
-func (sep *serviceEnrichmentProcessor) fetchFirstAvailableServiceName(attributes pcommon.Map) string {
+func (sep *serviceEnrichmentProcessor) resolveServiceName(attributes pcommon.Map) string {
 	for _, key := range sep.attrKeys {
 		if serviceName, ok := attributes.Get(key); ok {
 			return serviceName.AsString()
 		}
+	}
+	return getFallbackServiceName(attributes)
+}
+
+func skipServiceNameEnrichment(attr pcommon.Map) bool {
+	serviceName, exists := attr.Get(serviceNameAttributeKey)
+	return exists && serviceName.AsString() != "" && !unknownServiceRegex.MatchString(serviceName.AsString())
+}
+
+func getFallbackServiceName(attr pcommon.Map) string {
+	serviceName, exists := attr.Get(serviceNameAttributeKey)
+	if !exists {
+		return unknownService
+	}
+	if serviceName.AsString() == "" {
+		return unknownService
+	}
+	if unknownServiceRegex.MatchString(serviceName.AsString()) {
+		return serviceName.AsString()
 	}
 	return unknownService
 }
