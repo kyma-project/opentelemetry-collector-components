@@ -11,6 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const unknownService = "unknown_service"
+
 var unknownServiceRegex = regexp.MustCompile("^unknown_service(:.+)?$")
 var defaultPriority = []string{
 	"k8s.deployment.name",
@@ -27,7 +29,9 @@ type serviceEnrichmentProcessor struct {
 
 func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
 	keys := cfg.CustomLabels
-	keys = append(append(keys, cfg.CustomLabels...), defaultPriority...)
+	keys = append(keys, cfg.CustomLabels...)
+	keys = append(keys, defaultPriority...)
+	
 	return &serviceEnrichmentProcessor{
 		logger: logger,
 		keys:   keys,
@@ -81,5 +85,5 @@ func (sep *serviceEnrichmentProcessor) fetchFirstAvailableServiceName(attr pcomm
 			return svcName.AsString()
 		}
 	}
-	return "unknown_service"
+	return unknownService
 }

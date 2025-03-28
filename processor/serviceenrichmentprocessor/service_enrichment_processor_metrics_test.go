@@ -20,42 +20,42 @@ func TestProcessMetrics(t *testing.T) {
 	}{
 		{
 			name: "metrics with service name not set and k8s-io-app-name-set",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
 			expectedServiceName: "foo-k8s-io-app-name",
 		},
 		{
 			name: "metrics with service name not set and app-name-set",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"kyma.app_name": "foo-app-name",
 			}),
 			expectedServiceName: "foo-app-name",
 		},
 		{
 			name: "metrics with service name not set and deployment name set",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"k8s.deployment.name": "foo-deployment-name",
 			}),
 			expectedServiceName: "foo-deployment-name",
 		},
 		{
 			name: "metrics with service name not set and daemonset name set",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"k8s.daemonset.name": "foo-daemonset-name",
 			}),
 			expectedServiceName: "foo-daemonset-name",
 		},
 		{
 			name: "metrics with service name not set and job name is set",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"k8s.job.name": "foo-job-name",
 			}),
 			expectedServiceName: "foo-job-name",
 		},
 		{
 			name: "metrics with service name set to unknown_service",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -63,7 +63,7 @@ func TestProcessMetrics(t *testing.T) {
 		},
 		{
 			name: "metrics with service name set to test_unknown_service",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"service.name":                "test_unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -71,7 +71,7 @@ func TestProcessMetrics(t *testing.T) {
 		},
 		{
 			name: "metrics with service name set to unknown_service_test",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service_test",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -79,7 +79,7 @@ func TestProcessMetrics(t *testing.T) {
 		},
 		{
 			name: "metrics with service name set to unknown_service:",
-			metrics: setMetrics(map[string]string{
+			metrics: metricsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service:",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -125,7 +125,7 @@ func TestProcessMetrics(t *testing.T) {
 	}
 }
 
-func setMetrics(attrs ...map[string]string) pmetric.Metrics {
+func metricsWithResourceAttrs(attrs ...map[string]string) pmetric.Metrics {
 	metrics := pmetric.NewMetrics()
 	for _, attr := range attrs {
 		resMetrics := metrics.ResourceMetrics().AppendEmpty()

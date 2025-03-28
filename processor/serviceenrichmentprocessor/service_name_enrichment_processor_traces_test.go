@@ -20,42 +20,42 @@ func TestProcessTraces(t *testing.T) {
 	}{
 		{
 			name: "traces with service name not set and k8s-io-app-name-set",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
 			expectedServiceName: "foo-k8s-io-app-name",
 		},
 		{
 			name: "traces with service name not set and app-name-set",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"kyma.app_name": "foo-app-name",
 			}),
 			expectedServiceName: "foo-app-name",
 		},
 		{
 			name: "traces with service name not set and deployment name set",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"k8s.deployment.name": "foo-deployment-name",
 			}),
 			expectedServiceName: "foo-deployment-name",
 		},
 		{
 			name: "traces with service name not set and daemonset name set",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"k8s.daemonset.name": "foo-daemonset-name",
 			}),
 			expectedServiceName: "foo-daemonset-name",
 		},
 		{
 			name: "traces with service name not set and job name is set",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"k8s.job.name": "foo-job-name",
 			}),
 			expectedServiceName: "foo-job-name",
 		},
 		{
 			name: "traces with service name set to unknown_service",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -63,7 +63,7 @@ func TestProcessTraces(t *testing.T) {
 		},
 		{
 			name: "traces with service name set to test_unknown_service",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"service.name":                "test_unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -71,7 +71,7 @@ func TestProcessTraces(t *testing.T) {
 		},
 		{
 			name: "traces with service name set to unknown_service_test",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service_test",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -79,7 +79,7 @@ func TestProcessTraces(t *testing.T) {
 		},
 		{
 			name: "traces with service name set to unknown_service:",
-			traces: setTraces(map[string]string{
+			traces: tracesWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service:",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -127,7 +127,7 @@ func TestProcessTraces(t *testing.T) {
 	}
 }
 
-func setTraces(attrs ...map[string]string) ptrace.Traces {
+func tracesWithResourceAttrs(attrs ...map[string]string) ptrace.Traces {
 	traces := ptrace.NewTraces()
 	for _, attr := range attrs {
 		resTraces := traces.ResourceSpans().AppendEmpty()

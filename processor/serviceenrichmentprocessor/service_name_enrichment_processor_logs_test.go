@@ -20,42 +20,42 @@ func TestProcessLogs(t *testing.T) {
 	}{
 		{
 			name: "logs with service name not set and k8s-io-app-name-set",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
 			expectedServiceName: "foo-k8s-io-app-name",
 		},
 		{
 			name: "logs with service name not set and app-name-set",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"kyma.app_name": "foo-app-name",
 			}),
 			expectedServiceName: "foo-app-name",
 		},
 		{
 			name: "logs with service name not set and deployment name set",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"k8s.deployment.name": "foo-deployment-name",
 			}),
 			expectedServiceName: "foo-deployment-name",
 		},
 		{
 			name: "logs with service name not set and daemonset name set",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"k8s.daemonset.name": "foo-daemonset-name",
 			}),
 			expectedServiceName: "foo-daemonset-name",
 		},
 		{
 			name: "logs with service name not set and job name is set",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"k8s.job.name": "foo-job-name",
 			}),
 			expectedServiceName: "foo-job-name",
 		},
 		{
 			name: "logs with service name set to unknown_service",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -63,7 +63,7 @@ func TestProcessLogs(t *testing.T) {
 		},
 		{
 			name: "logs with service name set to test_unknown_service",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"service.name":                "test_unknown_service",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -71,7 +71,7 @@ func TestProcessLogs(t *testing.T) {
 		},
 		{
 			name: "logs with service name set to unknown_service_test",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service_test",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -79,7 +79,7 @@ func TestProcessLogs(t *testing.T) {
 		},
 		{
 			name: "logs with service name set to unknown_service:",
-			logs: setLogs(map[string]string{
+			logs: logsWithResourceAttrs(map[string]string{
 				"service.name":                "unknown_service:",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
@@ -126,7 +126,7 @@ func TestProcessLogs(t *testing.T) {
 	}
 }
 
-func setLogs(attrs ...map[string]string) plog.Logs {
+func logsWithResourceAttrs(attrs ...map[string]string) plog.Logs {
 	logs := plog.NewLogs()
 	for _, attr := range attrs {
 		resLogs := logs.ResourceLogs().AppendEmpty()

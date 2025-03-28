@@ -2,8 +2,7 @@ package serviceenrichmentprocessor
 
 import (
 	"context"
-	"fmt"
-
+	"errors"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/processor"
@@ -13,6 +12,7 @@ import (
 )
 
 var processorCapabilities = consumer.Capabilities{MutatesData: true}
+var errInvalidConfig = errors.New("invalid configuration")
 
 func NewFactory() processor.Factory {
 	return processor.NewFactory(
@@ -38,7 +38,7 @@ func createLogsServiceEnrichment(
 ) (processor.Logs, error) {
 	config, ok := cfg.(Config)
 	if !ok {
-		return nil, fmt.Errorf("invalid configuration")
+		return nil, errInvalidConfig
 	}
 	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewLogs(
@@ -58,7 +58,7 @@ func createTracesProcessor(
 ) (processor.Traces, error) {
 	config, ok := cfg.(Config)
 	if !ok {
-		return nil, fmt.Errorf("invalid configuration")
+		return nil, errInvalidConfig
 	}
 	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewTraces(
@@ -78,7 +78,7 @@ func createMetricsProcessor(
 ) (processor.Metrics, error) {
 	config, ok := cfg.(Config)
 	if !ok {
-		return nil, fmt.Errorf("invalid configuration")
+		return nil, errInvalidConfig
 	}
 	proc := newServiceEnrichmentProcessor(set.Logger, config)
 	return processorhelper.NewMetrics(
