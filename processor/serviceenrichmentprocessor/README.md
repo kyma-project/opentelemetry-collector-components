@@ -21,7 +21,7 @@ Additionally, you can define additional resource attributes, which are prepended
 
 ```yaml
 service_name_enrichment:
-  additional_resource_attributes:
+  resource_attributes:
   - "kyma.kubernetes_io_app_name",
   - "kyma.app_name",
 ```

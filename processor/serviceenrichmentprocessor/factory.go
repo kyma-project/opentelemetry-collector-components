@@ -25,7 +25,7 @@ func NewFactory() processor.Factory {
 }
 
 type Config struct {
-	additionalResourceAttributes []string `mapstructure:"additional_resource_attributes"`
+	resourceAttributes []string `mapstructure:"resource_attributes"`
 }
 
 func createDefaultConfig() component.Config { return Config{} }
