@@ -4,8 +4,8 @@ go 1.24.1
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.0.2
-	github.com/vladopajic/go-test-coverage/v2 v2.13.0
-	go.opentelemetry.io/build-tools/crosslink v0.20.0
+	github.com/vladopajic/go-test-coverage/v2 v2.13.1
+	go.opentelemetry.io/build-tools/crosslink v0.21.0
 	go.opentelemetry.io/collector/cmd/builder v0.122.1
 	go.opentelemetry.io/collector/cmd/mdatagen v0.122.1
 	golang.org/x/tools v0.31.0
@@ -209,7 +209,7 @@ require (
 	gitlab.com/bosi/decorder v0.4.2 // indirect
 	go-simpler.org/musttag v0.13.0 // indirect
 	go-simpler.org/sloglint v0.9.0 // indirect
-	go.opentelemetry.io/build-tools v0.20.0 // indirect
+	go.opentelemetry.io/build-tools v0.21.0 // indirect
 	go.opentelemetry.io/collector/component v1.28.1 // indirect
 	go.opentelemetry.io/collector/confmap v1.28.1 // indirect
 	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.28.1 // indirect
