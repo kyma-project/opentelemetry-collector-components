@@ -158,7 +158,7 @@ func TestSetServiceName(t *testing.T) {
 				},
 			}
 			sep := newServiceEnrichmentProcessor(logger, config)
-			sep.setServiceName(tc.attr)
+			sep.enrichServiceName(tc.attr)
 			got, _ := tc.attr.Get("service.name")
 			if got.AsString() != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got.AsString())
