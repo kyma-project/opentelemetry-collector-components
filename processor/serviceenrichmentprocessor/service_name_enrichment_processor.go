@@ -32,8 +32,8 @@ type serviceEnrichmentProcessor struct {
 }
 
 func newServiceEnrichmentProcessor(logger *zap.Logger, cfg Config) *serviceEnrichmentProcessor {
-	attrKeys := cfg.resourceAttributes
-	attrKeys = append(attrKeys, cfg.resourceAttributes...)
+	attrKeys := cfg.ResourceAttributes
+	attrKeys = append(attrKeys, cfg.ResourceAttributes...)
 	attrKeys = append(attrKeys, defaultAttributeKeysPriority...)
 
 	return &serviceEnrichmentProcessor{
