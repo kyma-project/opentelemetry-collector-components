@@ -1,5 +1,5 @@
 
-FROM golang:1.24.1-alpine3.21 as build
+FROM golang:1.24.2-alpine3.21 as build
 ARG OTEL_VERSION
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
