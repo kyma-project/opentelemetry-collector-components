@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	github.com/golangci/golangci-lint/v2 v2.0.2
 	github.com/vladopajic/go-test-coverage/v2 v2.13.2
-	go.opentelemetry.io/build-tools/crosslink v0.21.0
+	go.opentelemetry.io/build-tools/crosslink v0.22.0
 	go.opentelemetry.io/collector/cmd/builder v0.123.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.123.0
 	golang.org/x/tools v0.32.0
@@ -213,7 +213,7 @@ require (
 	go-simpler.org/musttag v0.13.0 // indirect
 	go-simpler.org/sloglint v0.9.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/build-tools v0.21.0 // indirect
+	go.opentelemetry.io/build-tools v0.22.0 // indirect
 	go.opentelemetry.io/collector/component v1.29.0 // indirect
 	go.opentelemetry.io/collector/confmap v1.29.0 // indirect
 	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.29.0 // indirect
