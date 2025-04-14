@@ -40,6 +40,15 @@ func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nol
 	return nil
 }
 
+func (r *dummyReceiver) Shutdown(_ context.Context) error {
+	r.settings.Logger.Info("Shutting down dummy receiver")
+	if r.cancel != nil {
+		r.cancel()
+	}
+	r.wg.Wait()
+	return nil
+}
+
 func (r *dummyReceiver) startGenerating(ctx context.Context, interval time.Duration) {
 	defer r.wg.Done()
 
@@ -90,13 +99,4 @@ func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
 	}
 
 	return md, nil
-}
-
-func (r *dummyReceiver) Shutdown(_ context.Context) error {
-	r.settings.Logger.Info("Shutting down dummy receiver")
-	if r.cancel != nil {
-		r.cancel()
-	}
-	r.wg.Wait()
-	return nil
 }

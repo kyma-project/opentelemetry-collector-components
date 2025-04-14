@@ -71,6 +71,14 @@ func (c *singletonReceiverCreator) Start(_ context.Context, h component.Host) er
 	return nil
 }
 
+// Shutdown stops the leader receiver creature and all its receivers started at runtime.
+func (c *singletonReceiverCreator) Shutdown(context.Context) error {
+	if c.cancel != nil {
+		c.cancel()
+	}
+	return nil
+}
+
 func (c *singletonReceiverCreator) initLeaderElector() (*leaderelection.LeaderElector, error) {
 	client, err := c.cfg.getK8sClient()
 	if err != nil {
@@ -132,14 +140,6 @@ func (c *singletonReceiverCreator) stopSubReceiver() error {
 	// if we don't get the lease then the wrapped receiver is not set
 	if c.subReceiverRunner != nil {
 		return c.subReceiverRunner.shutdown(context.Background())
-	}
-	return nil
-}
-
-// Shutdown stops the leader receiver creature and all its receivers started at runtime.
-func (c *singletonReceiverCreator) Shutdown(context.Context) error {
-	if c.cancel != nil {
-		c.cancel()
 	}
 	return nil
 }
