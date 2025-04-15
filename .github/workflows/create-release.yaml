@@ -15,6 +15,10 @@ on:
         type: boolean
         description: "Creates a dry-run branch and tag. This will not trigger the actual release process."
         default: true
+      push-tag:
+        type: boolean
+        description: "Push the tag to the repository. Overrides dry-run to push the dry-run tag."
+        default: true
 
 jobs:
   # check if tag is a valid semantic version
@@ -44,9 +48,13 @@ jobs:
         run: "./hack/scripts/check_artifacts_existence.sh ${{ inputs.release_version }}"
 
       # create a branch for the release and push it to the repository
-      - name: Create release branch (dry-run)
-        if: ${{ inputs.dry_run == true }}
+      - name: Create release branch (dry-run, no push)
+        if: ${{ inputs.dry_run == true && inputs.push_tag == false }}
         run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d"
+
+      - name: Create release branch (dry-run, no push)
+        if: ${{ inputs.dry_run == true && inputs.push_tag == true }}
+        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d -p"
 
       - name: Create release branch
         if: ${{ inputs.dry_run == false }}
