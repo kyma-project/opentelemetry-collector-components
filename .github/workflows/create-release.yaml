@@ -1,5 +1,5 @@
 name: "Create release"
-run-name: "Create release ${{ inputs.release_version }}, dry-run: ${{ inputs.dry-run }}, push-tag: ${{ inputs.push-tag }}"
+run-name: "Create release ${{ inputs.release_version }}, dry-run: ${{ inputs.dry-run }}, push-tag: ${{ inputs.push-tag }}, triggered-from: ${{github.ref}}
 
 permissions:
   contents: write
@@ -32,7 +32,8 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
-          ref: main
+          # the ref that received the dispatch event
+          ref: ${{ github.ref }}
 
       - name: Check if that release tag is correctly formatted
         run: "./hack/scripts/check_release_tag.sh ${{ inputs.release_version }}"
