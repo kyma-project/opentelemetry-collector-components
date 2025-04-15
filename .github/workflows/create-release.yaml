@@ -1,5 +1,5 @@
 name: "Create release"
-run-name: "Create release ${{ inputs.release_version }}"
+run-name: "Create release ${{ inputs.release_version }}, dry-run: ${{ inputs.dry-run }}, push-tag: ${{ inputs.push-tag }}"
 
 permissions:
   contents: write
