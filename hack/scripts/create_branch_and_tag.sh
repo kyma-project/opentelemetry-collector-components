@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -o pipefail
 
 # This script creates a new branch and tag in the repository.
 
