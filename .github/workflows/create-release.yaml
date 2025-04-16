@@ -29,6 +29,7 @@ env:
   GH_HOST: github.com
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
+  PUSH_PAT: ${{ secrets.BOT_PAT_FOR_PUSHING }}
   IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
   IMAGE_NAME: kyma-otel-collector
 
@@ -103,11 +104,42 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
-          ref: main
+          # without this token we would not trigger the tag image workflow
+          token: '${{ secrets.BOT_PAT_FOR_PUSHING }}'
+          ref: ${{ github.ref }}
 
-      - name: Create lightweight tag
+      - name: Setup release branch
+        run: |
+          #parse version into major, minor, patch
+          major=$(echo ${{ inputs.name }} | cut -d. -f1)
+          minor=$(echo ${{ inputs.name }} | cut -d. -f2)
+          patch=$(echo ${{ inputs.name }} | cut -d. -f3)
+          
+          # check if we need to setup a release branch
+          if [ $patch -eq 0 ]; then
+              # check if the release branch already exists
+              if git show-ref --verify --quiet refs/heads/release-$major.$minor; then
+              echo "Release branch already exists"
+              exit 1
+              else
+                  # create the release branch from main
+                  git checkout -b release-$major.$minor origin/main
+              fi
+          # if we have a non .0 release, checkout the release branch
+          else
+            # check if the release branch already exists
+            if ! git show-ref --verify --quiet refs/heads/release-$major.$minor; then
+                git checkout release-$major.$minor
+            else
+                echo "Release branch does not exist"
+                exit 1
+            fi
+          fi
+
+      - name: Create lightweight tag and push
         run: |
           git tag ${{ inputs.name }}
+          # push the tag to the repository and trigger the tag release workflow
           git push origin ${{ inputs.name }}
 
       - name: Recreate the release if it already exists
@@ -165,7 +197,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
-          ref: ${{ github.ref }}
+          ref: ${{ inputs.name }}
 
       - name: Prepare envs
         id: prepare-envs
@@ -199,26 +231,11 @@ jobs:
 
           echo "PREVIOUS_TAG=${previous_version}" >> "$GITHUB_OUTPUT"
 
-
-  build-image:
-    name: Build image
-    needs:
-      - create-draft
-      - envs
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: kyma-otel-collector
-      dockerfile: otel-collector/Dockerfile
-      context: .
-      build-args: ${{ needs.envs.outputs.build-args }}
-      tags: ${{ needs.envs.outputs.tag }}
-
   check-prerequisites:
     name: Check release pre-requisites
     needs:
       - create-draft
 #      - run-unit-tests
-      - build-image
       - envs
     runs-on: ubuntu-latest
 
@@ -230,6 +247,11 @@ jobs:
 
       - name: Check if image exists in registry
         run: |
+          # check if the image exists (every 15 seconds, up to 15 minutes)
+          for i in {1..60}; do
+            docker run ananace/skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.envs.outputs.tag }} && break
+            sleep 15
+          done
           docker run ananace/skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.envs.outputs.tag }} || exit 1
 
   publish-release:
