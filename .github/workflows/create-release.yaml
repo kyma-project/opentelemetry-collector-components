@@ -21,6 +21,10 @@ on:
         description: "Create PR to management-plane-charts"
         default: true
 
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: write # This is required for creating a release
+
 env:
   GH_HOST: github.com
   GH_REPO: ${{ github.repository }}
