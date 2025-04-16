@@ -30,8 +30,7 @@ env:
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
   IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
-  IMAGE_NAME: opentelemetry-collector-components
-  IMAGE_TAG: ${{ inputs.name }}
+  IMAGE_NAME: kyma-otel-collector
 
 jobs:
   validate-release:
@@ -231,7 +230,7 @@ jobs:
 
       - name: Check if image exists in registry
         run: |
-          docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${{ needs.envs.outputs.tag }} || exit 1
+          docker run ananace/skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.envs.outputs.tag }} || exit 1
 
   publish-release:
     name: Publish release
