@@ -14,12 +14,12 @@ on:
         type: boolean
       dry-run:
         type: boolean
-        description: "Do not publish. Builds image and runs tests but does not publish the release."
+        description: "Do not publish. Builds image and runs tests but does not publish the release. (dry-run)"
         default: false
-      create-pr:
-        type: boolean
-        description: "Create PR to management-plane-charts"
-        default: true
+#      create-pr:
+#        type: boolean
+#        description: "Create PR to management-plane-charts"
+#        default: true
 
 permissions:
   id-token: write # This is required for requesting the JWT token
@@ -27,6 +27,7 @@ permissions:
 
 env:
   GH_HOST: github.com
+  GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
   IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
   IMAGE_NAME: opentelemetry-collector-components
