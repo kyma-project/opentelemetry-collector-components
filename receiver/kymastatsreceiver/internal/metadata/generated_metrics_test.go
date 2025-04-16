@@ -118,13 +118,13 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, int64(1), dp.IntValue())
 					attrVal, ok := dp.Attributes().Get("reason")
 					assert.True(t, ok)
-					assert.EqualValues(t, "reason-val", attrVal.Str())
+					assert.Equal(t, "reason-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("status")
 					assert.True(t, ok)
-					assert.EqualValues(t, "status-val", attrVal.Str())
+					assert.Equal(t, "status-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("type")
 					assert.True(t, ok)
-					assert.EqualValues(t, "type-val", attrVal.Str())
+					assert.Equal(t, "type-val", attrVal.Str())
 				case "kyma.resource.status.state":
 					assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
 					validatedMetrics["kyma.resource.status.state"] = true
@@ -139,7 +139,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, int64(1), dp.IntValue())
 					attrVal, ok := dp.Attributes().Get("state")
 					assert.True(t, ok)
-					assert.EqualValues(t, "state-val", attrVal.Str())
+					assert.Equal(t, "state-val", attrVal.Str())
 				}
 			}
 		})

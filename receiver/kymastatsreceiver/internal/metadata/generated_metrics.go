@@ -12,6 +12,24 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 )
 
+var MetricsInfo = metricsInfo{
+	KymaResourceStatusConditions: metricInfo{
+		Name: "kyma.resource.status.conditions",
+	},
+	KymaResourceStatusState: metricInfo{
+		Name: "kyma.resource.status.state",
+	},
+}
+
+type metricsInfo struct {
+	KymaResourceStatusConditions metricInfo
+	KymaResourceStatusState      metricInfo
+}
+
+type metricInfo struct {
+	Name string
+}
+
 type metricKymaResourceStatusConditions struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
