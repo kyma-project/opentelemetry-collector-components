@@ -1,62 +1,285 @@
 name: "Create release"
-run-name: "Create release ${{ inputs.release_version }}, dry-run: ${{ inputs.dry-run }}, push-tag: ${{ inputs.push-tag }}, triggered-from: ${{ github.ref }}"
-
-permissions:
-  contents: write
+run-name: "Create release ${{ inputs.name }} force: ${{ inputs.force }} dry-run: ${{ inputs.dry-run }}"
 
 on:
   workflow_dispatch:
     inputs:
-      release_version:
-        description: "Release version (i.e. x.y.z)"
+      name: # release tag
+        description: "Release tag (i.e. x.y.z)"
         default: ""
         required: true
+      force:
+        description: "Force the release creation. This will overwrite an existing release with the same tag."
+        default: false
+        type: boolean
       dry-run:
         type: boolean
-        description: "Creates a dry-run branch and tag. This will not trigger the actual release process."
-        default: true
-      push-tag:
+        description: "Do not publish. Builds image and runs tests but does not publish the release."
+        default: false
+      create-pr:
         type: boolean
-        description: "Push the tag to the repository. Overrides dry-run to push the dry-run tag."
+        description: "Create PR to management-plane-charts"
         default: true
 
+env:
+  GH_HOST: github.com
+  GH_REPO: ${{ github.repository }}
+  IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
+  IMAGE_NAME: opentelemetry-collector-components
+  IMAGE_TAG: ${{ inputs.name }}
+
 jobs:
-  # check if tag is a valid semantic version
-  # check that no release already exists with that name
   validate-release:
     name: Validate release
     runs-on: ubuntu-latest
     steps:
-      # checkout code including all history
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
-          # the ref that received the dispatch event
           ref: ${{ github.ref }}
 
       - name: Check if that release tag is correctly formatted
-        run: "./hack/scripts/check_release_tag.sh ${{ inputs.release_version }}"
+        run: |
+          # Validate that the release tag is a proper semantic version
+          if ! [[ ${{ inputs.name }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error ::Release tag ${{ inputs.name }} is not a valid semantic version"
+            exit 1
+          fi
+
+      - name: Do NOT allow overriding a release when it is not a draft
+        run: |
+          # check if release exists
+          ! gh release view ${{ inputs.name }} --json tagName && exit 0
+          # allow only overriding draft releases
+          gh release view ${{ inputs.name }} --json isDraft,tagName | jq -e .isDraft==true
+
+      - name: Recreate the release tag if it already exists
+        if: ${{ inputs.force }}
+        run: |
+          git tag --delete ${{ inputs.name }} || true
+          git push --delete origin ${{ inputs.name }} || true
 
       - name: Check if release tag already exists
+        if: ${{ !inputs.force }}
         run: |
-          if [ $(git tag -l ${{ inputs.release_version }}) ]; then
-            echo "::error ::Tag ${{ inputs.release_version }} already exists"
+          if [ $(git tag -l ${{ inputs.name }}) ]; then
+            echo "::error ::Tag ${{ inputs.name }} already exists"
+            exit 1
+          fi
+
+      - name: Check if milestone for release exists and is closed
+        if: ${{ !inputs.force }}
+        run: |
+          state=$( gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --hostname ${GH_HOST} \
+            '/repos/'${GH_REPO}'/milestones?state=all' --paginate | jq -r '.[]|select(.title=="${{ inputs.name }}").state' )
+
+          if [ -z "$state" ] || [ "$state" != "closed" ]; then
+            echo "::error::Milestone for release ${{ inputs.name }} does not exist or is not closed"
             exit 1
           fi
 
       - name: Check for existing artifacts from previous release runs
-        run: "./hack/scripts/check_artifacts_existence.sh ${{ inputs.release_version }}"
+        if: ${{ !inputs.force }}
+        run: |
+          # run the script to check if the artifacts exist, ignore failure if force is set
+          ! docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || ${{ inputs.force }}
 
-      # create a branch for the release and push it to the repository
-      - name: Create release branch (dry-run, no push)
-        if: ${{ inputs.dry_run == true && inputs.push_tag == false }}
-        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d"
+  create-draft:
+    name: Create draft release
+    needs:
+      - validate-release
+    runs-on: ubuntu-latest
 
-      - name: Create release branch (dry-run, no push)
-        if: ${{ inputs.dry_run == true && inputs.push_tag == true }}
-        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin -d -p"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+          ref: main
 
-      - name: Create release branch
-        if: ${{ inputs.dry_run == false }}
-        run: "./hack/scripts/create_branch_and_tag.sh -v ${{ inputs.release_version }} -r origin"
+      - name: Create lightweight tag
+        run: |
+          git tag ${{ inputs.name }}
+          git push origin ${{ inputs.name }}
+
+      - name: Recreate the release if it already exists
+        if: ${{ inputs.force }}
+        run: |
+          gh release delete ${{ inputs.name }} || true
+
+      - name: Create draft release
+        id: create-draft
+        run: |
+          gh release create ${{ inputs.name }} \
+            --draft \
+            --title "${{ inputs.name }}" \
+            --generate-notes \
+            --verify-tag
+
+#  run-unit-tests:
+#    env:
+#      GH_HOST: github.com
+#      GH_ENTERPRISE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      GH_REPO: ${{ github.repository }}
+#      IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
+#      IMAGE_NAME: consumption-reporter
+#      IMAGE_TAG: ${{ inputs.name }}
+#    name: Unit tests
+#    needs: create-draft
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+#        with:
+#          fetch-depth: 0
+#          ref: ${{ inputs.name }}
+#      - name: Setup Golang
+#        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5
+#        with:
+#          go-version-file: "go.mod"
+#          cache: true
+#
+#      - name: Run tests
+#        run: make test
+
+  envs:
+    outputs:
+      build-args: ${{ steps.prepare-envs.outputs.build-args }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Prepare envs
+        id: prepare-envs
+        run: |
+          {
+          # this creates a multiline string with the envs.
+          # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
+          echo 'build-args<<BUILD_ARGS'
+          cat otel-collector/envs
+          echo BUILD_ARGS
+          } >> "$GITHUB_OUTPUT"
+
+      - name: load envs into output
+        id: load-envs
+        run: |
+          cat otel-collector/envs >> "$GITHUB_OUTPUT"
+
+      - name: create tags
+        id: create-tags
+        run: |
+          # the tag will look similar to: 0.102.1-0.1.0
+          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ inputs.name }}' >> "$GITHUB_OUTPUT"
+          echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
+
+          # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
+          previous_version=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags \
+          | grep -E "^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$" \
+          | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
+          | sort -t "." -k1,1n -k2,2n -k3,3n \
+          | grep -B 1 ${{ inputs.name }} | head -1)
+
+          echo "PREVIOUS_TAG=${previous_version}" >> "$GITHUB_OUTPUT"
+
+
+  build-image:
+    name: Build image
+    needs:
+      - create-draft
+      - envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: kyma-otel-collector
+      dockerfile: otel-collector/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+      tags: ${{ needs.envs.outputs.tags }}
+
+  check-prerequisites:
+    name: Check release pre-requisites
+    needs:
+      - create-draft
+#      - run-unit-tests
+      - build-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Check if image exists in registry
+        run: |
+          docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || exit 1
+
+  publish-release:
+    name: Publish release
+    needs:
+      - check-prerequisites
+      - create-draft
+    if: inputs.dry-run == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish release
+        run: |
+          gh release edit ${{ inputs.name }} --draft=false
+
+#  create-pr-to-management-plane-charts:
+#    name: Create PR to management-plane-charts
+#    env:
+#      GH_HOST: github.com
+#    needs:
+#      - publish-release
+#    runs-on: [self-h
+#    if: inputs.create-pr == true
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+#        with:
+#          repository: kyma/management-plane-charts
+#          ref: chart/consumption-reporter
+#          token: ${{ secrets.MPC_TOKEN }}
+#
+#      - name: Login to GitHub
+#        run: |
+#          gh auth login --with-token <<< ${{ secrets.MPC_TOKEN }}
+#
+#      - name: Create branch
+#        run: |
+#          git checkout -b kcr-release-${{ inputs.name }}
+#
+#      - name: Setup python
+#        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
+#        with:
+#          python-version: "3.x"
+#          cache: "pip" # caching pip dependencies
+#      - run: pip install -r tools/requirements.txt
+#
+#      - name: bump chart version
+#        run: |
+#          make bump-patch
+#
+#      - name: Update tag in values.yaml
+#        run: |
+#          yq -i '.image.tag = "${{ inputs.name }}"' consumption-reporter/values.yaml
+#          yq -i '.appVersion = "${{ inputs.name }}"' consumption-reporter/Chart.yaml
+#
+#      - name: Commit changes
+#        run: |
+#          git add .
+#          git commit -m "Bump consumption-reporter to ${{ inputs.name }}"
+#
+#      - name: Create PR
+#        run: |
+#          git push origin kcr-release-${{ inputs.name }}
+#          gh pr create --base chart/consumption-reporter --head kcr-release-${{ inputs.name }} --title "Bump consumption-reporter to ${{ inputs.name }}" --body "Bump consumption-reporter to ${{ inputs.name }}" --label pr-deploy
