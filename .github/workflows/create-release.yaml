@@ -155,6 +155,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
+      tag: ${{ steps.create-tags.outputs.tag }}
+      otel-version: ${{ steps.load-envs.outputs.OTEL_VERSION }}
+      otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
+      current-tag: ${{ steps.create-tags.outputs.CURRENT_TAG }}
+      previous-tag: ${{ steps.create-tags.outputs.PREVIOUS_TAG }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -182,7 +188,7 @@ jobs:
         id: create-tags
         run: |
           # the tag will look similar to: 0.102.1-0.1.0
-          echo 'TAGS=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ inputs.name }}' >> "$GITHUB_OUTPUT"
+          echo 'TAG=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ inputs.name }}' >> "$GITHUB_OUTPUT"
           echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
 
           # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
@@ -206,7 +212,7 @@ jobs:
       dockerfile: otel-collector/Dockerfile
       context: .
       build-args: ${{ needs.envs.outputs.build-args }}
-      tags: ${{ needs.envs.outputs.tags }}
+      tags: ${{ needs.envs.outputs.tag }}
 
   check-prerequisites:
     name: Check release pre-requisites
@@ -214,6 +220,7 @@ jobs:
       - create-draft
 #      - run-unit-tests
       - build-image
+      - envs
     runs-on: ubuntu-latest
 
     steps:
@@ -224,7 +231,7 @@ jobs:
 
       - name: Check if image exists in registry
         run: |
-          docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || exit 1
+          docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${{ needs.envs.outputs.tag }} || exit 1
 
   publish-release:
     name: Publish release
