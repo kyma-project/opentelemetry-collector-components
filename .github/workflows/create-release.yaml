@@ -147,6 +147,7 @@ jobs:
 #        run: make test
 
   envs:
+    runs-on: ubuntu-latest
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
     steps:
