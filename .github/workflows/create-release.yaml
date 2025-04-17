@@ -108,32 +108,29 @@ jobs:
           token: '${{ secrets.BOT_PAT_FOR_PUSHING }}'
           ref: ${{ github.ref }}
 
-      - name: Setup release branch
+      - name: Validate branch
         run: |
           #parse version into major, minor, patch
           major=$(echo ${{ inputs.name }} | cut -d. -f1)
           minor=$(echo ${{ inputs.name }} | cut -d. -f2)
           patch=$(echo ${{ inputs.name }} | cut -d. -f3)
           
-          # check if we need to setup a release branch
-          if [ $patch -eq 0 ]; then
-              # check if the release branch already exists
-              if git show-ref --verify --quiet refs/heads/release-$major.$minor; then
-              echo "Release branch already exists"
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            if [ $patch -ne 0 ]; then
+              echo "For patch releases, run the workflow from the release branch."
               exit 1
-              else
-                  # create the release branch from main
-                  git checkout -b release-$major.$minor origin/main
-              fi
-          # if we have a non .0 release, checkout the release branch
-          else
-            # check if the release branch already exists
-            if ! git show-ref --verify --quiet refs/heads/release-$major.$minor; then
-                git checkout release-$major.$minor
             else
-                echo "Release branch does not exist"
-                exit 1
+               # create branch if 
+              git checkout -b release-$major.$minor origin/main
             fi
+          elif [[ "${{ github.ref_name }}" == release-* ]]; then
+            if [ $patch -eq 0 ]; then
+              echo "For major or minor releases, run the workflow from the main branch."
+              exit 1
+            fi
+          else
+            echo "Invalid branch ${{ github.ref_name }}."
+#            exit 1
           fi
 
       - name: Create lightweight tag and push
@@ -191,6 +188,8 @@ jobs:
       otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
       current-tag: ${{ steps.create-tags.outputs.CURRENT_TAG }}
       previous-tag: ${{ steps.create-tags.outputs.PREVIOUS_TAG }}
+    needs:
+      - create-draft
 
     steps:
       - name: Checkout code
@@ -220,44 +219,29 @@ jobs:
         run: |
           # the tag will look similar to: 0.102.1-0.1.0
           echo 'TAG=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ inputs.name }}' >> "$GITHUB_OUTPUT"
-          echo 'CURRENT_TAG=${{ github.ref_name }}' >> "$GITHUB_OUTPUT"
 
-          # join all tags with the new tag in one list. Inject our new version in the list. Sort the list and get the line prior to the new tag
-          previous_version=$(git for-each-ref --sort=creatordate --format '%(refname)' refs/tags \
-          | grep -E "^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$" \
-          | grep -E "[0-9]+\.[0-9]+\.[0-9]+" -o \
-          | sort -t "." -k1,1n -k2,2n -k3,3n \
-          | grep -B 1 ${{ inputs.name }} | head -1)
+  build-image:
+    needs: envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: ${{ env.IMAGE_NAME }}
+      dockerfile: otel-collector/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+      tags: ${{ needs.envs.outputs.tags }}
 
-          echo "PREVIOUS_TAG=${previous_version}" >> "$GITHUB_OUTPUT"
-
-  check-prerequisites:
-    name: Check release pre-requisites
-    needs:
-      - create-draft
-#      - run-unit-tests
-      - envs
+  list-images:
+    needs: build-image
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          ref: ${{ github.ref }}
-
-      - name: Check if image exists in registry
+      - name: List images
         run: |
-          # check if the image exists (every 15 seconds, up to 15 minutes)
-          for i in {1..60}; do
-            docker run ananace/skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.envs.outputs.tag }} && break
-            sleep 15
-          done
-          docker run ananace/skopeo inspect docker://${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.envs.outputs.tag }} || exit 1
+          echo "${{ needs.build-image.outputs.images }}"
 
   publish-release:
     name: Publish release
     needs:
-      - check-prerequisites
+      - build-image
       - create-draft
     if: inputs.dry-run == false
     runs-on: ubuntu-latest
