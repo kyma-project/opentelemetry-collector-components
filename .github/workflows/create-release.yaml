@@ -29,7 +29,6 @@ env:
   GH_HOST: github.com
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
-  PUSH_PAT: ${{ secrets.BOT_PAT_FOR_PUSHING }}
   IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
   IMAGE_NAME: kyma-otel-collector
 
@@ -105,7 +104,6 @@ jobs:
         with:
           fetch-depth: 0
           # without this token we would not trigger the tag image workflow
-          token: '${{ secrets.BOT_PAT_FOR_PUSHING }}'
           ref: ${{ github.ref }}
 
       - name: Validate branch
