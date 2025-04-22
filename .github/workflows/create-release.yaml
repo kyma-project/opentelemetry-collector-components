@@ -119,8 +119,15 @@ jobs:
               exit 1
             else
               git checkout -b release-$major.$minor origin/main
+              git push origin release-$major.$minor
             fi
           elif [[ "${{ github.ref_name }}" == release-* ]]; then
+          
+            branch_version=$(echo "${{ github.ref_name }}" | sed 's/release-//')
+            if [ "$branch_version" != "$major.$minor" ]; then
+              echo "Release branch ${{ github.ref_name }}" doesn't match tag version."
+              exit 1
+            fi
             if [ $patch -eq 0 ]; then
               echo "For major or minor releases, run the workflow from the main branch."
               exit 1
