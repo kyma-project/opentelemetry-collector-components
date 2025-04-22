@@ -125,7 +125,7 @@ jobs:
           
             branch_version=$(echo "${{ github.ref_name }}" | sed 's/release-//')
             if [ "$branch_version" != "$major.$minor" ]; then
-              echo "Release branch ${{ github.ref_name }}" doesn't match tag version."
+              echo "Release branch ${{ github.ref_name }} does not match tag version."
               exit 1
             fi
             if [ $patch -eq 0 ]; then
