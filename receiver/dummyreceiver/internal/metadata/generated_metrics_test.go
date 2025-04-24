@@ -110,7 +110,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, int64(1), dp.IntValue())
 					attrVal, ok := dp.Attributes().Get("host")
 					assert.True(t, ok)
-					assert.EqualValues(t, "host-val", attrVal.Str())
+					assert.Equal(t, "host-val", attrVal.Str())
 				}
 			}
 		})

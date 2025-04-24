@@ -12,6 +12,20 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 )
 
+var MetricsInfo = metricsInfo{
+	Dummy: metricInfo{
+		Name: "dummy",
+	},
+}
+
+type metricsInfo struct {
+	Dummy metricInfo
+}
+
+type metricInfo struct {
+	Name string
+}
+
 type metricDummy struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
