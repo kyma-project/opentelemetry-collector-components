@@ -103,7 +103,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
-          # without this token we would not trigger the tag image workflow
           ref: ${{ github.ref }}
 
       - name: Validate branch
@@ -112,7 +111,7 @@ jobs:
           major=$(echo ${{ inputs.name }} | cut -d. -f1)
           minor=$(echo ${{ inputs.name }} | cut -d. -f2)
           patch=$(echo ${{ inputs.name }} | cut -d. -f3)
-          
+
           if [ "${{ github.ref_name }}" = "main" ]; then
             if [ $patch -ne 0 ]; then
               echo "For patch releases, run the workflow from the release branch."
@@ -122,7 +121,7 @@ jobs:
               git push origin release-$major.$minor
             fi
           elif [[ "${{ github.ref_name }}" == release-* ]]; then
-          
+
             branch_version=$(echo "${{ github.ref_name }}" | sed 's/release-//')
             if [ "$branch_version" != "$major.$minor" ]; then
               echo "Release branch ${{ github.ref_name }} does not match tag version."
@@ -134,7 +133,7 @@ jobs:
             fi
           else
             echo "Invalid branch ${{ github.ref_name }}."
-             # exit 1
+            exit 1
           fi
 
       - name: Create lightweight tag and push
@@ -156,32 +155,6 @@ jobs:
             --title "${{ inputs.name }}" \
             --generate-notes \
             --verify-tag
-
-#  run-unit-tests:
-#    env:
-#      GH_HOST: github.com
-#      GH_ENTERPRISE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      GH_REPO: ${{ github.repository }}
-#      IMAGE_REGISTRY: europe-docker.pkg.dev/kyma-project/prod
-#      IMAGE_NAME: consumption-reporter
-#      IMAGE_TAG: ${{ inputs.name }}
-#    name: Unit tests
-#    needs: create-draft
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout repo
-#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-#        with:
-#          fetch-depth: 0
-#          ref: ${{ inputs.name }}
-#      - name: Setup Golang
-#        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5
-#        with:
-#          go-version-file: "go.mod"
-#          cache: true
-#
-#      - name: Run tests
-#        run: make test
 
   envs:
     runs-on: ubuntu-latest

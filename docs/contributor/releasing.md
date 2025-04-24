@@ -10,8 +10,8 @@ This release process covers the steps to release new major and minor versions fo
 3. Create a new [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) for the next version.
 
 4. Manually trigger the [Create release](https://github.com/kyma-project/opentelemetry-collector-components/actions/workflows/create-release.yaml) GitHub Action from the target branch and provide an appropriate release tag as an arugment. The target branch must be:
-  - `main` for major and minor releases,
-  - `release-x.y` for patch releases of version x.y.
+   - `main` for major and minor releases,
+   - `release-x.y` for patch releases of version x.y.
 
 > [!NOTE]
 > - If you check `Do-Not-Publish`, the release will not be published. However, the action still creates an image and a draft release.
