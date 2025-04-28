@@ -14,10 +14,10 @@ This release process covers the steps to release new major and minor versions fo
    - `release-x.y` for patch releases of version x.y.
 
 > [!NOTE]
-> - If you check `Do-Not-Publish`, the release will not be published. However, the action still creates an image and a draft release.
-> - If you check `Force`, it overwrites the existing release and any previously built images. It will never overwrite an already published release. For draft releases, the force option: - recreates the Git tag in the repository - recreates the release notes - overwrites the previously built image
+> - If you select `Do-Not-Publish`, the release will not be published. However, the action still creates an image and a draft release.
+> - If you select `Force`, it overwrites the existing release and any previously built images. It will never overwrite an already published release. For draft releases, the force option recreates the Git tag in the repository, recreates the release notes, and overwrites the previously built image
 
-5. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
+5. If the previous release was a patch release that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
@@ -52,4 +52,4 @@ The subject must describe the change and follow the recommendations:
 - Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).
  It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
 - Start with an uppercase, and not finish with a full stop.
-- Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides.
+- Apply Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides.

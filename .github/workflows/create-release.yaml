@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       name: # release tag
-        description: "Release tag (i.e. x.y.z)"
+        description: "Release tag (in the format x.y.z)"
         default: ""
         required: true
       force:
@@ -51,11 +51,11 @@ jobs:
             exit 1
           fi
 
-      - name: Do NOT allow overriding a release when it is not a draft
+      - name: Do NOT allow overwriting a release when it is not a draft
         run: |
           # check if release exists
           ! gh release view ${{ inputs.name }} --json tagName && exit 0
-          # allow only overriding draft releases
+          # allow only overwriting draft releases
           gh release view ${{ inputs.name }} --json isDraft,tagName | jq -e .isDraft==true
 
       - name: Recreate the release tag if it already exists
@@ -179,7 +179,7 @@ jobs:
         id: prepare-envs
         run: |
           {
-          # this creates a multiline string with the envs.
+          # This creates a multiline string with the envs.
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
           echo 'build-args<<BUILD_ARGS'
           cat otel-collector/envs
