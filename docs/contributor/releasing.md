@@ -9,40 +9,15 @@ This release process covers the steps to release new major and minor versions fo
 
 3. Create a new [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) for the next version.
 
-4. In the `opentelemetry-collector-components` repository, create a release branch.
-   The name of this branch must follow the `release-x.y` pattern, such as `release-1.0`. As opentelemetry-collector follows the release schedule of the `telemetry-manager` component, the release branch should also have the same name as the `telemetry-manager` release branch.
+4. Manually trigger the [Create release](https://github.com/kyma-project/opentelemetry-collector-components/actions/workflows/create-release.yaml) GitHub Action from the target branch and provide an appropriate release tag as an arugment. The target branch must be:
+   - `main` for major and minor releases,
+   - `release-x.y` for patch releases of version x.y.
 
-   ```bash
-   git fetch upstream
-   git checkout --no-track -b {RELEASE_BRANCH} upstream/main
-   git push upstream {RELEASE_BRANCH}
-   ```
+> [!NOTE]
+> - If you select `Do-Not-Publish`, the release will not be published. However, the action still creates an image and a draft release.
+> - If you select `Force`, it overwrites the existing release and any previously built images. It will never overwrite an already published release. For draft releases, the force option recreates the Git tag in the repository, recreates the release notes, and overwrites the previously built image
 
-5. In the `opentelemetry-collector-components/{RELEASE_BRANCH}` branch, create release tags for the HEAD commit.
-
-   ```bash
-   git tag {RELEASE_VERSION}
-   ```
-   Replace {RELEASE_VERSION} with the new release version, for example, `1.0.0`
-
-6. Push the tag to the upstream repository.
-
-   ```bash
-   git push {REPOSITORY_REMOTE} {RELEASE_VERSION}
-   ```
-
-   The {RELEASE_VERSION} tag triggers a GitHub action (`GitHub Release`).
-
-7. Verify the [status](https://github.com/kyma-project/opentelemetry-collector-components/actions) of the GitHub action (`GitHub Release`).
-   - After the GitHub action succeeded, the new GitHub release is available under [releases](https://github.com/kyma-project/opentelemetry-collector-components/releases).
-   - If the GitHub action fails, re-trigger it by removing the {RELEASE_VERSION} tag from upstream and pushing it again:
-
-     ```bash
-     git push --delete upstream v{RELEASE_VERSION}
-     git push upstream v{RELEASE_VERSION}
-     ```
-
-8. If the previous release was a bugfix version (patch release) that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
+5. If the previous release was a patch release that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
@@ -77,4 +52,4 @@ The subject must describe the change and follow the recommendations:
 - Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).
  It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
 - Start with an uppercase, and not finish with a full stop.
-- Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides. 
+- Apply Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/02-style-and-terminology.md#terminology) guides.
