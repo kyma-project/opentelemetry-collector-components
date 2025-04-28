@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/internal/tools
 go 1.24.2
 
 require (
-	github.com/golangci/golangci-lint/v2 v2.1.2
+	github.com/golangci/golangci-lint/v2 v2.1.5
 	github.com/vladopajic/go-test-coverage/v2 v2.14.1
 	go.opentelemetry.io/build-tools/crosslink v0.22.0
 	go.opentelemetry.io/collector/cmd/builder v0.124.0
@@ -20,7 +20,6 @@ require (
 	github.com/Antonboom/nilnil v1.1.0 // indirect
 	github.com/Antonboom/testifylint v1.6.1 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
-	github.com/Crocmagnon/fatcontext v0.7.2 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.3.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
@@ -216,6 +215,7 @@ require (
 	gitlab.com/bosi/decorder v0.4.2 // indirect
 	go-simpler.org/musttag v0.13.0 // indirect
 	go-simpler.org/sloglint v0.11.0 // indirect
+	go.augendre.info/fatcontext v0.8.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/build-tools v0.22.0 // indirect
 	go.opentelemetry.io/collector/component v1.30.0 // indirect
