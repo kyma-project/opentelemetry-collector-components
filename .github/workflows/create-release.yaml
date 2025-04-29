@@ -1,4 +1,4 @@
-name: "Create release"
+name: "Create Release"
 run-name: "Create release ${{ inputs.name }} force: ${{ inputs.force }} dry-run: ${{ inputs.dry-run }}"
 
 on:
@@ -227,54 +227,3 @@ jobs:
       - name: Publish release
         run: |
           gh release edit ${{ inputs.name }} --draft=false
-
-#  create-pr-to-management-plane-charts:
-#    name: Create PR to management-plane-charts
-#    env:
-#      GH_HOST: github.com
-#    needs:
-#      - publish-release
-#    runs-on: [self-h
-#    if: inputs.create-pr == true
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-#        with:
-#          repository: kyma/management-plane-charts
-#          ref: chart/consumption-reporter
-#          token: ${{ secrets.MPC_TOKEN }}
-#
-#      - name: Login to GitHub
-#        run: |
-#          gh auth login --with-token <<< ${{ secrets.MPC_TOKEN }}
-#
-#      - name: Create branch
-#        run: |
-#          git checkout -b kcr-release-${{ inputs.name }}
-#
-#      - name: Setup python
-#        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
-#        with:
-#          python-version: "3.x"
-#          cache: "pip" # caching pip dependencies
-#      - run: pip install -r tools/requirements.txt
-#
-#      - name: bump chart version
-#        run: |
-#          make bump-patch
-#
-#      - name: Update tag in values.yaml
-#        run: |
-#          yq -i '.image.tag = "${{ inputs.name }}"' consumption-reporter/values.yaml
-#          yq -i '.appVersion = "${{ inputs.name }}"' consumption-reporter/Chart.yaml
-#
-#      - name: Commit changes
-#        run: |
-#          git add .
-#          git commit -m "Bump consumption-reporter to ${{ inputs.name }}"
-#
-#      - name: Create PR
-#        run: |
-#          git push origin kcr-release-${{ inputs.name }}
-#          gh pr create --base chart/consumption-reporter --head kcr-release-${{ inputs.name }} --title "Bump consumption-reporter to ${{ inputs.name }}" --body "Bump consumption-reporter to ${{ inputs.name }}" --label pr-deploy
