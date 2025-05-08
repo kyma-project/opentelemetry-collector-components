@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync/atomic"
 	"time"
 
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver"
@@ -17,13 +19,15 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 )
 
 type kymaScraper struct {
-	config  Config
-	dynamic dynamic.Interface
-	logger  *zap.Logger
-	mb      *metadata.MetricsBuilder
+	config   Config
+	dynamic  dynamic.Interface
+	logger   *zap.Logger
+	mb       *metadata.MetricsBuilder
+	isLeader *atomic.Bool
 }
 
 type resourceStats struct {
@@ -60,16 +64,20 @@ func newKymaScraper(
 	settings receiver.Settings,
 ) (scraper.Metrics, error) {
 	ks := kymaScraper{
-		config:  config,
-		dynamic: dynamic,
-		logger:  settings.Logger,
-		mb:      metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
+		config:   config,
+		dynamic:  dynamic,
+		logger:   settings.Logger,
+		mb:       metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
+		isLeader: &atomic.Bool{},
 	}
 
-	return scraper.NewMetrics(ks.scrape)
+	return scraper.NewMetrics(ks.scrape, scraper.WithStart(ks.startFunc))
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
+	if !ks.isLeader.Load() {
+		return pmetric.Metrics{}, nil
+	}
 	stats, err := ks.collectResourceStats(ctx)
 	if err != nil {
 		return pmetric.Metrics{}, err
@@ -100,6 +108,39 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	}
 
 	return ks.mb.Emit(), nil
+}
+
+func (ks *kymaScraper) startFunc(ctx context.Context, host component.Host) error {
+	if ks.config.K8sLeaderElector != nil {
+		ks.logger.Info("Starting kymaScraper with leader election")
+		extList := host.GetExtensions()
+		if extList == nil {
+			return errors.New("extension list is empty")
+		}
+
+		ext := extList[*ks.config.K8sLeaderElector]
+		if ext == nil {
+			return errors.New("extension k8s leader elector not found")
+		}
+
+		leaderElectorExt, ok := ext.(k8sleaderelector.LeaderElection)
+		if !ok {
+			return errors.New("referenced extension is not k8s leader elector")
+		}
+		leaderElectorExt.SetCallBackFuncs(
+			func(ctx context.Context) {
+				ks.isLeader.Store(true)
+
+			}, func() {
+				ks.isLeader.Store(false)
+			},
+		)
+	} else {
+		ks.isLeader.Store(true)
+		return nil
+	}
+
+	return nil
 }
 
 func (ks *kymaScraper) collectResourceStats(ctx context.Context) ([]resourceStats, error) {
