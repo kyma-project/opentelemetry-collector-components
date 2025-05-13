@@ -1,6 +1,9 @@
 name: "Create Release"
 run-name: "Create release ${{ inputs.name }} force: ${{ inputs.force }} dry-run: ${{ inputs.dry-run }}"
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,14 +19,6 @@ on:
         type: boolean
         description: "Do not publish. Builds image and runs tests but does not publish the release. (dry-run)"
         default: false
-#      create-pr:
-#        type: boolean
-#        description: "Create PR to management-plane-charts"
-#        default: true
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: write # This is required for creating a release
 
 env:
   GH_HOST: github.com
@@ -34,11 +29,13 @@ env:
 
 jobs:
   validate-release:
+    permissions:
+      contents: write # Required for creating the release
     name: Validate release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -93,6 +90,8 @@ jobs:
           ! docker run ananace/skopeo inspect docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || ${{ inputs.force }}
 
   create-draft:
+    permissions:
+      contents: write # Required for creating the release
     name: Create draft release
     needs:
       - validate-release
@@ -100,7 +99,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
@@ -170,7 +169,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           ref: ${{ inputs.name }}
@@ -198,6 +197,9 @@ jobs:
           echo 'TAG=${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ inputs.name }}' >> "$GITHUB_OUTPUT"
 
   build-image:
+    permissions:
+      id-token: write # Required for requesting the JWT token
+      contents: read
     needs: envs
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
@@ -216,6 +218,8 @@ jobs:
           echo "${{ needs.build-image.outputs.images }}"
 
   publish-release:
+    permissions:
+      contents: write # Required for creating the release
     name: Publish release
     needs:
       - build-image
