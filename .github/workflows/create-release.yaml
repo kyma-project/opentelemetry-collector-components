@@ -30,7 +30,7 @@ env:
 jobs:
   validate-release:
     permissions:
-      contents: write
+      contents: write # Required for creating the release
     name: Validate release
     runs-on: ubuntu-latest
     steps:
@@ -91,7 +91,7 @@ jobs:
 
   create-draft:
     permissions:
-      contents: write
+      contents: write # Required for creating the release
     name: Create draft release
     needs:
       - validate-release
@@ -198,7 +198,7 @@ jobs:
 
   build-image:
     permissions:
-      id-token: write # This is required for requesting the JWT token
+      id-token: write # Required for requesting the JWT token
       contents: read
     needs: envs
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -219,7 +219,7 @@ jobs:
 
   publish-release:
     permissions:
-      contents: write
+      contents: write # Required for creating the release
     name: Publish release
     needs:
       - build-image

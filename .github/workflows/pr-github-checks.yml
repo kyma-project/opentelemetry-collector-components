@@ -47,7 +47,7 @@ jobs:
 
   pr-label-check:
     permissions:
-      pull-requests: write
+      pull-requests: write # Required for setting the labels
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -101,7 +101,7 @@ jobs:
 
   pr-title-check:
     permissions:
-      pull-requests: write
+      pull-requests: write # Required for setting the title
     runs-on: ubuntu-latest
     steps:
       - name: Validate title
