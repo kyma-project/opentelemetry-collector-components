@@ -1,13 +1,16 @@
 package kymastatsreceiver
 
 import (
+	"context"
 	"errors"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -93,18 +96,19 @@ func TestScrape(t *testing.T) {
 		},
 	)
 
-	r, err := newKymaScraper(
-		Config{
+	r := kymaScraper{
+		config: Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
-		dynamic,
-		receivertest.NewNopSettings(metadata.Type),
-	)
+		dynamic:      dynamic,
+		mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
+		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
+		shouldScrape: atomic.Bool{},
+	}
+	require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
 
-	require.NoError(t, err)
-
-	md, err := r.ScrapeMetrics(t.Context())
+	md, err := r.scrape(context.Background())
 	require.NoError(t, err)
 
 	expectedFile := filepath.Join("testdata", "metrics.yaml")
@@ -140,18 +144,19 @@ func TestScrape_CantPullResource(t *testing.T) {
 		return true, nil, errors.New("error")
 	})
 
-	r, err := newKymaScraper(
-		Config{
+	r := kymaScraper{
+		config: Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
-		dynamic,
-		receivertest.NewNopSettings(metadata.Type),
-	)
+		dynamic:      dynamic,
+		mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
+		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
+		shouldScrape: atomic.Bool{},
+	}
+	require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
 
-	require.NoError(t, err)
-
-	_, err = r.ScrapeMetrics(t.Context())
+	_, err := r.scrape(context.Background())
 	require.Error(t, err)
 
 }
@@ -317,19 +322,30 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
-			r, err := newKymaScraper(
-				Config{
+			// r, err := newKymaScraper(
+			// 	Config{
+			// 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			// 		Resources:            resources,
+			// 	},
+			// 	dynamic,
+			// 	receivertest.NewNopSettings(metadata.Type),
+			// )
+
+			r := kymaScraper{
+				config: Config{
 					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 					Resources:            resources,
 				},
-				dynamic,
-				receivertest.NewNopSettings(metadata.Type),
-			)
-			require.NoError(t, err)
+				dynamic:      dynamic,
+				mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
+				logger:       receivertest.NewNopSettings(metadata.Type).Logger,
+				shouldScrape: atomic.Bool{},
+			}
+			require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
 
-			metrics, err := r.ScrapeMetrics(t.Context())
+			md, err := r.scrape(context.Background())
 			require.NoError(t, err)
-			require.Equal(t, tt.expectedDataPoints, metrics.DataPointCount())
+			require.Equal(t, tt.expectedDataPoints, md.DataPointCount())
 		})
 	}
 }
