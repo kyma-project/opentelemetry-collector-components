@@ -4,7 +4,7 @@ go 1.24.3
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.1.6
-	github.com/vladopajic/go-test-coverage/v2 v2.14.1
+	github.com/vladopajic/go-test-coverage/v2 v2.14.3
 	go.opentelemetry.io/build-tools/crosslink v0.22.0
 	go.opentelemetry.io/collector/cmd/builder v0.124.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.124.0
