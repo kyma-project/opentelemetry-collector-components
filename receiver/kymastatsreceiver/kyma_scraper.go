@@ -23,11 +23,11 @@ import (
 )
 
 type kymaScraper struct {
-	config   Config
-	dynamic  dynamic.Interface
-	logger   *zap.Logger
-	mb       *metadata.MetricsBuilder
-	isLeader *atomic.Bool
+	config       Config
+	dynamic      dynamic.Interface
+	logger       *zap.Logger
+	mb           *metadata.MetricsBuilder
+	shouldScrape atomic.Bool
 }
 
 type resourceStats struct {
@@ -64,19 +64,19 @@ func newKymaScraper(
 	settings receiver.Settings,
 ) (scraper.Metrics, error) {
 	ks := kymaScraper{
-		config:   config,
-		dynamic:  dynamic,
-		logger:   settings.Logger,
-		mb:       metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
-		isLeader: &atomic.Bool{},
+		config:       config,
+		dynamic:      dynamic,
+		logger:       settings.Logger,
+		mb:           metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
+		shouldScrape: atomic.Bool{},
 	}
 
 	return scraper.NewMetrics(ks.scrape, scraper.WithStart(ks.startFunc))
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	if !ks.isLeader.Load() {
-		return pmetric.Metrics{}, nil
+	if !ks.shouldScrape.Load() {
+		return pmetric.NewMetrics(), nil
 	}
 	stats, err := ks.collectResourceStats(ctx)
 	if err != nil {
@@ -107,12 +107,16 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
 
+	// this condition tries to avoid duplicated metrics when just losing leadership
+	if !ks.shouldScrape.Load() {
+		return pmetric.NewMetrics(), nil
+	}
+
 	return ks.mb.Emit(), nil
 }
 
 func (ks *kymaScraper) startFunc(ctx context.Context, host component.Host) error {
 	if ks.config.K8sLeaderElector != nil {
-		ks.logger.Info("Starting kymaScraper with leader election")
 		extList := host.GetExtensions()
 		if extList == nil {
 			return errors.New("extension list is empty")
@@ -129,14 +133,15 @@ func (ks *kymaScraper) startFunc(ctx context.Context, host component.Host) error
 		}
 		leaderElectorExt.SetCallBackFuncs(
 			func(ctx context.Context) {
-				ks.isLeader.Store(true)
+				// scrape when elected as leader
+				ks.shouldScrape.Store(true)
 
 			}, func() {
-				ks.isLeader.Store(false)
+				ks.shouldScrape.Store(false)
 			},
 		)
 	} else {
-		ks.isLeader.Store(true)
+		ks.shouldScrape.Store(true)
 		return nil
 	}
 
