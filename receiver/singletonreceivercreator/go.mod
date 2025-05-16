@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator
 
-go 1.24.2
+go 1.24.3
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-20250324081004-2c1b3b613557
