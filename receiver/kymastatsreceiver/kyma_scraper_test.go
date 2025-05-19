@@ -3,7 +3,6 @@ package kymastatsreceiver
 import (
 	"errors"
 	"path/filepath"
-	"sync/atomic"
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
@@ -95,19 +94,19 @@ func TestScrape(t *testing.T) {
 		},
 	)
 
-	r := kymaScraper{
-		config: Config{
+	r, err := newKymaScraper(
+		Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
-		dynamic:      dynamic,
-		mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
-		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
-		shouldScrape: atomic.Bool{},
-	}
-	require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
+		dynamic,
+		receivertest.NewNopSettings(metadata.Type),
+	)
+	require.NoError(t, err)
 
-	md, err := r.scrape(t.Context())
+	require.NoError(t, r.Start(t.Context(), componenttest.NewNopHost()))
+
+	md, err := r.ScrapeMetrics(t.Context())
 	require.NoError(t, err)
 
 	expectedFile := filepath.Join("testdata", "metrics.yaml")
@@ -143,19 +142,19 @@ func TestScrape_CantPullResource(t *testing.T) {
 		return true, nil, errors.New("error")
 	})
 
-	r := kymaScraper{
-		config: Config{
+	r, err := newKymaScraper(
+		Config{
 			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
-		dynamic:      dynamic,
-		mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
-		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
-		shouldScrape: atomic.Bool{},
-	}
-	require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
+		dynamic,
+		receivertest.NewNopSettings(metadata.Type))
 
-	_, err := r.scrape(t.Context())
+	require.NoError(t, err)
+
+	require.NoError(t, r.Start(t.Context(), componenttest.NewNopHost()))
+
+	_, err = r.ScrapeMetrics(t.Context())
 	require.Error(t, err)
 
 }
@@ -321,19 +320,19 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
-			r := kymaScraper{
-				config: Config{
+			r, err := newKymaScraper(
+				Config{
 					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
 					Resources:            resources,
 				},
-				dynamic:      dynamic,
-				mb:           metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
-				logger:       receivertest.NewNopSettings(metadata.Type).Logger,
-				shouldScrape: atomic.Bool{},
-			}
-			require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
+				dynamic,
+				receivertest.NewNopSettings(metadata.Type))
 
-			md, err := r.scrape(t.Context())
+			require.NoError(t, err)
+
+			require.NoError(t, r.Start(t.Context(), componenttest.NewNopHost()))
+
+			md, err := r.ScrapeMetrics(t.Context())
 			require.NoError(t, err)
 			require.Equal(t, tt.expectedDataPoints, md.DataPointCount())
 		})
