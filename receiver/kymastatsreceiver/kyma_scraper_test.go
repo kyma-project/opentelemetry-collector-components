@@ -321,15 +321,6 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			dynamic := dynamicfake.NewSimpleDynamicClient(scheme, &unstructured.Unstructured{Object: obj})
 
-			// r, err := newKymaScraper(
-			// 	Config{
-			// 		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
-			// 		Resources:            resources,
-			// 	},
-			// 	dynamic,
-			// 	receivertest.NewNopSettings(metadata.Type),
-			// )
-
 			r := kymaScraper{
 				config: Config{
 					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
