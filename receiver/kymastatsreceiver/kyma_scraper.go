@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -19,7 +20,6 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 )
 
 type kymaScraper struct {

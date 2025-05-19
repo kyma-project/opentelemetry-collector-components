@@ -1,7 +1,6 @@
 package kymastatsreceiver
 
 import (
-	"context"
 	"errors"
 	"path/filepath"
 	"sync/atomic"
@@ -106,9 +105,9 @@ func TestScrape(t *testing.T) {
 		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
 		shouldScrape: atomic.Bool{},
 	}
-	require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
+	require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
 
-	md, err := r.scrape(context.Background())
+	md, err := r.scrape(t.Context())
 	require.NoError(t, err)
 
 	expectedFile := filepath.Join("testdata", "metrics.yaml")
@@ -154,9 +153,9 @@ func TestScrape_CantPullResource(t *testing.T) {
 		logger:       receivertest.NewNopSettings(metadata.Type).Logger,
 		shouldScrape: atomic.Bool{},
 	}
-	require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
+	require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
 
-	_, err := r.scrape(context.Background())
+	_, err := r.scrape(t.Context())
 	require.Error(t, err)
 
 }
@@ -341,9 +340,9 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				logger:       receivertest.NewNopSettings(metadata.Type).Logger,
 				shouldScrape: atomic.Bool{},
 			}
-			require.NoError(t, r.startFunc(context.Background(), componenttest.NewNopHost()))
+			require.NoError(t, r.startFunc(t.Context(), componenttest.NewNopHost()))
 
-			md, err := r.scrape(context.Background())
+			md, err := r.scrape(t.Context())
 			require.NoError(t, err)
 			require.Equal(t, tt.expectedDataPoints, md.DataPointCount())
 		})
