@@ -71,7 +71,7 @@ func newKymaScraper(
 		shouldScrape: atomic.Bool{},
 	}
 
-	return scraper.NewMetrics(ks.scrape, scraper.WithStart(ks.startFunc))
+	return scraper.NewMetrics(ks.scrape, scraper.WithStart(ks.start))
 }
 
 func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
@@ -115,7 +115,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	return ks.mb.Emit(), nil
 }
 
-func (ks *kymaScraper) startFunc(ctx context.Context, host component.Host) error {
+func (ks *kymaScraper) start(ctx context.Context, host component.Host) error {
 	if ks.config.K8sLeaderElector != nil {
 		extList := host.GetExtensions()
 		if extList == nil {
