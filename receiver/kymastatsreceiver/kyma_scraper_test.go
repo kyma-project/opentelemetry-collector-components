@@ -5,9 +5,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector/k8sleaderelectortest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/component/componenttest"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -337,6 +339,75 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 			require.Equal(t, tt.expectedDataPoints, md.DataPointCount())
 		})
 	}
+}
+
+func TestSrapeWithLeaderElection(t *testing.T) {
+	fakeLeaderElection := &k8sleaderelectortest.FakeLeaderElection{}
+	leaderElectorID := component.MustNewID("k8s_leader_elector")
+	fakeHost := &k8sleaderelectortest.FakeHost{
+		FakeLeaderElection: fakeLeaderElection,
+	}
+
+	resources := []ResourceConfig{
+		{
+			Group:    telemetryResourceGroup,
+			Version:  telemetryResourceVersion,
+			Resource: "telemetries",
+		},
+	}
+
+	scheme := runtime.NewScheme()
+
+	telemetry := newUnstructuredObject("Telemetry", "telemetry", "default")
+	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+		"state": "Ready",
+		"conditions": []interface{}{
+			map[string]interface{}{
+				"type":   "TelemetryHealthy",
+				"status": "True",
+				"reason": "AllFine",
+			},
+		},
+	}, "status")
+
+	dynamic := dynamicfake.NewSimpleDynamicClientWithCustomListKinds(scheme,
+		map[schema.GroupVersionResource]string{
+			schema.GroupVersionResource(resources[0]): "TelemetryList",
+		}, &unstructured.Unstructured{
+			Object: telemetry,
+		},
+	)
+
+	r, err := newKymaScraper(
+		Config{
+			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			Resources:            resources,
+			K8sLeaderElector:     &leaderElectorID,
+		},
+		dynamic,
+		receivertest.NewNopSettings(metadata.Type))
+
+	require.NoError(t, err)
+
+	r.Start(t.Context(), fakeHost)
+
+	// before being a leader
+	md, err := r.ScrapeMetrics(t.Context())
+	require.NoError(t, err)
+	require.Zero(t, md.DataPointCount())
+
+	// elected leader
+	fakeLeaderElection.InvokeOnLeading()
+	md, err = r.ScrapeMetrics(t.Context())
+	require.NoError(t, err)
+	require.NotZero(t, md.DataPointCount())
+
+	// stopped leading
+	fakeLeaderElection.InvokeOnStopping()
+	md, err = r.ScrapeMetrics(t.Context())
+	require.NoError(t, err)
+	require.Zero(t, md.DataPointCount())
+
 }
 
 func newUnstructuredObject(kind, resourceType, name string) map[string]interface{} {
