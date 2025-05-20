@@ -341,7 +341,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 	}
 }
 
-func TestSrapeWithLeaderElection(t *testing.T) {
+func TestScrapeWithLeaderElection(t *testing.T) {
 	fakeLeaderElection := &k8sleaderelectortest.FakeLeaderElection{}
 	leaderElectorID := component.MustNewID("k8s_leader_elector")
 	fakeHost := &k8sleaderelectortest.FakeHost{
