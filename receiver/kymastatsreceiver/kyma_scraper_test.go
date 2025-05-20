@@ -389,7 +389,7 @@ func TestScrapeWithLeaderElection(t *testing.T) {
 
 	require.NoError(t, err)
 
-	r.Start(t.Context(), fakeHost)
+	require.NoError(t, r.Start(t.Context(), fakeHost))
 
 	// before being a leader
 	md, err := r.ScrapeMetrics(t.Context())
