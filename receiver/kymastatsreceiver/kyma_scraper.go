@@ -7,7 +7,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -20,6 +19,7 @@ import (
 	"k8s.io/client-go/dynamic"
 
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 )
 
 type kymaScraper struct {
@@ -116,34 +116,34 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 }
 
 func (ks *kymaScraper) start(ctx context.Context, host component.Host) error {
-	if ks.config.K8sLeaderElector != nil {
-		extList := host.GetExtensions()
-		if extList == nil {
-			return errors.New("extension list is empty")
-		}
-
-		ext := extList[*ks.config.K8sLeaderElector]
-		if ext == nil {
-			return errors.New("extension k8s leader elector not found")
-		}
-
-		leaderElectorExt, ok := ext.(k8sleaderelector.LeaderElection)
-		if !ok {
-			return errors.New("referenced extension is not k8s leader elector")
-		}
-		leaderElectorExt.SetCallBackFuncs(
-			func(ctx context.Context) {
-				// scrape when elected as leader
-				ks.shouldScrape.Store(true)
-
-			}, func() {
-				ks.shouldScrape.Store(false)
-			},
-		)
-	} else {
+	if ks.config.K8sLeaderElector == nil {
 		ks.shouldScrape.Store(true)
 		return nil
 	}
+
+	extList := host.GetExtensions()
+	if extList == nil {
+		return errors.New("extension list is empty")
+	}
+
+	ext := extList[*ks.config.K8sLeaderElector]
+	if ext == nil {
+		return errors.New("extension k8s leader elector not found")
+	}
+
+	leaderElectorExt, ok := ext.(k8sleaderelector.LeaderElection)
+	if !ok {
+		return errors.New("referenced extension is not k8s leader elector")
+	}
+	leaderElectorExt.SetCallBackFuncs(
+		func(ctx context.Context) {
+			// scrape when elected as leader
+			ks.shouldScrape.Store(true)
+
+		}, func() {
+			ks.shouldScrape.Store(false)
+		},
+	)
 
 	return nil
 }
