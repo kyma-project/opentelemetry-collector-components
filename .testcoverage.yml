@@ -18,7 +18,6 @@ threshold:
 # If project has multiple rules that match same path, override rules should be listed in order from
 # specific to more general rules.
 override:
-  - ^receiver/singletonreceivercreator: 79
   - ^receiver/dummyreceiver: 89
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics

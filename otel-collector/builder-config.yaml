@@ -23,7 +23,6 @@ receivers:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/httpcheckreceiver vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver vOTEL_CONTRIB_VERSION
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
-  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
 
 processors:
@@ -56,7 +55,6 @@ replaces:
   # a list of "replaces" directives that will be part of the resulting go.mod
   - github.com/go-resty/resty/v2 => github.com/go-resty/resty/v2 v2.12.0
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../receiver/dummyreceiver
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../receiver/singletonreceivercreator
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../receiver/kymastatsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../internal/k8sconfig
   - github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor => ../processor/serviceenrichmentprocessor

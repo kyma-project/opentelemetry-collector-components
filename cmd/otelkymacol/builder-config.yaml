@@ -20,7 +20,6 @@ providers:
 receivers:
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
-  - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator v0.0.1
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.126.0
 
 processors:
@@ -33,4 +32,3 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../../receiver/dummyreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../../receiver/kymastatsreceiver
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/singletonreceivercreator => ../../receiver/singletonreceivercreator
