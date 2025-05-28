@@ -60,5 +60,5 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../receiver/kymastatsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../internal/k8sconfig
   - github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor => ../processor/serviceenrichmentprocessor
-  - - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ../processor/istioenrichmentprocessor
+  - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ../processor/istioenrichmentprocessor
 
