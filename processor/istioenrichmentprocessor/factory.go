@@ -16,9 +16,7 @@ var processorCapabilities = consumer.Capabilities{MutatesData: true}
 var errInvalidConfig = errors.New("invalid configuration")
 
 type Config struct {
-	ModuleVersion  string `mapstructure:"module_version"`
-	SeverityText   string `mapstructure:"severity_text"`
-	SeverityNumber int32  `mapstructure:"severity_number"`
+	ScopeVersion string `mapstructure:"scope_version"`
 }
 
 func createDefaultConfig() component.Config { return Config{} }

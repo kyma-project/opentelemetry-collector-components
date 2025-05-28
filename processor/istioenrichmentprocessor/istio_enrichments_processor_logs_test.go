@@ -89,9 +89,7 @@ func TestProcessLogs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sink := new(consumertest.LogsSink)
 			config := Config{
-				ModuleVersion:  "v1",
-				SeverityText:   "INFO",
-				SeverityNumber: 9,
+				ScopeVersion: "v1",
 			}
 
 			factory := NewFactory()

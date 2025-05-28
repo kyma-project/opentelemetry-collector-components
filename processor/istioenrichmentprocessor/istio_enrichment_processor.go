@@ -22,6 +22,8 @@ const (
 	resourceAttributeLogName            = "log_name"
 	resourceAttributeZoneName           = "zone_name"
 	resourceAttributeNodeName           = "node_name"
+	defaultSeverityText                 = "INFO"
+	defaultSeverityNumber               = plog.SeverityNumberInfo
 )
 
 var (
@@ -58,7 +60,7 @@ func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Lo
 					// we skip the enrichment for this log record.
 					continue
 				}
-				iep.enrichSeverityAttributes(logR)
+				enrichSeverityAttributes(logR)
 				setNetworkProtocolAttributes(logR)
 				setNetworkAddressAttributes(logR)
 				logR.Attributes().Remove(kymaModuleAttributeName)
@@ -87,14 +89,14 @@ func removeIstioResourceAttributes(resource pcommon.Resource) {
 	resource.Attributes().Remove(resourceAttributeNodeName)
 }
 
-func (iep *istioEnrichmentProcessor) enrichSeverityAttributes(logR plog.LogRecord) {
-	logR.SetSeverityText(iep.config.SeverityText)
-	logR.SetSeverityNumber(plog.SeverityNumber(iep.config.SeverityNumber))
+func enrichSeverityAttributes(logR plog.LogRecord) {
+	logR.SetSeverityText(defaultSeverityText)
+	logR.SetSeverityNumber(defaultSeverityNumber)
 }
 
 func (iep *istioEnrichmentProcessor) setScopeAttributes(scopeLog plog.ScopeLogs) {
 	scopeLog.Scope().SetName(istioScopeName)
-	scopeLog.Scope().SetVersion(iep.config.ModuleVersion)
+	scopeLog.Scope().SetVersion(iep.config.ScopeVersion)
 }
 
 func setNetworkProtocolAttributes(logR plog.LogRecord) {
