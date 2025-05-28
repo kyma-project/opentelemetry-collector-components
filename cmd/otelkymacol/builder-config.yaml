@@ -18,12 +18,14 @@ providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.32.0
 
 receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.126.0
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.126.0
 
 processors:
   - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.126.0
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor v0.0.1
 
 exporters:
   - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.126.0
@@ -32,3 +34,4 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../../internal/k8sconfig
   - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../../receiver/dummyreceiver
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../../receiver/kymastatsreceiver
+  - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ../../processor/istioenrichmentprocessor

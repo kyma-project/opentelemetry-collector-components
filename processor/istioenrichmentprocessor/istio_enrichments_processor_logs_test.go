@@ -29,7 +29,7 @@ func TestProcessLogs(t *testing.T) {
 		expectShouldTestModifiedAttributes bool
 	}{
 		{
-			name: "logs with istio attributes",
+			name: "logs with kyma.module istio attribute",
 			logs: NewPLogBuilder().WithScopeName("test_scope").
 				WithScopeVersion("someVersion").
 				WithResourceAttributes(map[string]string{
@@ -45,7 +45,7 @@ func TestProcessLogs(t *testing.T) {
 					"client.address":        "client.local:456",
 				}).
 				Build(),
-			expectedScopeName:                  "io.kyma-project.telemetry/istio",
+			expectedScopeName:                  istioScopeName,
 			expectedScopeVersion:               "v1",
 			expectedNetworkProtocolName:        "HTTP",
 			expectedNetworkProtocolVersion:     "1.0",
@@ -58,7 +58,7 @@ func TestProcessLogs(t *testing.T) {
 			expectShouldTestModifiedAttributes: true,
 		},
 		{
-			name: "logs without istio attributes",
+			name: "logs without kyma.module istio attribute",
 			logs: NewPLogBuilder().WithScopeName("test_scope").
 				WithScopeVersion("someVersion").
 				WithResourceAttributes(map[string]string{
@@ -115,7 +115,7 @@ func TestProcessLogs(t *testing.T) {
 			for _, l := range allLogs {
 				for iResource := 0; iResource < l.ResourceLogs().Len(); iResource++ {
 
-					require.Equal(t, tc.expectedResourceAttributeCount, l.ResourceLogs().At(iResource).Resource().Attributes().Len(), "Resource attributes should be empty")
+					require.Equal(t, tc.expectedResourceAttributeCount, l.ResourceLogs().At(iResource).Resource().Attributes().Len())
 
 					for iScope := 0; iScope < l.ResourceLogs().At(iResource).ScopeLogs().Len(); iScope++ {
 
