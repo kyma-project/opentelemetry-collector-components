@@ -1,5 +1,8 @@
 name: Build Image
 
+permissions:
+  contents: read
+
 on:
   pull_request_target:
     types: [opened, edited, synchronize, reopened, ready_for_review]
@@ -21,10 +24,6 @@ on:
       - "OWNERS"
       - "CODEOWNERS"
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   envs:
     runs-on: ubuntu-latest
@@ -39,13 +38,13 @@ jobs:
     steps:
       - name: Checkout code
         if: github.event_name == 'pull_request_target'
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Checkout code
         if: github.event_name == 'push'
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: prepare envs
         id: prepare-envs
@@ -77,6 +76,9 @@ jobs:
           echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
 
   build-image:
+    permissions:
+      id-token: write # Required for requesting the JWT token
+      contents: read
     needs: envs
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
@@ -85,6 +87,8 @@ jobs:
       context: .
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
+      build-engine: buildx
+      platforms: "linux/amd64,linux/arm64"
 
   list-images:
     needs: build-image

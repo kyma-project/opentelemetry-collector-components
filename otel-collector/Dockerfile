@@ -1,5 +1,8 @@
 
-FROM golang:1.24.2-alpine3.21 as build
+FROM --platform=$BUILDPLATFORM golang:1.24.3-alpine3.21 AS build
+ARG TARGETOS
+ARG TARGETARCH
+
 ARG OTEL_VERSION
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
@@ -11,14 +14,14 @@ ADD processor /processor/
 WORKDIR /app
 COPY otel-collector/builder-config.yaml builder-config.yaml
 
-ENV OTEL_VERSION ${OTEL_VERSION}
-ENV OTEL_CONTRIB_VERSION ${OTEL_CONTRIB_VERSION}
+ENV OTEL_VERSION=${OTEL_VERSION}
+ENV OTEL_CONTRIB_VERSION=${OTEL_CONTRIB_VERSION}
 RUN sed -i s/OTEL_VERSION/${OTEL_VERSION}/g builder-config.yaml
 RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
-RUN builder --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
 
 FROM scratch
 

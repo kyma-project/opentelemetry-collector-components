@@ -1,4 +1,8 @@
-name: All Checks passed
+name: All Checks Passed
+
+permissions:
+  contents: read
+
 on:
   pull_request:
     types:
@@ -15,10 +19,10 @@ jobs:
   all-checks:
     runs-on: ubuntu-latest
     permissions:
-      checks: read
+      checks: read # Required for checking the status of actions
       contents: read
     steps:
       - uses: wechuli/allcheckspassed@e22f45a4f25f4cf821d1273705ac233355400db1 # v1.2.0
         with:
-          retries: '30'
-          polling_interval: '1'
+          retries: "30"
+          polling_interval: "1"

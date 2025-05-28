@@ -1,7 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
-set -o pipefail
 
 # This script creates a new branch and tag in the repository.
 
@@ -9,22 +8,28 @@ set -o pipefail
 # version is a positional argument
 DRYRUN=false
 REMOTE=origin
-PUSH=true
+PUSH=false
 
-# parse arguments
-# -v version
-# -r remote
-# -d dry-run
-# -n no push
-
-while getopts "r:v:d" flag; do
+while getopts "r:v:dph" flag; do
 case "$flag" in
     d) DRYRUN=true;;
     v) VERSION=$OPTARG;;
     r) REMOTE=$OPTARG;;
-    n) PUSH=false;;
+    p) PUSH=true;;
+    h) echo "Usage: $0 [-d] [-r <remote>] [-v <version>] [-n] [-h]"
+       echo "  -d: dry-run"
+       echo "  -r: remote (default: origin)"
+       echo "  -v: version (mandatory)"
+       echo "  -p: push (pushes also when in dry-run mode)"
+       echo "  -h: help"
+       exit 0;;
 esac
 done
+
+# override push for 'normal' mode
+if [ "$DRYRUN" = false ]; then
+  PUSH=true
+fi
 
 regex="^[0-9]+\.[0-9]+\.[0-9]+$"
 
