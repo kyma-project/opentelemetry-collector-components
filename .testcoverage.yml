@@ -19,6 +19,7 @@ threshold:
 # specific to more general rules.
 override:
   - ^receiver/dummyreceiver: 89
+  - ^processor/istioenrichmentprocessor: 95
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics
 exclude:

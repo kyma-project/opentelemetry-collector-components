@@ -33,6 +33,8 @@ processors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor v0.0.1
+  - gomod: github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor v0.0.1
+
 
 exporters:
   - gomod: go.opentelemetry.io/collector/exporter/debugexporter vOTEL_VERSION
@@ -58,3 +60,5 @@ replaces:
   - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../receiver/kymastatsreceiver
   - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../internal/k8sconfig
   - github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor => ../processor/serviceenrichmentprocessor
+  - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ../processor/istioenrichmentprocessor
+
