@@ -4,7 +4,6 @@ import (
 	"context"
 	"regexp"
 
-	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.uber.org/zap"
 )
@@ -15,13 +14,8 @@ const (
 	istioScopeName                      = "io.kyma-project.telemetry/istio"
 	clientAddressAttributeName          = "client.address"
 	clientPortAttributeName             = "client.port"
-	serverAddressAttributeName          = "server.address"
 	networkProtocolNameAttributeName    = "network.protocol.name"
 	networkProtocolVersionAttributeName = "network.protocol.version"
-	resourceAttributeClusterName        = "cluster_name"
-	resourceAttributeLogName            = "log_name"
-	resourceAttributeZoneName           = "zone_name"
-	resourceAttributeNodeName           = "node_name"
 	defaultSeverityText                 = "INFO"
 	defaultSeverityNumber               = plog.SeverityNumberInfo
 )
@@ -46,7 +40,6 @@ func newIstioEnrichmentProcessor(logger *zap.Logger, cfg Config) *istioEnrichmen
 func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Logs) (plog.Logs, error) {
 	resourceLogs := logs.ResourceLogs()
 	for r := 0; r < resourceLogs.Len(); r++ {
-		updateResourceAttributes := true
 
 		for s := 0; s < resourceLogs.At(r).ScopeLogs().Len(); s++ {
 			updateScopeAttributes := true
@@ -69,24 +62,10 @@ func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Lo
 					iep.setScopeAttributes(scopeLogs)
 					updateScopeAttributes = false
 				}
-
-				if updateResourceAttributes {
-					removeIstioResourceAttributes(resourceLogs.At(r).Resource())
-					updateResourceAttributes = false
-				}
-
 			}
 		}
 	}
 	return logs, nil
-}
-
-func removeIstioResourceAttributes(resource pcommon.Resource) {
-	// Remove Istio specific attributes
-	resource.Attributes().Remove(resourceAttributeClusterName)
-	resource.Attributes().Remove(resourceAttributeLogName)
-	resource.Attributes().Remove(resourceAttributeZoneName)
-	resource.Attributes().Remove(resourceAttributeNodeName)
 }
 
 func enrichSeverityAttributes(logR plog.LogRecord) {
@@ -113,15 +92,6 @@ func setNetworkProtocolAttributes(logR plog.LogRecord) {
 }
 
 func setNetworkAddressAttributes(logR plog.LogRecord) {
-	networkProtocolName, existNN := logR.Attributes().Get(networkProtocolNameAttributeName)
-
-	serverAddress, existSA := logR.Attributes().Get(serverAddressAttributeName)
-	if existNN && networkProtocolName.Str() != "" && existSA && networkAddressRegex.MatchString(serverAddress.Str()) {
-		matches := networkAddressRegex.FindStringSubmatch(serverAddress.Str())
-		if len(matches) == 3 {
-			logR.Attributes().PutStr(serverAddressAttributeName, matches[1])
-		}
-	}
 
 	clientAddress, existCA := logR.Attributes().Get(clientAddressAttributeName)
 

@@ -20,24 +20,16 @@ func TestProcessLogs(t *testing.T) {
 		expectedScopeVersion               string
 		expectedNetworkProtocolName        string
 		expectedNetworkProtocolVersion     string
-		expectedServerAddress              string
 		expectedClientAddress              string
 		expectedClientPort                 string
 		expectedSeverityText               string
 		expectedSeverityNumber             plog.SeverityNumber
-		expectedResourceAttributeCount     int
 		expectShouldTestModifiedAttributes bool
 	}{
 		{
 			name: "logs with kyma.module istio attribute",
 			logs: NewPLogBuilder().WithScopeName("test_scope").
 				WithScopeVersion("someVersion").
-				WithResourceAttributes(map[string]string{
-					resourceAttributeClusterName: "clusterName",
-					resourceAttributeLogName:     "logName",
-					resourceAttributeNodeName:    "nodeName",
-					resourceAttributeZoneName:    "zoneName",
-				}).
 				WithLogAttributes(map[string]string{
 					"kyma.module":           "istio",
 					"network.protocol.name": "HTTP/1.0",
@@ -49,24 +41,16 @@ func TestProcessLogs(t *testing.T) {
 			expectedScopeVersion:               "v1",
 			expectedNetworkProtocolName:        "HTTP",
 			expectedNetworkProtocolVersion:     "1.0",
-			expectedServerAddress:              "server.local",
 			expectedClientAddress:              "client.local",
 			expectedClientPort:                 "456",
 			expectedSeverityText:               "INFO",
 			expectedSeverityNumber:             plog.SeverityNumberInfo,
-			expectedResourceAttributeCount:     0,
 			expectShouldTestModifiedAttributes: true,
 		},
 		{
 			name: "logs without kyma.module istio attribute",
 			logs: NewPLogBuilder().WithScopeName("test_scope").
 				WithScopeVersion("someVersion").
-				WithResourceAttributes(map[string]string{
-					resourceAttributeClusterName: "clusterName",
-					resourceAttributeLogName:     "logName",
-					resourceAttributeNodeName:    "nodeName",
-					resourceAttributeZoneName:    "zoneName",
-				}).
 				WithLogAttributes(map[string]string{
 					"kyma.module":           "some_other_module",
 					"network.protocol.name": "HTTP/1.0",
@@ -77,11 +61,9 @@ func TestProcessLogs(t *testing.T) {
 			expectedScopeName:                  "test_scope",
 			expectedScopeVersion:               "someVersion",
 			expectedNetworkProtocolName:        "HTTP/1.0",
-			expectedServerAddress:              "server.local:123",
 			expectedClientAddress:              "client.local:456",
 			expectedSeverityText:               "",
 			expectedSeverityNumber:             plog.SeverityNumberUnspecified,
-			expectedResourceAttributeCount:     4,
 			expectShouldTestModifiedAttributes: false,
 		},
 	}
@@ -113,8 +95,6 @@ func TestProcessLogs(t *testing.T) {
 			for _, l := range allLogs {
 				for iResource := 0; iResource < l.ResourceLogs().Len(); iResource++ {
 
-					require.Equal(t, tc.expectedResourceAttributeCount, l.ResourceLogs().At(iResource).Resource().Attributes().Len())
-
 					for iScope := 0; iScope < l.ResourceLogs().At(iResource).ScopeLogs().Len(); iScope++ {
 
 						require.Equal(t, tc.expectedScopeVersion, l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).Scope().Version())
@@ -123,7 +103,6 @@ func TestProcessLogs(t *testing.T) {
 						for iLog := 0; iLog < l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).LogRecords().Len(); iLog++ {
 							logR := l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).LogRecords().At(iLog)
 							require.Equal(t, tc.expectedNetworkProtocolName, logR.Attributes().AsRaw()["network.protocol.name"])
-							require.Equal(t, tc.expectedServerAddress, logR.Attributes().AsRaw()["server.address"])
 							require.Equal(t, tc.expectedClientAddress, logR.Attributes().AsRaw()["client.address"])
 							require.Equal(t, tc.expectedSeverityNumber, logR.SeverityNumber())
 							require.Equal(t, tc.expectedSeverityText, logR.SeverityText())
