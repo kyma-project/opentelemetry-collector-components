@@ -13,7 +13,7 @@ The processor enriches the Istio access log attributes with the following log at
 - `network.protocol.name`
 - `network.protocol.version`
 
-Additionally, set the log severity attributes and scope attributes to the following values:
+Additionally, the processor sets the log severity attributes and instrumentation scope attributes to the following values:
 
 - `severity.text` to `INFO`
 - `severity.number` to `9`

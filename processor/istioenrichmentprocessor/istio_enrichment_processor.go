@@ -35,27 +35,24 @@ func newIstioEnrichmentProcessor(logger *zap.Logger, cfg Config) *istioEnrichmen
 
 func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Logs) (plog.Logs, error) {
 	resourceLogs := logs.ResourceLogs()
-	for r := 0; r < resourceLogs.Len(); r++ {
-
-		for s := 0; s < resourceLogs.At(r).ScopeLogs().Len(); s++ {
+	for _, r := range resourceLogs.All() {
+		for _, s := range r.ScopeLogs().All() {
 			updateScopeAttributes := true
-			scopeLogs := resourceLogs.At(r).ScopeLogs().At(s)
 
-			for i := 0; i < scopeLogs.LogRecords().Len(); i++ {
-				logR := scopeLogs.LogRecords().At(i)
-				moduleName, exist := logR.Attributes().Get(kymaModuleAttributeName)
+			for _, l := range s.LogRecords().All() {
+				moduleName, exist := l.Attributes().Get(kymaModuleAttributeName)
 				if !exist || moduleName.Str() != kymaModuleAttributeValue {
 					// If the log record does not have the kyma.module attribute set to "istio",
 					// we skip the enrichment for this log record.
 					continue
 				}
-				enrichSeverityAttributes(logR)
-				setNetworkProtocolAttributes(logR)
-				setNetworkAddressAttributes(logR)
-				logR.Attributes().Remove(kymaModuleAttributeName)
+				enrichSeverityAttributes(l)
+				setNetworkProtocolAttributes(l)
+				setNetworkAddressAttributes(l)
+				l.Attributes().Remove(kymaModuleAttributeName)
 
 				if updateScopeAttributes {
-					iep.setScopeAttributes(scopeLogs)
+					iep.setScopeAttributes(s)
 					updateScopeAttributes = false
 				}
 			}

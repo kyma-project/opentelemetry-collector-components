@@ -93,23 +93,21 @@ func TestProcessLogs(t *testing.T) {
 			allLogs := sink.AllLogs()
 			require.Len(t, allLogs, 1)
 			for _, l := range allLogs {
-				for iResource := 0; iResource < l.ResourceLogs().Len(); iResource++ {
+				for _, r := range l.ResourceLogs().All() {
+					for _, s := range r.ScopeLogs().All() {
 
-					for iScope := 0; iScope < l.ResourceLogs().At(iResource).ScopeLogs().Len(); iScope++ {
+						require.Equal(t, tc.expectedScopeVersion, s.Scope().Version())
+						require.Equal(t, tc.expectedScopeName, s.Scope().Name())
 
-						require.Equal(t, tc.expectedScopeVersion, l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).Scope().Version())
-						require.Equal(t, tc.expectedScopeName, l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).Scope().Name())
-
-						for iLog := 0; iLog < l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).LogRecords().Len(); iLog++ {
-							logR := l.ResourceLogs().At(iResource).ScopeLogs().At(iScope).LogRecords().At(iLog)
-							require.Equal(t, tc.expectedNetworkProtocolName, logR.Attributes().AsRaw()["network.protocol.name"])
-							require.Equal(t, tc.expectedClientAddress, logR.Attributes().AsRaw()["client.address"])
-							require.Equal(t, tc.expectedSeverityNumber, logR.SeverityNumber())
-							require.Equal(t, tc.expectedSeverityText, logR.SeverityText())
+						for _, lr := range s.LogRecords().All() {
+							require.Equal(t, tc.expectedNetworkProtocolName, lr.Attributes().AsRaw()["network.protocol.name"])
+							require.Equal(t, tc.expectedClientAddress, lr.Attributes().AsRaw()["client.address"])
+							require.Equal(t, tc.expectedSeverityNumber, lr.SeverityNumber())
+							require.Equal(t, tc.expectedSeverityText, lr.SeverityText())
 
 							if tc.expectShouldTestModifiedAttributes {
-								require.Equal(t, tc.expectedNetworkProtocolVersion, logR.Attributes().AsRaw()["network.protocol.version"])
-								require.Equal(t, tc.expectedClientPort, logR.Attributes().AsRaw()["client.port"])
+								require.Equal(t, tc.expectedNetworkProtocolVersion, lr.Attributes().AsRaw()["network.protocol.version"])
+								require.Equal(t, tc.expectedClientPort, lr.Attributes().AsRaw()["client.port"])
 							}
 						}
 					}
