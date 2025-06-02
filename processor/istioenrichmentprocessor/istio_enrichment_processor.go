@@ -87,7 +87,6 @@ func setNetworkProtocolAttributes(logR plog.LogRecord) {
 
 func setNetworkAddressAttributes(logR plog.LogRecord) {
 	clientAddress, exist := logR.Attributes().Get(clientAddressAttributeName)
-
 	if exist && clientAddress.Str() != "" {
 		host, port, err := net.SplitHostPort(clientAddress.Str())
 		if err != nil {
