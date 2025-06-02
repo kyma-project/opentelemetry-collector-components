@@ -2,6 +2,7 @@ package istioenrichmentprocessor
 
 import (
 	"context"
+	"net"
 	"strings"
 
 	"go.opentelemetry.io/collector/pdata/plog"
@@ -86,11 +87,12 @@ func setNetworkProtocolAttributes(logR plog.LogRecord) {
 
 func setNetworkAddressAttributes(logR plog.LogRecord) {
 	clientAddress, exist := logR.Attributes().Get(clientAddressAttributeName)
+
 	if exist && clientAddress.Str() != "" {
-		parts := strings.Split(clientAddress.Str(), ":")
-		if len(parts) == 2 {
-			logR.Attributes().PutStr(clientAddressAttributeName, parts[0])
-			logR.Attributes().PutStr(clientPortAttributeName, parts[1])
+		host, port, err := net.SplitHostPort(clientAddress.Str())
+		if err != nil {
+			logR.Attributes().PutStr(clientAddressAttributeName, host)
+			logR.Attributes().PutStr(clientPortAttributeName, port)
 		}
 	}
 }
