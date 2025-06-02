@@ -2,7 +2,7 @@ package istioenrichmentprocessor
 
 import (
 	"context"
-	"regexp"
+	"strings"
 
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.uber.org/zap"
@@ -18,11 +18,6 @@ const (
 	networkProtocolVersionAttributeName = "network.protocol.version"
 	defaultSeverityText                 = "INFO"
 	defaultSeverityNumber               = plog.SeverityNumberInfo
-)
-
-var (
-	networkProtocolRegex = regexp.MustCompile("^(.+)/(.+$)$")
-	networkAddressRegex  = regexp.MustCompile("^(.+):(.+$)$")
 )
 
 type istioEnrichmentProcessor struct {
@@ -79,27 +74,23 @@ func (iep *istioEnrichmentProcessor) setScopeAttributes(scopeLog plog.ScopeLogs)
 }
 
 func setNetworkProtocolAttributes(logR plog.LogRecord) {
-
 	networkProtocol, exist := logR.Attributes().Get(networkProtocolNameAttributeName)
-	if exist && networkProtocolRegex.MatchString(networkProtocol.Str()) {
-		matches := networkProtocolRegex.FindStringSubmatch(networkProtocol.Str())
-		if len(matches) == 3 {
-			logR.Attributes().PutStr(networkProtocolNameAttributeName, matches[1])
-
-			logR.Attributes().PutStr(networkProtocolVersionAttributeName, matches[2])
+	if exist && networkProtocol.Str() != "" {
+		parts := strings.Split(networkProtocol.Str(), "/")
+		if len(parts) == 2 {
+			logR.Attributes().PutStr(networkProtocolNameAttributeName, parts[0])
+			logR.Attributes().PutStr(networkProtocolVersionAttributeName, parts[1])
 		}
 	}
 }
 
 func setNetworkAddressAttributes(logR plog.LogRecord) {
-
-	clientAddress, existCA := logR.Attributes().Get(clientAddressAttributeName)
-
-	if existCA && networkAddressRegex.MatchString(clientAddress.Str()) {
-		matches := networkAddressRegex.FindStringSubmatch(clientAddress.Str())
-		if len(matches) == 3 {
-			logR.Attributes().PutStr(clientAddressAttributeName, matches[1])
-			logR.Attributes().PutStr(clientPortAttributeName, matches[2])
+	clientAddress, exist := logR.Attributes().Get(clientAddressAttributeName)
+	if exist && clientAddress.Str() != "" {
+		parts := strings.Split(clientAddress.Str(), ":")
+		if len(parts) == 2 {
+			logR.Attributes().PutStr(clientAddressAttributeName, parts[0])
+			logR.Attributes().PutStr(clientPortAttributeName, parts[1])
 		}
 	}
 }
