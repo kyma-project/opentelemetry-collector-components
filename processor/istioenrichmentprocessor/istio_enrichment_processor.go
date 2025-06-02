@@ -48,7 +48,7 @@ func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Lo
 				}
 				enrichSeverityAttributes(l)
 				setNetworkProtocolAttributes(l)
-				setNetworkAddressAttributes(l)
+				setClientAddressAttributes(l)
 				l.Attributes().Remove(kymaModuleAttributeName)
 
 				if updateScopeAttributes {
@@ -82,7 +82,7 @@ func setNetworkProtocolAttributes(logR plog.LogRecord) {
 	}
 }
 
-func setNetworkAddressAttributes(logR plog.LogRecord) {
+func setClientAddressAttributes(logR plog.LogRecord) {
 	clientAddress, exist := logR.Attributes().Get(clientAddressAttributeName)
 	if exist && clientAddress.Str() != "" {
 		host, port, err := net.SplitHostPort(clientAddress.Str())
