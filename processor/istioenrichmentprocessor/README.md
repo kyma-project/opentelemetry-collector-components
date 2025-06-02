@@ -6,7 +6,7 @@
 | Code Owners | kyma-project/observability |
 
 
-The processor enrichens the Istio access log attributes with the following log attributes:
+The processor enriches the Istio access log attributes with the following log attributes:
 
 - `client.address`
 - `client.port`
