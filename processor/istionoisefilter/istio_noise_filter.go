@@ -45,41 +45,20 @@ func extractSpanAttrs(span ptrace.Span, resourceAttrs pcommon.Map) spanAttrs {
 }
 
 func (f *istioNoiseFilter) processTraces(_ context.Context, traces ptrace.Traces) (ptrace.Traces, error) {
-	out := ptrace.NewTraces()
-	rss := traces.ResourceSpans()
-	outRss := out.ResourceSpans()
+	for i := range traces.ResourceSpans().Len() {
+		resourceSpans := traces.ResourceSpans().At(i)
 
-	for i := range rss.Len() {
-		rs := rss.At(i)
-		resource := rs.Resource()
-		resourceAttrs := resource.Attributes()
+		for j := range resourceSpans.ScopeSpans().Len() {
+			scopeSpans := resourceSpans.ScopeSpans().At(j)
 
-		ilss := rs.ScopeSpans()
-		newRs := outRss.AppendEmpty()
-		resource.CopyTo(newRs.Resource())
-		newIlss := newRs.ScopeSpans()
-
-		for j := range ilss.Len() {
-			ils := ilss.At(j)
-			spans := ils.Spans()
-			newIls := newIlss.AppendEmpty()
-			ils.Scope().CopyTo(newIls.Scope())
-			newSpans := newIls.Spans()
-
-			for k := range spans.Len() {
-				span := spans.At(k)
-
-				attrs := extractSpanAttrs(span, resourceAttrs)
-				if shouldFilterSpan(attrs) {
-					continue
-				}
-
-				span.CopyTo(newSpans.AppendEmpty())
-			}
+			spans := scopeSpans.Spans()
+			spans.RemoveIf(func(span ptrace.Span) bool {
+				return shouldFilterSpan(span, resourceSpans.Resource().Attributes())
+			})
 		}
 	}
 
-	return out, nil
+	return traces, nil
 }
 
 var (
@@ -87,7 +66,9 @@ var (
 	regexTelemetryGatewayURL = regexp.MustCompile(`^https?://telemetry-otlp-(logs|metrics|traces)\.kyma-system(\..*)?:(4317|4318).*`)
 )
 
-func shouldFilterSpan(attrs spanAttrs) bool {
+func shouldFilterSpan(span ptrace.Span, resourceAttrs pcommon.Map) bool {
+	attrs := extractSpanAttrs(span, resourceAttrs)
+
 	isIstioProxy := attrs.component == "proxy"
 	if !isIstioProxy {
 		return false

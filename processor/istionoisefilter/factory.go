@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	processorCapabilities = consumer.Capabilities{MutatesData: false}
+	processorCapabilities = consumer.Capabilities{MutatesData: true}
 	errInvalidConfig      = errors.New("invalid configuration, expected *istionoisefilter.Config")
 )
 
