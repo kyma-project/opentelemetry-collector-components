@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.1.6
 	github.com/vladopajic/go-test-coverage/v2 v2.14.3
 	go.opentelemetry.io/build-tools/crosslink v0.23.1
-	go.opentelemetry.io/collector/cmd/builder v0.126.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.126.0
+	go.opentelemetry.io/collector/cmd/builder v0.127.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.127.0
 	golang.org/x/tools v0.33.0
 )
 
@@ -218,13 +218,13 @@ require (
 	go.augendre.info/fatcontext v0.8.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/build-tools v0.23.1 // indirect
-	go.opentelemetry.io/collector/component v1.32.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.32.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.32.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.32.0 // indirect
-	go.opentelemetry.io/collector/filter v0.126.0 // indirect
-	go.opentelemetry.io/collector/internal/telemetry v0.126.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.32.0 // indirect
+	go.opentelemetry.io/collector/component v1.33.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.33.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.33.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.33.0 // indirect
+	go.opentelemetry.io/collector/filter v0.127.0 // indirect
+	go.opentelemetry.io/collector/internal/telemetry v0.127.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.33.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otelzap v0.10.0 // indirect
 	go.opentelemetry.io/otel v1.35.0 // indirect
 	go.opentelemetry.io/otel/log v0.11.0 // indirect
@@ -242,7 +242,7 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
-	google.golang.org/grpc v1.72.0 // indirect
+	google.golang.org/grpc v1.72.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

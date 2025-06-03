@@ -3,6 +3,7 @@ package kymastatsreceiver
 import (
 	"errors"
 
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/scraper/scraperhelper"
 	"k8s.io/client-go/dynamic"
 
@@ -16,6 +17,7 @@ type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
 	Resources                      []ResourceConfig `mapstructure:"resources"`
+	K8sLeaderElector               *component.ID    `mapstructure:"k8s_leader_elector"`
 
 	// Used for unit testing only
 	makeDynamicClient func() (dynamic.Interface, error)
