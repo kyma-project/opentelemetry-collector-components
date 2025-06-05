@@ -1,0 +1,12 @@
+type: istio_noise_filter
+
+status:
+  class: processor
+  stability:
+    alpha: [logs, metrics, traces]
+  distributions: [kyma]
+  codeowners:
+    active: [kyma-project/observability]
+tests:
+  skip_lifecycle: true
+  skip_shutdown: true
