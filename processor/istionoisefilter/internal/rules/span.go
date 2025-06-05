@@ -95,7 +95,6 @@ func hasOutboundClusterPrefix(cluster string) bool {
 	return len(cluster) >= 9 && cluster[:9] == "outbound|"
 }
 
-// check if the span is from user application to the telemetry gateway.
 func isTelemetryGatewaySpan(attrs spanAttrs) bool {
 	if attrs.httpMethod != "POST" {
 		return false
@@ -108,7 +107,6 @@ func isTelemetryGatewaySpan(attrs spanAttrs) bool {
 	return regexTelemetryGatewayURL.MatchString(attrs.httpURL)
 }
 
-// check if the span is emitted by the metric agent or RMA scraping a user application.
 func isMetricScrapeSpan(attrs spanAttrs) bool {
 	if attrs.httpMethod != "GET" {
 		return false

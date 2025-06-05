@@ -53,10 +53,14 @@ func mergeSets(a, b map[string]struct{}) map[string]struct{} {
 	return merged
 }
 
+// metric agent proxy scrape spans and access logs can be identified by the user agent
+// the user agent is by default set to the name of the collector binary, which is "kyma-otelcol"
 func isMetricAgentUserAgent(userAgent string) bool {
 	return strings.HasPrefix(userAgent, "kyma-otelcol/")
 }
 
+// rma scrape spans and access logs can be identified by the user agent
+// the user agent is by default set to "vm_promscrape" (since RMA is based on vmagent)
 func isRMAUserAgent(userAgent string) bool {
 	return strings.HasPrefix(userAgent, "vm_promscrape")
 }
