@@ -1,15 +1,8 @@
 package rules
 
 import (
-	"regexp"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
-)
-
-var (
-	regexHealthzURL                  = regexp.MustCompile(`^https://healthz\..+/healthz/ready`)
-	regexTelemetryGatewayURLWithPort = regexp.MustCompile(`^https?://telemetry-otlp-(logs|metrics|traces)\.kyma-system(\..*)?:(4317|4318).*`)
 )
 
 func ShouldDropSpan(span ptrace.Span, resourceAttrs pcommon.Map) bool {
@@ -112,7 +105,7 @@ func isTelemetryGatewaySpan(attrs spanAttrs) bool {
 		return false
 	}
 
-	return regexTelemetryGatewayURLWithPort.MatchString(attrs.httpURL)
+	return regexTelemetryGatewayURL.MatchString(attrs.httpURL)
 }
 
 // check if the span is emitted by the metric agent or RMA scraping a user application.

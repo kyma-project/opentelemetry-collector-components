@@ -1,16 +1,8 @@
 package rules
 
 import (
-	"regexp"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
-)
-
-var (
-	regexTelemetryGatewayURL = regexp.MustCompile(`^telemetry-otlp-(traces|metrics|logs)\.kyma-system.*`)
-	regexHealthzDomain       = regexp.MustCompile(`^healthz\..+`)
-	regexHealthzPath         = regexp.MustCompile(`/healthz/ready`)
 )
 
 type logAttrs struct {
@@ -50,7 +42,7 @@ func ShouldDropLogRecord(log plog.LogRecord, resourceAttrs pcommon.Map) bool {
 	switch {
 	case isTelemetryMouduleComponentAccessLog(attrs):
 		return true
-	case regexTelemetryGatewayURL.MatchString(attrs.serverAddress):
+	case regexTelemetryGatewayHost.MatchString(attrs.serverAddress):
 		return true
 	case isMetricScrapeAccessLog(attrs):
 		return true
@@ -86,7 +78,7 @@ func isHealthCheckAccessLog(attrs logAttrs) bool {
 		return false
 	}
 
-	return regexHealthzDomain.MatchString(attrs.serverAddress) && regexHealthzPath.MatchString(attrs.urlPath)
+	return regexHealthzHost.MatchString(attrs.serverAddress) && regexHealthzPath.MatchString(attrs.urlPath)
 }
 
 func isMetricScrapeAccessLog(attrs logAttrs) bool {
