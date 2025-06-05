@@ -1,6 +1,8 @@
 package rules
 
 import (
+	"strings"
+
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 )
@@ -79,7 +81,7 @@ func isAvailabilityServiceProbeAccessLog(attrs logAttrs) bool {
 		return false
 	}
 
-	return regexHealthzHost.MatchString(attrs.serverAddress) && regexHealthzPath.MatchString(attrs.urlPath)
+	return strings.HasPrefix(attrs.serverAddress, healthzHostPrefix) && strings.HasSuffix(attrs.urlPath, healthzPath)
 }
 
 func isMetricScrapeAccessLog(attrs logAttrs) bool {

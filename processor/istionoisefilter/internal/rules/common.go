@@ -28,9 +28,9 @@ var (
 	regexTelemetryGatewayURL  = regexp.MustCompile(`^https?://telemetry-otlp-(logs|metrics|traces)\.kyma-system(\..*)?:(4317|4318).*`)
 	regexTelemetryGatewayHost = regexp.MustCompile(`^telemetry-otlp-(logs|metrics|traces)\.kyma-system.*`)
 
-	regexHealthzURL  = regexp.MustCompile(`^https://healthz\..+/healthz/ready`)
-	regexHealthzHost = regexp.MustCompile(`^healthz\..+`)
-	regexHealthzPath = regexp.MustCompile(`/healthz/ready`)
+	healthzHostPrefix = "healthz."
+	healthzPath       = "/healthz/ready"
+	regexHealthzURL   = regexp.MustCompile(`^https://` + regexp.QuoteMeta(healthzHostPrefix) + `.+` + regexp.QuoteMeta(healthzPath))
 )
 
 func getStringAttrOrEmpty(attrs pcommon.Map, key string) string {
