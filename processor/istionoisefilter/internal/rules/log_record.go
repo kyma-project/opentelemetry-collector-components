@@ -35,6 +35,7 @@ func extractLogAttrs(log plog.LogRecord, resourceAttrs pcommon.Map) logAttrs {
 func ShouldDropLogRecord(log plog.LogRecord, resourceAttrs pcommon.Map) bool {
 	attrs := extractLogAttrs(log, resourceAttrs)
 
+	// a magic attribute that indicates that is an Istio proxy access log
 	if attrs.kymaModule != "istio" {
 		return false
 	}
