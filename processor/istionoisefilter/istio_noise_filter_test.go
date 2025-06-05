@@ -91,7 +91,7 @@ func TestIstioNoiseFilter_Spans(t *testing.T) {
 			expectedSpanCount: 0,
 		},
 		{
-			name: "drops VictoriaMetrics scrape span",
+			name: "drops if user agent is vm_promscrape",
 			spanAttrs: []map[string]any{
 				{
 					"component":             "proxy",
@@ -104,7 +104,7 @@ func TestIstioNoiseFilter_Spans(t *testing.T) {
 			expectedSpanCount: 0,
 		},
 		{
-			name: "drops metric agent scrape span",
+			name: "drops if user agent is kyma-otelcol",
 			spanAttrs: []map[string]any{
 				{
 					"component":             "proxy",
@@ -185,7 +185,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 1,
 		},
 		{
-			name: "drops log if server.address matches telemetry-otlp gateway",
+			name: "drops log if server address is log gateway",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module":    "istio",
@@ -196,7 +196,29 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if k8s.namespace.name is kyma-system and deployment matches metric gateway",
+			name: "drops log if server address is metric gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module":    "istio",
+					"server.address": "telemetry-otlp-metrics.kyma-system.svc:4318",
+				},
+			},
+			resourceAttrs:    map[string]any{},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if server address is trace gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module":    "istio",
+					"server.address": "telemetry-otlp-traces.kyma-system.svc:4318",
+				},
+			},
+			resourceAttrs:    map[string]any{},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by metric gateway",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module": "istio",
@@ -209,7 +231,59 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if k8s.namespace.name is kyma-system and daemonset matches fluent bit",
+			name: "drops log if emitted by log gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module": "istio",
+				},
+			},
+			resourceAttrs: map[string]any{
+				"k8s.namespace.name":  "kyma-system",
+				"k8s.deployment.name": "telemetry-log-gateway",
+			},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by trace gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module": "istio",
+				},
+			},
+			resourceAttrs: map[string]any{
+				"k8s.namespace.name":  "kyma-system",
+				"k8s.deployment.name": "telemetry-metric-gateway",
+			},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by log agent",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module": "istio",
+				},
+			},
+			resourceAttrs: map[string]any{
+				"k8s.namespace.name": "kyma-system",
+				"k8s.daemonset.name": "telemetry-log-agent",
+			},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by metric agent",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module": "istio",
+				},
+			},
+			resourceAttrs: map[string]any{
+				"k8s.namespace.name": "kyma-system",
+				"k8s.daemonset.name": "telemetry-log-agent",
+			},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by fluent bit",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module": "istio",
@@ -222,7 +296,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if GET/inbound/vm_promscrape user agent",
+			name: "drops log if vm_promscrape user agent",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module":         "istio",
@@ -235,7 +309,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if GET/inbound/kyma-otelcol user agent",
+			name: "drops log if kyma-otelcol user agent",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module":         "istio",
@@ -248,7 +322,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if GET/outbound/healthz domain and /healthz/ready path",
+			name: "drops if healthz domain and /healthz/ready path",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module":         "istio",
@@ -262,7 +336,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "keeps log if GET/outbound/healthz domain but wrong path",
+			name: "keeps log healthz domain but wrong path",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module":         "istio",
