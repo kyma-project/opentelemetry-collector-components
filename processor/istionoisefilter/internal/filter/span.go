@@ -23,13 +23,11 @@ func ShouldDropSpan(span ptrace.Span, resourceAttrs pcommon.Map) bool {
 	switch {
 	case isTelemetryModuleComponentSpan(attrs):
 		return true
-	case isAvailabilityServiceProbeSpan(attrs):
-		return true
 	case isTelemetryGatewaySpan(attrs):
 		return true
-	case isVictoriaMetricsScrapeSpan(attrs):
+	case isMetricScrapeSpan(attrs):
 		return true
-	case isMetricAgentScrapeSpan(attrs):
+	case isAvailabilityServiceProbeSpan(attrs):
 		return true
 	default:
 		return false
@@ -123,8 +121,8 @@ func isTelemetryGatewaySpan(attrs spanAttrs) bool {
 	return regexTelemetryGatewayURLWithPort.MatchString(attrs.httpURL)
 }
 
-// check if the span is emitted by the VictoriaMetrics(RMA) scraper.
-func isVictoriaMetricsScrapeSpan(attrs spanAttrs) bool {
+// check if the span is emitted by the metric agent or RMA scraping a user application.
+func isMetricScrapeSpan(attrs spanAttrs) bool {
 	if attrs.httpMethod != "GET" {
 		return false
 	}
@@ -133,18 +131,5 @@ func isVictoriaMetricsScrapeSpan(attrs spanAttrs) bool {
 		return false
 	}
 
-	return isRMAUserAgent(attrs.userAgent)
-}
-
-// check if the span is emitted by the metric agent scraping a user application.
-func isMetricAgentScrapeSpan(attrs spanAttrs) bool {
-	if attrs.httpMethod != "GET" {
-		return false
-	}
-
-	if !hasInboundClusterPrefix(attrs.upstreamCluster) {
-		return false
-	}
-
-	return isMetricAgentUserAgent(attrs.userAgent)
+	return isMetricAgentUserAgent(attrs.userAgent) || isRMAUserAgent(attrs.userAgent)
 }

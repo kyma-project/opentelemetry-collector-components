@@ -9,8 +9,6 @@ import (
 
 var (
 	regexTelemetryGatewayURL = regexp.MustCompile(`^telemetry-otlp-(traces|metrics|logs)\.kyma-system.*`)
-	regexDeploymentGateway   = regexp.MustCompile(`^telemetry-(metric|log|trace)-gateway$`)
-	regexDaemonsetAgent      = regexp.MustCompile(`^telemetry-(metric-agent|log-agent|fluent-bit)$`)
 	regexHealthzDomain       = regexp.MustCompile(`^healthz\..+`)
 	regexHealthzPath         = regexp.MustCompile(`/healthz/ready`)
 )
@@ -22,9 +20,9 @@ type logAttrs struct {
 	httpDirection  string
 	userAgent      string
 	urlPath        string
-	resourceNS     string
-	resourceDep    string
-	resourceDaemon string
+	namespace      string
+	deploymentName string
+	daemonsetName  string
 }
 
 func extractLogAttrs(log plog.LogRecord, resourceAttrs pcommon.Map) logAttrs {
@@ -36,9 +34,9 @@ func extractLogAttrs(log plog.LogRecord, resourceAttrs pcommon.Map) logAttrs {
 		httpDirection:  getStringAttrOrEmpty(attrs, "http.direction"),
 		userAgent:      getStringAttrOrEmpty(attrs, "user_agent.original"),
 		urlPath:        getStringAttrOrEmpty(attrs, "url.path"),
-		resourceNS:     getStringAttrOrEmpty(resourceAttrs, "k8s.namespace.name"),
-		resourceDep:    getStringAttrOrEmpty(resourceAttrs, "k8s.deployment.name"),
-		resourceDaemon: getStringAttrOrEmpty(resourceAttrs, "k8s.daemonset.name"),
+		namespace:      getStringAttrOrEmpty(resourceAttrs, "k8s.namespace.name"),
+		deploymentName: getStringAttrOrEmpty(resourceAttrs, "k8s.deployment.name"),
+		daemonsetName:  getStringAttrOrEmpty(resourceAttrs, "k8s.daemonset.name"),
 	}
 }
 
@@ -50,21 +48,51 @@ func ShouldDropLogRecord(log plog.LogRecord, resourceAttrs pcommon.Map) bool {
 	}
 
 	switch {
+	case isTelemetryMouduleComponentAccessLog(attrs):
+		return true
 	case regexTelemetryGatewayURL.MatchString(attrs.serverAddress):
 		return true
-	case attrs.resourceNS == "kyma-system" && regexDeploymentGateway.MatchString(attrs.resourceDep):
+	case isMetricScrapeAccessLog(attrs):
 		return true
-	case attrs.resourceNS == "kyma-system" && regexDaemonsetAgent.MatchString(attrs.resourceDaemon):
-		return true
-	case attrs.httpMethod == "GET" && attrs.httpDirection == "inbound" && isRMAUserAgent(attrs.userAgent):
-		return true
-	case attrs.httpMethod == "GET" && attrs.httpDirection == "inbound" && isMetricAgentUserAgent(attrs.userAgent):
-		return true
-	case attrs.httpMethod == "GET" && attrs.httpDirection == "outbound" &&
-		regexHealthzDomain.MatchString(attrs.serverAddress) &&
-		regexHealthzPath.MatchString(attrs.urlPath):
+	case isHealthCheckAccessLog(attrs):
 		return true
 	default:
 		return false
 	}
+}
+
+func isTelemetryMouduleComponentAccessLog(attrs logAttrs) bool {
+	if attrs.namespace != "kyma-system" {
+		return false
+	}
+
+	return attrs.daemonsetName == "telemetry-log-agent" ||
+		attrs.deploymentName == "telemetry-log-gateway" ||
+		attrs.daemonsetName == "telemetry-metric-agent" ||
+		attrs.deploymentName == "telemetry-metric-gateway" ||
+		attrs.deploymentName == "telemetry-trace-gateway"
+}
+
+func isHealthCheckAccessLog(attrs logAttrs) bool {
+	if attrs.httpMethod != "GET" {
+		return false
+	}
+
+	if attrs.httpDirection != "outbound" {
+		return false
+	}
+
+	return regexHealthzDomain.MatchString(attrs.serverAddress) && regexHealthzPath.MatchString(attrs.urlPath)
+}
+
+func isMetricScrapeAccessLog(attrs logAttrs) bool {
+	if attrs.httpMethod != "GET" {
+		return false
+	}
+
+	if attrs.httpDirection != "inbound" {
+		return false
+	}
+
+	return isRMAUserAgent(attrs.userAgent) || isMetricAgentUserAgent(attrs.userAgent)
 }

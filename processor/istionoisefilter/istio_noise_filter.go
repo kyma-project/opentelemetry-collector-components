@@ -20,6 +20,7 @@ func newProcessor(cfg *Config) *istioNoiseFilter {
 	}
 }
 
+//nolint:dupl //all 3 process methods are similar, but operate on different data types
 func (f *istioNoiseFilter) processTraces(_ context.Context, traces ptrace.Traces) (ptrace.Traces, error) {
 	for i := range traces.ResourceSpans().Len() {
 		resourceSpans := traces.ResourceSpans().At(i)
@@ -27,8 +28,7 @@ func (f *istioNoiseFilter) processTraces(_ context.Context, traces ptrace.Traces
 		for j := range resourceSpans.ScopeSpans().Len() {
 			scopeSpans := resourceSpans.ScopeSpans().At(j)
 
-			spans := scopeSpans.Spans()
-			spans.RemoveIf(func(span ptrace.Span) bool {
+			scopeSpans.Spans().RemoveIf(func(span ptrace.Span) bool {
 				return filter.ShouldDropSpan(span, resourceSpans.Resource().Attributes())
 			})
 		}
@@ -37,6 +37,7 @@ func (f *istioNoiseFilter) processTraces(_ context.Context, traces ptrace.Traces
 	return traces, nil
 }
 
+//nolint:dupl //all 3 process methods are similar, but operate on different data types
 func (f *istioNoiseFilter) processLogs(_ context.Context, logs plog.Logs) (plog.Logs, error) {
 	for i := range logs.ResourceLogs().Len() {
 		resourceLogs := logs.ResourceLogs().At(i)
@@ -44,8 +45,7 @@ func (f *istioNoiseFilter) processLogs(_ context.Context, logs plog.Logs) (plog.
 		for j := range resourceLogs.ScopeLogs().Len() {
 			scopeLogs := resourceLogs.ScopeLogs().At(j)
 
-			logRecords := scopeLogs.LogRecords()
-			logRecords.RemoveIf(func(logRecord plog.LogRecord) bool {
+			scopeLogs.LogRecords().RemoveIf(func(logRecord plog.LogRecord) bool {
 				return filter.ShouldDropLogRecord(logRecord, resourceLogs.Resource().Attributes())
 			})
 		}
@@ -54,6 +54,7 @@ func (f *istioNoiseFilter) processLogs(_ context.Context, logs plog.Logs) (plog.
 	return logs, nil
 }
 
+//nolint:dupl //all 3 process methods are similar, but operate on different data types
 func (f *istioNoiseFilter) processMetrics(_ context.Context, metrics pmetric.Metrics) (pmetric.Metrics, error) {
 	for i := range metrics.ResourceMetrics().Len() {
 		resourceMetrics := metrics.ResourceMetrics().At(i)
@@ -61,8 +62,7 @@ func (f *istioNoiseFilter) processMetrics(_ context.Context, metrics pmetric.Met
 		for j := range resourceMetrics.ScopeMetrics().Len() {
 			scopeMetrics := resourceMetrics.ScopeMetrics().At(j)
 
-			metrics := scopeMetrics.Metrics()
-			metrics.RemoveIf(func(m pmetric.Metric) bool {
+			scopeMetrics.Metrics().RemoveIf(func(m pmetric.Metric) bool {
 				return filter.ShouldDropMetric(m)
 			})
 		}
