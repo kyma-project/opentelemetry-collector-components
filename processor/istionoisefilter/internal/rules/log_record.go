@@ -66,11 +66,15 @@ func isTelemetryMouduleComponentAccessLog(attrs logAttrs) bool {
 		return false
 	}
 
-	return attrs.daemonsetName == "telemetry-log-agent" ||
-		attrs.deploymentName == "telemetry-log-gateway" ||
+	dss := attrs.daemonsetName == "telemetry-log-agent" ||
 		attrs.daemonsetName == "telemetry-metric-agent" ||
+		attrs.daemonsetName == "telemetry-fluent-bit"
+
+	deps := attrs.deploymentName == "telemetry-log-gateway" ||
 		attrs.deploymentName == "telemetry-metric-gateway" ||
 		attrs.deploymentName == "telemetry-trace-gateway"
+
+	return dss || deps
 }
 
 func isHealthCheckAccessLog(attrs logAttrs) bool {

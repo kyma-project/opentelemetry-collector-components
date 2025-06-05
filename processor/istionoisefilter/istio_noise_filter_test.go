@@ -196,7 +196,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if k8s.namespace.name is kyma-system and deployment matches gateway",
+			name: "drops log if k8s.namespace.name is kyma-system and deployment matches metric gateway",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module": "istio",
@@ -209,7 +209,7 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			expectedLogCount: 0,
 		},
 		{
-			name: "drops log if k8s.namespace.name is kyma-system and daemonset matches agent",
+			name: "drops log if k8s.namespace.name is kyma-system and daemonset matches fluent bit",
 			logAttrs: []map[string]any{
 				{
 					"kyma.module": "istio",
