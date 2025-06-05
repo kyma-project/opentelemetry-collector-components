@@ -15,6 +15,7 @@ var (
 func ShouldDropSpan(span ptrace.Span, resourceAttrs pcommon.Map) bool {
 	attrs := extractSpanAttrs(span, resourceAttrs)
 
+	// component must be "proxy" to be considered an Istio proxy span.
 	isIstioProxy := attrs.component == "proxy"
 	if !isIstioProxy {
 		return false
@@ -64,18 +65,11 @@ func isTelemetryModuleComponentSpan(attrs spanAttrs) bool {
 		return false
 	}
 
-	switch attrs.canonicalService {
-	case
-		"telemetry-fluent-bit",
-		"telemetry-log-agent",
-		"telemetry-log-gateway",
-		"telemetry-metric-gateway",
-		"telemetry-metric-agent",
-		"telemetry-trace-gateway":
+	if _, found := telemetryModuleComponents[attrs.canonicalService]; found {
 		return true
-	default:
-		return false
 	}
+
+	return false
 }
 
 // check if the span is from the availability service probe.

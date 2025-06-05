@@ -30,9 +30,17 @@ func TestIstioNoiseFilter_Spans(t *testing.T) {
 			expectedSpanCount: 1,
 		},
 		{
-			name: "drops telemetry module component span",
+			name: "drops fluent-bit span",
 			spanAttrs: []map[string]any{
 				{"component": "proxy", "istio.canonical_service": "telemetry-fluent-bit"},
+			},
+			resourceAttrs:     map[string]any{"k8s.namespace.name": "kyma-system"},
+			expectedSpanCount: 0,
+		},
+		{
+			name: "drops metric gateway span",
+			spanAttrs: []map[string]any{
+				{"component": "proxy", "istio.canonical_service": "telemetry-metric-gateway"},
 			},
 			resourceAttrs:     map[string]any{"k8s.namespace.name": "kyma-system"},
 			expectedSpanCount: 0,

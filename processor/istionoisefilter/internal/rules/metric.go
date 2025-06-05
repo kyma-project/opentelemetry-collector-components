@@ -19,8 +19,9 @@ func ShouldDropMetric(metric pmetric.Metric) bool {
 	}
 
 	if destinationWorkload, found := dataPointAttrs.Get("destination_workload"); found {
-		switch destinationWorkload.Str() {
-		case "telemetry-log-gateway", "telemetry-metric-gateway", "telemetry-trace-gateway":
+		// check if the destination workload is one of the telemetry module gateways
+		// since only gateways can be one the receiving side
+		if _, found := telemetryModuleGateways[destinationWorkload.Str()]; found {
 			return true
 		}
 	}
