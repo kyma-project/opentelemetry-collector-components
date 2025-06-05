@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.opentelemetry.io/collector/processor/processortest"
 
@@ -317,6 +318,94 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 	}
 }
 
+func TestIstioNoiseFilter_Metrics(t *testing.T) {
+	testCases := []struct {
+		name         string
+		metricName   string
+		attrs        map[string]any
+		metricType   pmetric.MetricType
+		expectedDrop bool
+	}{
+		{
+			name:         "keeps non-istio metric (Gauge)",
+			metricName:   "custom.metric",
+			attrs:        map[string]any{"source_workload": "telemetry-metric-agent"},
+			metricType:   pmetric.MetricTypeGauge,
+			expectedDrop: false,
+		},
+		{
+			name:         "drops istio metric with source_workload telemetry-metric-agent (Gauge)",
+			metricName:   "istio.requests.total",
+			attrs:        map[string]any{"source_workload": "telemetry-metric-agent"},
+			metricType:   pmetric.MetricTypeGauge,
+			expectedDrop: true,
+		},
+		{
+			name:         "drops istio metric with source_workload telemetry-metric-agent (Sum)",
+			metricName:   "istio.bytes.sent",
+			attrs:        map[string]any{"source_workload": "telemetry-metric-agent"},
+			metricType:   pmetric.MetricTypeSum,
+			expectedDrop: true,
+		},
+		{
+			name:         "drops istio metric with destination_workload telemetry-log-gateway (Histogram)",
+			metricName:   "istio.latency",
+			attrs:        map[string]any{"destination_workload": "telemetry-log-gateway"},
+			metricType:   pmetric.MetricTypeHistogram,
+			expectedDrop: true,
+		},
+		{
+			name:         "drops istio metric with destination_workload telemetry-metric-gateway (ExponentialHistogram)",
+			metricName:   "istio.latency.exp",
+			attrs:        map[string]any{"destination_workload": "telemetry-metric-gateway"},
+			metricType:   pmetric.MetricTypeExponentialHistogram,
+			expectedDrop: true,
+		},
+		{
+			name:         "drops istio metric with destination_workload telemetry-trace-gateway (Summary)",
+			metricName:   "istio.summary",
+			attrs:        map[string]any{"destination_workload": "telemetry-trace-gateway"},
+			metricType:   pmetric.MetricTypeSummary,
+			expectedDrop: true,
+		},
+		{
+			name:         "keeps istio metric with other destination_workload (Gauge)",
+			metricName:   "istio.requests.total",
+			attrs:        map[string]any{"destination_workload": "user-app"},
+			metricType:   pmetric.MetricTypeGauge,
+			expectedDrop: false,
+		},
+		{
+			name:         "does not drop istio metric with no relevant attributes (Sum)",
+			metricName:   "istio.requests.total",
+			attrs:        map[string]any{"foo": "bar"},
+			metricType:   pmetric.MetricTypeSum,
+			expectedDrop: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			metrics := generateMetrics(tc.metricName, tc.attrs, tc.metricType)
+			factory := NewFactory()
+			cfg := factory.CreateDefaultConfig()
+
+			mp, err := factory.CreateMetrics(t.Context(), processortest.NewNopSettings(metadata.Type), cfg, consumertest.NewNop())
+			require.NoError(t, err)
+			require.NotNil(t, mp)
+
+			err = mp.ConsumeMetrics(t.Context(), metrics)
+			require.NoError(t, err)
+
+			got := metrics.ResourceMetrics().At(0).ScopeMetrics().At(0).Metrics()
+			if tc.expectedDrop {
+				require.Equal(t, 0, got.Len())
+			} else {
+				require.Equal(t, 1, got.Len())
+			}
+		})
+	}
+}
+
 func generateTraces(resourceAttrs map[string]any, spanAttrs []map[string]any) ptrace.Traces {
 	traces := ptrace.NewTraces()
 	rs := traces.ResourceSpans().AppendEmpty()
@@ -350,4 +439,35 @@ func generateLogs(resourceAttrs map[string]any, logAttrs []map[string]any) plog.
 	}
 
 	return logs
+}
+
+func generateMetrics(metricName string, dataPointAttrs map[string]any, metricType pmetric.MetricType) pmetric.Metrics {
+	metrics := pmetric.NewMetrics()
+	rm := metrics.ResourceMetrics().AppendEmpty()
+	sm := rm.ScopeMetrics().AppendEmpty()
+	metric := sm.Metrics().AppendEmpty()
+	metric.SetName(metricName)
+	switch metricType {
+	case pmetric.MetricTypeGauge:
+		metric.SetEmptyGauge()
+		dp := metric.Gauge().DataPoints().AppendEmpty()
+		dp.Attributes().FromRaw(dataPointAttrs)
+	case pmetric.MetricTypeSum:
+		metric.SetEmptySum()
+		dp := metric.Sum().DataPoints().AppendEmpty()
+		dp.Attributes().FromRaw(dataPointAttrs)
+	case pmetric.MetricTypeHistogram:
+		metric.SetEmptyHistogram()
+		dp := metric.Histogram().DataPoints().AppendEmpty()
+		dp.Attributes().FromRaw(dataPointAttrs)
+	case pmetric.MetricTypeExponentialHistogram:
+		metric.SetEmptyExponentialHistogram()
+		dp := metric.ExponentialHistogram().DataPoints().AppendEmpty()
+		dp.Attributes().FromRaw(dataPointAttrs)
+	case pmetric.MetricTypeSummary:
+		metric.SetEmptySummary()
+		dp := metric.Summary().DataPoints().AppendEmpty()
+		dp.Attributes().FromRaw(dataPointAttrs)
+	}
+	return metrics
 }
