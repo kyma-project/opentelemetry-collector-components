@@ -46,7 +46,7 @@ func ShouldDropLogRecord(log plog.LogRecord, resourceAttrs pcommon.Map) bool {
 		return true
 	case isMetricScrapeAccessLog(attrs):
 		return true
-	case isHealthCheckAccessLog(attrs):
+	case isAvailabilityServiceProbeAccessLog(attrs):
 		return true
 	default:
 		return false
@@ -69,7 +69,7 @@ func isTelemetryMouduleComponentAccessLog(attrs logAttrs) bool {
 	return false
 }
 
-func isHealthCheckAccessLog(attrs logAttrs) bool {
+func isAvailabilityServiceProbeAccessLog(attrs logAttrs) bool {
 	if attrs.httpMethod != "GET" {
 		return false
 	}
