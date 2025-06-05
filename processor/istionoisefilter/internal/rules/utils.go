@@ -1,4 +1,4 @@
-package filter
+package rules
 
 import "go.opentelemetry.io/collector/pdata/pcommon"
 

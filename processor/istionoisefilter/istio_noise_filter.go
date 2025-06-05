@@ -7,7 +7,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter/internal/filter"
+	"github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter/internal/rules"
 )
 
 type istioNoiseFilter struct {
@@ -29,7 +29,7 @@ func (f *istioNoiseFilter) processTraces(_ context.Context, traces ptrace.Traces
 			scopeSpans := resourceSpans.ScopeSpans().At(j)
 
 			scopeSpans.Spans().RemoveIf(func(span ptrace.Span) bool {
-				return filter.ShouldDropSpan(span, resourceSpans.Resource().Attributes())
+				return rules.ShouldDropSpan(span, resourceSpans.Resource().Attributes())
 			})
 		}
 	}
@@ -46,7 +46,7 @@ func (f *istioNoiseFilter) processLogs(_ context.Context, logs plog.Logs) (plog.
 			scopeLogs := resourceLogs.ScopeLogs().At(j)
 
 			scopeLogs.LogRecords().RemoveIf(func(logRecord plog.LogRecord) bool {
-				return filter.ShouldDropLogRecord(logRecord, resourceLogs.Resource().Attributes())
+				return rules.ShouldDropLogRecord(logRecord, resourceLogs.Resource().Attributes())
 			})
 		}
 	}
@@ -63,7 +63,7 @@ func (f *istioNoiseFilter) processMetrics(_ context.Context, metrics pmetric.Met
 			scopeMetrics := resourceMetrics.ScopeMetrics().At(j)
 
 			scopeMetrics.Metrics().RemoveIf(func(m pmetric.Metric) bool {
-				return filter.ShouldDropMetric(m)
+				return rules.ShouldDropMetric(m)
 			})
 		}
 	}
