@@ -3,10 +3,11 @@ package istionoisefilter
 import (
 	"context"
 
-	"github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter/internal/filter"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
+
+	"github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter/internal/filter"
 )
 
 type istioNoiseFilter struct {
@@ -54,5 +55,18 @@ func (f *istioNoiseFilter) processLogs(_ context.Context, logs plog.Logs) (plog.
 }
 
 func (f *istioNoiseFilter) processMetrics(_ context.Context, metrics pmetric.Metrics) (pmetric.Metrics, error) {
-	return pmetric.Metrics{}, nil
+	for i := range metrics.ResourceMetrics().Len() {
+		resourceMetrics := metrics.ResourceMetrics().At(i)
+
+		for j := range resourceMetrics.ScopeMetrics().Len() {
+			scopeMetrics := resourceMetrics.ScopeMetrics().At(j)
+
+			metrics := scopeMetrics.Metrics()
+			metrics.RemoveIf(func(m pmetric.Metric) bool {
+				return filter.ShouldDropMetric(m)
+			})
+		}
+	}
+
+	return metrics, nil
 }
