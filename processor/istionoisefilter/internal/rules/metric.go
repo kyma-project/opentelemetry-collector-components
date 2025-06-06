@@ -7,8 +7,14 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 )
 
+const (
+	istioMetricPrefix = "istio_"
+)
+
+// ShouldDropMetric checks if the given metric is an Istio metric that records communication between telemetry module components,
+// or between a telemetry module component and a workload, and should be dropped since it does not provide useful information to the user.
 func ShouldDropMetric(metric pmetric.Metric) bool {
-	if !strings.HasPrefix(metric.Name(), "istio.") {
+	if !strings.HasPrefix(metric.Name(), istioMetricPrefix) {
 		return false
 	}
 
