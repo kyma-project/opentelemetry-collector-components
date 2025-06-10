@@ -171,6 +171,10 @@ func TestIstioNoiseFilter_Spans(t *testing.T) {
 			err = tp.ConsumeTraces(t.Context(), td)
 			require.NoError(t, err)
 			require.Equal(t, tc.expectedSpanCount, td.SpanCount())
+
+			if tc.expectedSpanCount == 0 {
+				require.Equal(t, 0, td.ResourceSpans().Len(), "expect no resource spans when all spans are filtered out")
+			}
 		})
 	}
 }
@@ -396,6 +400,10 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 			err = lp.ConsumeLogs(t.Context(), ld)
 			require.NoError(t, err)
 			require.Equal(t, tc.expectedLogCount, ld.LogRecordCount())
+
+			if tc.expectedLogCount == 0 {
+				require.Equal(t, 0, ld.ResourceLogs().Len(), "expect no resource logs when all logs are filtered out")
+			}
 		})
 	}
 }
@@ -495,31 +503,11 @@ func TestIstioNoiseFilter_Metrics(t *testing.T) {
 			err = mp.ConsumeMetrics(t.Context(), md)
 			require.NoError(t, err)
 
-			// Count the number of data points remaining after processing
-			gotCount := 0
-			rmSlice := md.ResourceMetrics()
-			for i := 0; i < rmSlice.Len(); i++ {
-				smSlice := rmSlice.At(i).ScopeMetrics()
-				for j := 0; j < smSlice.Len(); j++ {
-					metrics := smSlice.At(j).Metrics()
-					for k := 0; k < metrics.Len(); k++ {
-						m := metrics.At(k)
-						switch m.Type() {
-						case pmetric.MetricTypeGauge:
-							gotCount += m.Gauge().DataPoints().Len()
-						case pmetric.MetricTypeSum:
-							gotCount += m.Sum().DataPoints().Len()
-						case pmetric.MetricTypeHistogram:
-							gotCount += m.Histogram().DataPoints().Len()
-						case pmetric.MetricTypeExponentialHistogram:
-							gotCount += m.ExponentialHistogram().DataPoints().Len()
-						case pmetric.MetricTypeSummary:
-							gotCount += m.Summary().DataPoints().Len()
-						}
-					}
-				}
+			require.Equal(t, tc.expectedDataPointCount, md.DataPointCount())
+
+			if tc.expectedDataPointCount == 0 {
+				require.Equal(t, 0, md.ResourceMetrics().Len(), "expect no resource metrics when all metrics are filtered out")
 			}
-			require.Equal(t, tc.expectedDataPointCount, gotCount)
 		})
 	}
 }
