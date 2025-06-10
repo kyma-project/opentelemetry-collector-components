@@ -42,7 +42,7 @@ func createLogProcessor(
 		return nil, errInvalidConfig
 	}
 
-	proc := newProcessor(c)
+	proc := newProcessor(c, set)
 	return processorhelper.NewLogs(
 		ctx,
 		set,
@@ -63,7 +63,7 @@ func createMetricsProcessor(
 		return nil, errInvalidConfig
 	}
 
-	proc := newProcessor(c)
+	proc := newProcessor(c, set)
 	return processorhelper.NewMetrics(
 		ctx,
 		set,
@@ -84,7 +84,7 @@ func createTracesProcessor(
 		return nil, errInvalidConfig
 	}
 
-	proc := newProcessor(c)
+	proc := newProcessor(c, set)
 	return processorhelper.NewTraces(
 		ctx,
 		set,

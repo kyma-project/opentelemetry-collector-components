@@ -6,17 +6,21 @@ import (
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
+	"go.opentelemetry.io/collector/processor"
+	"go.uber.org/zap"
 
 	"github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter/internal/rules"
 )
 
 type istioNoiseFilter struct {
-	cfg *Config
+	cfg    *Config
+	logger *zap.Logger
 }
 
-func newProcessor(cfg *Config) *istioNoiseFilter {
+func newProcessor(cfg *Config, set processor.Settings) *istioNoiseFilter {
 	return &istioNoiseFilter{
-		cfg: cfg,
+		cfg:    cfg,
+		logger: set.Logger,
 	}
 }
 
@@ -62,9 +66,39 @@ func (f *istioNoiseFilter) processMetrics(_ context.Context, metrics pmetric.Met
 		for j := range resourceMetrics.ScopeMetrics().Len() {
 			scopeMetrics := resourceMetrics.ScopeMetrics().At(j)
 
-			scopeMetrics.Metrics().RemoveIf(func(m pmetric.Metric) bool {
-				return rules.ShouldDropMetric(m)
-			})
+			for k := range scopeMetrics.Metrics().Len() {
+				metric := scopeMetrics.Metrics().At(k)
+				metricName := metric.Name()
+
+				switch metric.Type() {
+				case pmetric.MetricTypeGauge:
+					metric.Gauge().DataPoints().RemoveIf(func(ndp pmetric.NumberDataPoint) bool {
+						return rules.ShouldDropMetricDataPoint(metricName, ndp.Attributes())
+					})
+				case pmetric.MetricTypeSum:
+					metric.Sum().DataPoints().RemoveIf(func(ndp pmetric.NumberDataPoint) bool {
+						return rules.ShouldDropMetricDataPoint(metricName, ndp.Attributes())
+					})
+				case pmetric.MetricTypeHistogram:
+					metric.Histogram().DataPoints().RemoveIf(func(hdp pmetric.HistogramDataPoint) bool {
+						return rules.ShouldDropMetricDataPoint(metricName, hdp.Attributes())
+					})
+				case pmetric.MetricTypeExponentialHistogram:
+					metric.ExponentialHistogram().DataPoints().RemoveIf(func(ehdp pmetric.ExponentialHistogramDataPoint) bool {
+						return rules.ShouldDropMetricDataPoint(metricName, ehdp.Attributes())
+					})
+				case pmetric.MetricTypeSummary:
+					metric.Summary().DataPoints().RemoveIf(func(sdp pmetric.SummaryDataPoint) bool {
+						return rules.ShouldDropMetricDataPoint(metricName, sdp.Attributes())
+					})
+				default:
+					f.logger.Warn("Unknown metric type encountered in processMetrics",
+						zap.String("metric_name", metricName),
+						zap.Any("metric_type", metric.Type()),
+					)
+				}
+			}
+
 		}
 	}
 
