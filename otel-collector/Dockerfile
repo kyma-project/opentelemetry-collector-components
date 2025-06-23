@@ -14,13 +14,12 @@ COPY --from=otel-builder-tool /go/bin/builder /usr/local/bin/builder
 WORKDIR /app
 
 COPY go.mod go.sum ./
+COPY otel-collector/builder-config.yaml builder-config.yaml
+ADD receiver ./receiver/
+ADD internal ./internal/
+ADD processor ./processor/
 
 RUN go mod download
-
-COPY otel-collector/builder-config.yaml builder-config.yaml
-ADD receiver /receiver/
-ADD internal /internal/
-ADD processor /processor/
 
 ENV OTEL_VERSION=${OTEL_VERSION}
 ENV OTEL_CONTRIB_VERSION=${OTEL_CONTRIB_VERSION}

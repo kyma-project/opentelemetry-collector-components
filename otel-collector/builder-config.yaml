@@ -56,9 +56,9 @@ connectors:
 replaces:
   # a list of "replaces" directives that will be part of the resulting go.mod
   - github.com/go-resty/resty/v2 => github.com/go-resty/resty/v2 v2.12.0
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ../receiver/dummyreceiver
-  - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ../receiver/kymastatsreceiver
-  - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ../internal/k8sconfig
-  - github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor => ../processor/serviceenrichmentprocessor
-  - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ../processor/istioenrichmentprocessor
-  - github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter => ../processor/istionoisefilter
+  - github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ./receiver/dummyreceiver
+  - github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver => ./receiver/kymastatsreceiver
+  - github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig => ./internal/k8sconfig
+  - github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor => ./processor/serviceenrichmentprocessor
+  - github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor => ./processor/istioenrichmentprocessor
+  - github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter => ./processor/istionoisefilter
