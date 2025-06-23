@@ -41,6 +41,8 @@
 
 FROM --platform=$BUILDPLATFORM golang:1.24.4-alpine3.21 AS deps
 
+ARG OTEL_VERSION
+
 WORKDIR /app
 
 COPY otel-collector/builder-config.yaml builder-config.yaml
@@ -53,7 +55,6 @@ ADD processor /app/processor/
 RUN apk --update add --no-cache git
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
-ARG OTEL_VERSION
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 RUN sed -i "s/OTEL_VERSION/${OTEL_VERSION}/g" builder-config.yaml && \
     sed -i "s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g" builder-config.yaml
