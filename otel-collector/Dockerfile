@@ -9,11 +9,13 @@ ARG TARGETARCH
 ARG OTEL_VERSION
 ARG OTEL_CONTRIB_VERSION=${OTEL_VERSION}
 
-RUN apk --update add ca-certificates git
-
 COPY --from=otel-builder-tool /go/bin/builder /usr/local/bin/builder
 
 WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
 
 COPY otel-collector/builder-config.yaml builder-config.yaml
 ADD receiver /receiver/
