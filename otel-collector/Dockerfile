@@ -14,6 +14,9 @@ COPY --from=otel-builder-tool /go/bin/builder /usr/local/bin/builder
 WORKDIR /app
 
 COPY go.mod go.sum ./
+ADD receiver ./receiver/
+ADD internal ./internal/
+ADD processor ./processor/
 
 RUN go mod download
 

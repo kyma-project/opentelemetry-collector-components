@@ -11,7 +11,10 @@ require (
 	go.opentelemetry.io/collector/receiver v1.34.0
 )
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.0-00010101000000-000000000000
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -126,4 +129,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-//replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ./receiver/dummyreceiver
+replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ./receiver/dummyreceiver
