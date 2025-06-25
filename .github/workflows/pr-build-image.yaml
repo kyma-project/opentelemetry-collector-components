@@ -4,6 +4,7 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   pull_request_target:
     types: [opened, edited, synchronize, reopened, ready_for_review]
     branches:
@@ -87,8 +88,6 @@ jobs:
       context: .
       build-args: ${{ needs.envs.outputs.build-args }}
       tags: ${{ needs.envs.outputs.tags }}
-      build-engine: buildx
-      platforms: "linux/amd64,linux/arm64"
 
   list-images:
     needs: build-image
