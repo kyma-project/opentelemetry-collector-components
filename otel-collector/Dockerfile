@@ -28,8 +28,11 @@ ENV OTEL_VERSION=${OTEL_VERSION}
 ENV OTEL_CONTRIB_VERSION=${OTEL_CONTRIB_VERSION}
 
 RUN sed -i "s/OTEL_VERSION/${OTEL_VERSION}/g" builder-config.yaml && \
-    sed -i "s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g" builder-config.yaml && \
-    GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
+    sed -i "s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g" builder-config.yaml
+
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --skip-compilation --skip-get-modules --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --skip-generate --skip-compilation --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --skip-generate --skip-get-modules --config=builder-config.yaml
 
 FROM scratch
 
