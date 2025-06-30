@@ -96,6 +96,7 @@ func TestFetchFirstAvailableServiceName(t *testing.T) {
 				},
 			}
 			sep := newServiceEnrichmentProcessor(logger, config)
+
 			got := sep.resolveServiceName(tc.attr)
 			if got != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got)
@@ -159,21 +160,23 @@ func TestSetServiceName(t *testing.T) {
 			}
 			sep := newServiceEnrichmentProcessor(logger, config)
 			sep.enrichServiceName(tc.attr)
+
 			got, _ := tc.attr.Get("service.name")
 			if got.AsString() != tc.expected {
 				t.Errorf("expected %s, got %s", tc.expected, got.AsString())
 			}
 		})
 	}
-
 }
 
 func setAttributes(attrs ...map[string]string) pcommon.Map {
 	attrMap := pcommon.NewMap()
+
 	for _, attr := range attrs {
 		for k, v := range attr {
 			attrMap.PutStr(k, v)
 		}
 	}
+
 	return attrMap
 }

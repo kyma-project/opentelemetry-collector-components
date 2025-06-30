@@ -46,6 +46,7 @@ func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Lo
 					// we skip the enrichment for this log record.
 					continue
 				}
+
 				enrichSeverityAttributes(l)
 				setNetworkProtocolAttributes(l)
 				setClientAddressAttributes(l)
@@ -53,11 +54,13 @@ func (iep *istioEnrichmentProcessor) processLogs(_ context.Context, logs plog.Lo
 
 				if updateScopeAttributes {
 					iep.setScopeAttributes(s)
+
 					updateScopeAttributes = false
 				}
 			}
 		}
 	}
+
 	return logs, nil
 }
 

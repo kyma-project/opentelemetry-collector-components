@@ -41,6 +41,7 @@ type spanAttrs struct {
 func extractSpanAttrs(span ptrace.Span, resourceAttrs pcommon.Map) spanAttrs {
 	ns := getStringAttrOrEmpty(resourceAttrs, "k8s.namespace.name")
 	spanAttrsMap := span.Attributes()
+
 	return spanAttrs{
 		namespace:        ns,
 		component:        getStringAttrOrEmpty(spanAttrsMap, "component"),
