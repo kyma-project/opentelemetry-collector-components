@@ -55,6 +55,7 @@ func (b *PLogBuilder) Build() plog.Logs {
 	for k, v := range b.scopeAttributes {
 		scopeLogs.Scope().Attributes().PutStr(k, v)
 	}
+
 	scopeLogs.Scope().SetName(b.scopeName)
 	scopeLogs.Scope().SetVersion(b.scopeVersion)
 
@@ -62,5 +63,6 @@ func (b *PLogBuilder) Build() plog.Logs {
 	for k, v := range b.logAttributes {
 		logRecord.Attributes().PutStr(k, v)
 	}
+
 	return logs
 }

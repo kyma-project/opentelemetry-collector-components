@@ -28,6 +28,7 @@ linters:
     - nestif
     - nlreturn
     - noctx
+    - noinlineerr
     - nonamedreturns
     - paralleltest
     - perfsprint

@@ -78,6 +78,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 	if !ks.shouldScrape.Load() {
 		return pmetric.NewMetrics(), nil
 	}
+
 	stats, err := ks.collectResourceStats(ctx)
 	if err != nil {
 		return pmetric.Metrics{}, err
@@ -89,6 +90,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 		if s.hasState {
 			ks.mb.RecordKymaResourceStatusStateDataPoint(now, int64(1), s.state)
 		}
+
 		rb := ks.mb.NewResourceBuilder()
 		if s.namespace != "" {
 			rb.SetK8sNamespaceName(s.namespace)
@@ -104,6 +106,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 			val := conditionStatusToValue(c.status)
 			ks.mb.RecordKymaResourceStatusConditionsDataPoint(now, val, c.reason, c.status, c.condType)
 		}
+
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
 
@@ -135,11 +138,11 @@ func (ks *kymaScraper) start(ctx context.Context, host component.Host) error {
 	if !ok {
 		return errors.New("referenced extension is not k8s leader elector")
 	}
+
 	leaderElectorExt.SetCallBackFuncs(
 		func(ctx context.Context) {
 			// scrape when elected as leader
 			ks.shouldScrape.Store(true)
-
 		}, func() {
 			ks.shouldScrape.Store(false)
 		},
@@ -150,8 +153,10 @@ func (ks *kymaScraper) start(ctx context.Context, host component.Host) error {
 
 func (ks *kymaScraper) collectResourceStats(ctx context.Context) ([]resourceStats, error) {
 	var res []resourceStats
+
 	for _, resource := range ks.config.Resources {
 		gvr := schema.GroupVersionResource(resource)
+
 		resourceList, err := ks.dynamic.Resource(gvr).List(ctx, metav1.ListOptions{})
 		if err != nil {
 			ks.logger.Error("Error fetching resource list",
@@ -159,6 +164,7 @@ func (ks *kymaScraper) collectResourceStats(ctx context.Context) ([]resourceStat
 				zap.String("group", gvr.Group),
 				zap.String("version", gvr.Version),
 				zap.String("resource", gvr.Resource))
+
 			return nil, err
 		}
 
@@ -171,8 +177,10 @@ func (ks *kymaScraper) collectResourceStats(ctx context.Context) ([]resourceStat
 					zap.String("namespace", r.GetNamespace()),
 					zap.String("kind", r.GetKind()),
 				)
+
 				continue
 			}
+
 			stats.group = gvr.Group
 			stats.version = gvr.Version
 			stats.kind = gvr.Resource
@@ -189,6 +197,7 @@ func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (
 	if err != nil {
 		return nil, err
 	}
+
 	if !found {
 		return nil, &fieldNotFoundError{"status"}
 	}
@@ -202,6 +211,7 @@ func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (
 			zap.String("kind", resource.GetKind()),
 		)
 	}
+
 	if !found {
 		ks.logger.Debug("Error retrieving state: state not found",
 			zap.Error(err),
@@ -227,8 +237,10 @@ func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (
 			zap.String("namespace", resource.GetNamespace()),
 			zap.String("kind", resource.GetKind()),
 		)
+
 		return stats, nil
 	}
+
 	if !found {
 		ks.logger.Debug("Error retrieving conditions: conditions not found",
 			zap.Error(err),
@@ -236,6 +248,7 @@ func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (
 			zap.String("namespace", resource.GetNamespace()),
 			zap.String("kind", resource.GetKind()),
 		)
+
 		return stats, nil
 	}
 
@@ -248,8 +261,10 @@ func (ks *kymaScraper) unstructuredToStats(resource unstructured.Unstructured) (
 				zap.String("namespace", resource.GetNamespace()),
 				zap.String("kind", resource.GetKind()),
 			)
+
 			continue
 		}
+
 		stats.conditions = append(stats.conditions, *cond)
 	}
 
@@ -266,6 +281,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if !found {
 		return nil, &fieldNotFoundError{"type"}
 	}
@@ -274,6 +290,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if !found {
 		return nil, &fieldNotFoundError{"status"}
 	}
@@ -282,6 +299,7 @@ func (ks *kymaScraper) unstructuredToCondition(cond any) (*condition, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if !found {
 		return nil, &fieldNotFoundError{"reason"}
 	}
