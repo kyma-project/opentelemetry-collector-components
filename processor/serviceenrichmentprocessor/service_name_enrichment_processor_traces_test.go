@@ -122,6 +122,7 @@ func TestProcessTraces(t *testing.T) {
 
 			got := sink.AllTraces()
 			require.Len(t, got, 1)
+
 			for _, tr := range got {
 				for i := 0; i < tr.ResourceSpans().Len(); i++ {
 					attr := tr.ResourceSpans().At(i).Resource().Attributes()
@@ -142,5 +143,6 @@ func tracesWithResourceAttrs(attrs ...map[string]string) ptrace.Traces {
 			resTraces.Resource().Attributes().PutStr(k, v)
 		}
 	}
+
 	return traces
 }

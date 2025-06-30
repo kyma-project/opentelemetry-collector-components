@@ -158,7 +158,6 @@ func TestScrape_CantPullResource(t *testing.T) {
 
 	_, err = r.ScrapeMetrics(t.Context())
 	require.Error(t, err)
-
 }
 
 func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
@@ -315,6 +314,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 				},
 			}
 			scheme := runtime.NewScheme()
+
 			obj := newUnstructuredObject("MyKymaResource", "telemetry", "default")
 			if tt.status != nil {
 				unstructured.SetNestedField(obj, tt.status, "status")
@@ -398,16 +398,17 @@ func TestScrapeWithLeaderElection(t *testing.T) {
 
 	// elected leader
 	fakeLeaderElection.InvokeOnLeading()
+
 	md, err = r.ScrapeMetrics(t.Context())
 	require.NoError(t, err)
 	require.NotZero(t, md.DataPointCount())
 
 	// stopped leading
 	fakeLeaderElection.InvokeOnStopping()
+
 	md, err = r.ScrapeMetrics(t.Context())
 	require.NoError(t, err)
 	require.Zero(t, md.DataPointCount())
-
 }
 
 func newUnstructuredObject(kind, resourceType, name string) map[string]interface{} {
@@ -421,6 +422,7 @@ func newUnstructuredObject(kind, resourceType, name string) map[string]interface
 			},
 		}
 	}
+
 	if resourceType == "logpipeline" {
 		return map[string]interface{}{
 			"apiVersion": logPipelineResourceGroup + "/" + logPipelineResourceVersion,
@@ -430,5 +432,6 @@ func newUnstructuredObject(kind, resourceType, name string) map[string]interface
 			},
 		}
 	}
+
 	return nil
 }
