@@ -3,7 +3,6 @@ module github.com/kyma-project/opentelemetry-collector-components
 go 1.24.4
 
 require (
-	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
 	go.opentelemetry.io/collector/exporter v0.128.0
 	go.opentelemetry.io/collector/exporter/debugexporter v0.128.0
 	go.opentelemetry.io/collector/otelcol v0.128.0
@@ -12,7 +11,9 @@ require (
 	go.opentelemetry.io/collector/receiver v1.34.0
 )
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -126,5 +127,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-replace github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver => ./receiver/dummyreceiver
