@@ -47,9 +47,11 @@ func mergeSets(a, b map[string]struct{}) map[string]struct{} {
 	for k := range a {
 		merged[k] = struct{}{}
 	}
+
 	for k := range b {
 		merged[k] = struct{}{}
 	}
+
 	return merged
 }
 

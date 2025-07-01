@@ -92,10 +92,10 @@ func TestProcessLogs(t *testing.T) {
 
 			allLogs := sink.AllLogs()
 			require.Len(t, allLogs, 1)
+
 			for _, l := range allLogs {
 				for _, r := range l.ResourceLogs().All() {
 					for _, s := range r.ScopeLogs().All() {
-
 						require.Equal(t, tc.expectedScopeVersion, s.Scope().Version())
 						require.Equal(t, tc.expectedScopeName, s.Scope().Name())
 

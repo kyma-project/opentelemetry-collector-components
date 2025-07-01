@@ -94,32 +94,38 @@ func (f *istioNoiseFilter) removeMetricDataPointsIfMatch(m pmetric.Metric) int {
 		m.Gauge().DataPoints().RemoveIf(func(ndp pmetric.NumberDataPoint) bool {
 			return rules.ShouldDropMetricDataPoint(m.Name(), ndp.Attributes())
 		})
+
 		return m.Gauge().DataPoints().Len()
 	case pmetric.MetricTypeSum:
 		m.Sum().DataPoints().RemoveIf(func(ndp pmetric.NumberDataPoint) bool {
 			return rules.ShouldDropMetricDataPoint(m.Name(), ndp.Attributes())
 		})
+
 		return m.Sum().DataPoints().Len()
 	case pmetric.MetricTypeHistogram:
 		m.Histogram().DataPoints().RemoveIf(func(hdp pmetric.HistogramDataPoint) bool {
 			return rules.ShouldDropMetricDataPoint(m.Name(), hdp.Attributes())
 		})
+
 		return m.Histogram().DataPoints().Len()
 	case pmetric.MetricTypeExponentialHistogram:
 		m.ExponentialHistogram().DataPoints().RemoveIf(func(ehdp pmetric.ExponentialHistogramDataPoint) bool {
 			return rules.ShouldDropMetricDataPoint(m.Name(), ehdp.Attributes())
 		})
+
 		return m.ExponentialHistogram().DataPoints().Len()
 	case pmetric.MetricTypeSummary:
 		m.Summary().DataPoints().RemoveIf(func(sdp pmetric.SummaryDataPoint) bool {
 			return rules.ShouldDropMetricDataPoint(m.Name(), sdp.Attributes())
 		})
+
 		return m.Summary().DataPoints().Len()
 	default:
 		f.logger.Warn("Unknown metric type encountered in processMetrics",
 			zap.String("metric_name", m.Name()),
 			zap.Any("metric_type", m.Type()),
 		)
+
 		return -1
 	}
 }
