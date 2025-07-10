@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor
 
-go 1.24.4
+go 1.24.5
 
 require (
 	github.com/stretchr/testify v1.10.0
