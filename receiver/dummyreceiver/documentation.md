@@ -22,9 +22,9 @@ a dummy gauge
 
 #### Attributes
 
-| Name | Description | Values | Optional |
-| ---- | ----------- | ------ | -------- |
-| host | the current hostname | Any Str | false |
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| host | the current hostname | Any Str |
 
 ## Resource Attributes
 
