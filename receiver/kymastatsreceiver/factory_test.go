@@ -57,6 +57,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			factory := NewFactory()
+
 			metricsReceiver, err := factory.CreateMetrics(
 				t.Context(),
 				receivertest.NewNopSettings(metadata.Type),
@@ -66,6 +67,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 			if tt.expectedErr {
 				require.Error(t, err)
 				require.Nil(t, metricsReceiver)
+
 				return
 			}
 
@@ -126,6 +128,7 @@ func TestFactoryBadAuthType(t *testing.T) {
 func TestFactoryNoneAuthType(t *testing.T) {
 	t.Setenv("KUBERNETES_SERVICE_HOST", "somehost")
 	t.Setenv("KUBERNETES_SERVICE_PORT", "443")
+
 	factory := NewFactory()
 	cfg := &Config{
 		APIConfig: k8sconfig.APIConfig{

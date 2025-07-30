@@ -553,37 +553,44 @@ func generateMetrics(metricName string, dataPointAttrs []map[string]any, metricT
 	sm := rm.ScopeMetrics().AppendEmpty()
 	metric := sm.Metrics().AppendEmpty()
 	metric.SetName(metricName)
+
 	switch metricType {
 	case pmetric.MetricTypeGauge:
 		metric.SetEmptyGauge()
+
 		for _, attrs := range dataPointAttrs {
 			dp := metric.Gauge().DataPoints().AppendEmpty()
 			dp.Attributes().FromRaw(attrs)
 		}
 	case pmetric.MetricTypeSum:
 		metric.SetEmptySum()
+
 		for _, attrs := range dataPointAttrs {
 			dp := metric.Sum().DataPoints().AppendEmpty()
 			dp.Attributes().FromRaw(attrs)
 		}
 	case pmetric.MetricTypeHistogram:
 		metric.SetEmptyHistogram()
+
 		for _, attrs := range dataPointAttrs {
 			dp := metric.Histogram().DataPoints().AppendEmpty()
 			dp.Attributes().FromRaw(attrs)
 		}
 	case pmetric.MetricTypeExponentialHistogram:
 		metric.SetEmptyExponentialHistogram()
+
 		for _, attrs := range dataPointAttrs {
 			dp := metric.ExponentialHistogram().DataPoints().AppendEmpty()
 			dp.Attributes().FromRaw(attrs)
 		}
 	case pmetric.MetricTypeSummary:
 		metric.SetEmptySummary()
+
 		for _, attrs := range dataPointAttrs {
 			dp := metric.Summary().DataPoints().AppendEmpty()
 			dp.Attributes().FromRaw(attrs)
 		}
 	}
+
 	return metrics
 }

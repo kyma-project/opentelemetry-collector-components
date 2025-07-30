@@ -39,7 +39,9 @@ func createLogsIstioEnrichment(
 	if !ok {
 		return nil, errInvalidConfig
 	}
+
 	proc := newIstioEnrichmentProcessor(set.Logger, config)
+
 	return processorhelper.NewLogs(
 		ctx,
 		set,

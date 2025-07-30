@@ -22,11 +22,11 @@ The resource status conditions. Possible metric values for condition status are 
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| reason | The reason of the resource condition status. | Any Str |
-| status | The status of the resource condition. | Any Str |
-| type | The type of the resource condition. | Any Str |
+| Name | Description | Values | Optional |
+| ---- | ----------- | ------ | -------- |
+| reason | The reason of the resource condition status. | Any Str | false |
+| status | The status of the resource condition. | Any Str | false |
+| type | The type of the resource condition. | Any Str | false |
 
 ### kyma.resource.status.state
 
@@ -38,9 +38,9 @@ The resource status state, metric value is 1 for the last scraped resource statu
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| state | The state of the resource status. | Any Str |
+| Name | Description | Values | Optional |
+| ---- | ----------- | ------ | -------- |
+| state | The state of the resource status. | Any Str | false |
 
 ## Resource Attributes
 

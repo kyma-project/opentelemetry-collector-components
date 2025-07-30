@@ -21,6 +21,7 @@ type logAttrs struct {
 
 func extractLogAttrs(log plog.LogRecord, resourceAttrs pcommon.Map) logAttrs {
 	attrs := log.Attributes()
+
 	return logAttrs{
 		kymaModule:     getStringAttrOrEmpty(attrs, "kyma.module"),
 		serverAddress:  getStringAttrOrEmpty(attrs, "server.address"),

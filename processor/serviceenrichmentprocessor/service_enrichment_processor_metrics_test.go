@@ -140,5 +140,6 @@ func metricsWithResourceAttrs(attrs ...map[string]string) pmetric.Metrics {
 			resMetrics.Resource().Attributes().PutStr(k, v)
 		}
 	}
+
 	return metrics
 }

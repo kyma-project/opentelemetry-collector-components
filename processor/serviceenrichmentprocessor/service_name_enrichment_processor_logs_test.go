@@ -113,6 +113,7 @@ func TestProcessLogs(t *testing.T) {
 
 			got := sink.AllLogs()
 			require.Len(t, got, 1)
+
 			for _, l := range got {
 				for i := 0; i < l.ResourceLogs().Len(); i++ {
 					attr := l.ResourceLogs().At(i).Resource().Attributes()
@@ -133,5 +134,6 @@ func logsWithResourceAttrs(attrs ...map[string]string) plog.Logs {
 			resLogs.Resource().Attributes().PutStr(k, v)
 		}
 	}
+
 	return logs
 }

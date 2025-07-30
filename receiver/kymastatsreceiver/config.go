@@ -16,8 +16,9 @@ type Config struct {
 	k8sconfig.APIConfig            `mapstructure:",squash"`
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
-	Resources                      []ResourceConfig `mapstructure:"resources"`
-	K8sLeaderElector               *component.ID    `mapstructure:"k8s_leader_elector"`
+
+	Resources        []ResourceConfig `mapstructure:"resources"`
+	K8sLeaderElector *component.ID    `mapstructure:"k8s_leader_elector"`
 
 	// Used for unit testing only
 	makeDynamicClient func() (dynamic.Interface, error)
@@ -51,5 +52,6 @@ func (cfg *Config) getDynamicClient() (dynamic.Interface, error) {
 	if cfg.makeDynamicClient != nil {
 		return cfg.makeDynamicClient()
 	}
+
 	return k8sconfig.MakeDynamicClient(cfg.APIConfig)
 }
