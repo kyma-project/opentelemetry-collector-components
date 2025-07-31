@@ -25,16 +25,17 @@ type dummyReceiver struct {
 
 func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nolint:contextcheck // Create a new context as specified in the interface documentation
 	r.settings.Logger.Info("Starting dummy receiver", zap.String("interval", r.config.Interval))
+
 	ctx := context.Background()
 	ctx, r.cancel = context.WithCancel(ctx)
 
 	interval, err := time.ParseDuration(r.config.Interval)
 	if err != nil {
 		return fmt.Errorf("failed to parse interval: %w", err)
-
 	}
 
 	r.wg.Add(1)
+
 	go r.startGenerating(ctx, interval) //nolint:contextcheck // Non-inherited new context
 
 	return nil
@@ -42,10 +43,13 @@ func (r *dummyReceiver) Start(_ context.Context, _ component.Host) error { //nol
 
 func (r *dummyReceiver) Shutdown(_ context.Context) error {
 	r.settings.Logger.Info("Shutting down dummy receiver")
+
 	if r.cancel != nil {
 		r.cancel()
 	}
+
 	r.wg.Wait()
+
 	return nil
 }
 
@@ -65,6 +69,7 @@ func (r *dummyReceiver) startGenerating(ctx context.Context, interval time.Durat
 				r.settings.Logger.Error("Failed to generate metric", zap.Error(err))
 				continue
 			}
+
 			err = r.nextConsumer.ConsumeMetrics(ctx, md)
 			if err != nil {
 				r.settings.Logger.Error("next consumer failed", zap.Error(err))
@@ -75,6 +80,7 @@ func (r *dummyReceiver) startGenerating(ctx context.Context, interval time.Durat
 
 func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
 	r.settings.Logger.Debug("Generating metric")
+
 	host, err := os.Hostname()
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf("failed to get hostname: %w", err)
@@ -91,6 +97,7 @@ func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
 
 	metric.SetName("dummy")
 	metric.SetDescription("a dummy gauge")
+
 	gauge := metric.SetEmptyGauge()
 	for i := 0; i < 5; i++ {
 		dp := gauge.DataPoints().AppendEmpty()

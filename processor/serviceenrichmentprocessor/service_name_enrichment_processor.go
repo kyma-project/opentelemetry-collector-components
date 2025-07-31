@@ -48,6 +48,7 @@ func (sep *serviceEnrichmentProcessor) processTraces(_ context.Context, traces p
 		attributes := resourceSpans.At(i).Resource().Attributes()
 		sep.enrichServiceName(attributes)
 	}
+
 	return traces, nil
 }
 
@@ -57,6 +58,7 @@ func (sep *serviceEnrichmentProcessor) processMetrics(_ context.Context, metrics
 		attr := resourceMetrics.At(i).Resource().Attributes()
 		sep.enrichServiceName(attr)
 	}
+
 	return metrics, nil
 }
 
@@ -65,8 +67,8 @@ func (sep *serviceEnrichmentProcessor) processLogs(_ context.Context, logs plog.
 	for i := 0; i < resourceLogs.Len(); i++ {
 		attr := resourceLogs.At(i).Resource().Attributes()
 		sep.enrichServiceName(attr)
-
 	}
+
 	return logs, nil
 }
 
@@ -84,6 +86,7 @@ func (sep *serviceEnrichmentProcessor) resolveServiceName(attributes pcommon.Map
 			return serviceName.AsString()
 		}
 	}
+
 	return getFallbackServiceName(attributes)
 }
 
@@ -97,11 +100,14 @@ func getFallbackServiceName(attr pcommon.Map) string {
 	if !exists {
 		return unknownService
 	}
+
 	if serviceName.AsString() == "" {
 		return unknownService
 	}
+
 	if unknownServiceRegex.MatchString(serviceName.AsString()) {
 		return serviceName.AsString()
 	}
+
 	return unknownService
 }
