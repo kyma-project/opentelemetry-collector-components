@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.3.0
 	github.com/vladopajic/go-test-coverage/v2 v2.16.0
 	go.opentelemetry.io/build-tools/crosslink v0.26.0
-	go.opentelemetry.io/collector/cmd/builder v0.131.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.131.0
+	go.opentelemetry.io/collector/cmd/builder v0.130.1
+	go.opentelemetry.io/collector/cmd/mdatagen v0.130.1
 	golang.org/x/tools v0.35.0
 )
 
