@@ -60,9 +60,6 @@ jobs:
         run: |
           cat otel-collector/envs >> "$GITHUB_OUTPUT"
 
-      - name: print env context
-        run: echo "${{ steps.prepare-envs.outputs.build-args }}"
-
       - name: create tags
         id: create-tags
         run: |
