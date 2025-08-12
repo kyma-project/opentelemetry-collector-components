@@ -143,6 +143,8 @@ go.opentelemetry.io/collector/pdata/testdata v0.130.1 h1:JFoGD2GSeLS+bBy3BBz+INm
 go.opentelemetry.io/collector/pdata/testdata v0.130.1/go.mod h1:PXhFHhRA6ndyODxIf4tg73Np6sG6e2x5l/b6WXmZQCw=
 go.opentelemetry.io/collector/pipeline v0.130.1 h1:LgcvTvaVYQ1RUfrJHTdo+Oh3ydnzGBwaFvHgCMx9wKQ=
 go.opentelemetry.io/collector/pipeline v0.130.1/go.mod h1:TO02zju/K6E+oFIOdi372Wk0MXd+Szy72zcTsFQwXl4=
+go.opentelemetry.io/collector/pipeline v1.38.0 h1:6kWfaWUW9RptGv2NSyT/EZoIkwUOBsZ220UYvOVNZ3U=
+go.opentelemetry.io/collector/pipeline v1.38.0/go.mod h1:TO02zju/K6E+oFIOdi372Wk0MXd+Szy72zcTsFQwXl4=
 go.opentelemetry.io/collector/receiver v1.36.1 h1:ZbICeR+3QtcnEjne7zZr20Ckply+NfojSCG2w6dSyjQ=
 go.opentelemetry.io/collector/receiver v1.36.1/go.mod h1:GH2kVvYQLDCJpSMHVHRuaKT35YLPGcRfyYKNeUjjvqU=
 go.opentelemetry.io/collector/receiver/receiverhelper v0.130.1 h1:yADqSEbxc+wHD8BXdcc+wCaHkCtX/deBYO7ENiAJq+g=
