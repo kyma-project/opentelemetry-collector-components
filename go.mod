@@ -8,7 +8,7 @@ require (
 	go.opentelemetry.io/collector/exporter/debugexporter v0.132.0
 	go.opentelemetry.io/collector/otelcol v0.132.0
 	go.opentelemetry.io/collector/processor v1.38.0
-	go.opentelemetry.io/collector/processor/batchprocessor v0.130.1
+	go.opentelemetry.io/collector/processor/batchprocessor v0.132.0
 	go.opentelemetry.io/collector/receiver v1.38.0
 )
 
