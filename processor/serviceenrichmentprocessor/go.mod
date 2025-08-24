@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/processor/serv
 go 1.25.0
 
 require (
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	go.opentelemetry.io/collector/component v1.38.0
 	go.opentelemetry.io/collector/component/componenttest v0.132.0
 	go.opentelemetry.io/collector/consumer v1.38.0
