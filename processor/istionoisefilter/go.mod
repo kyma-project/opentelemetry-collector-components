@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/processor/istionoisefilter
 
-go 1.25.0
+go 1.24.6
 
 require (
 	github.com/stretchr/testify v1.10.0

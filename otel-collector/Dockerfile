@@ -1,5 +1,5 @@
 
-FROM --platform=$BUILDPLATFORM golang:1.25.0-alpine3.22 AS build
+FROM --platform=$BUILDPLATFORM golang:1.24.6-alpine3.22 AS build
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -19,11 +19,13 @@ ENV OTEL_CONTRIB_VERSION=${OTEL_CONTRIB_VERSION}
 RUN sed -i s/OTEL_VERSION/${OTEL_VERSION}/g builder-config.yaml
 RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
-RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
+RUN GOFIPS=v1.0.0 go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
 RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
 
 FROM scratch
+
+ENV GODEBUG=fips140=only
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build --chmod=755 /app/kyma-otelcol /
