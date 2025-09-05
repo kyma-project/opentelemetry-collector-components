@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.4.0
-	github.com/vladopajic/go-test-coverage/v2 v2.16.0
+	github.com/vladopajic/go-test-coverage/v2 v2.16.1
 	go.opentelemetry.io/build-tools/crosslink v0.26.2
 	go.opentelemetry.io/collector/cmd/builder v0.133.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.133.0
@@ -29,8 +29,8 @@ require (
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.20.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.3.1 // indirect
-	github.com/alexflint/go-arg v1.4.3 // indirect
-	github.com/alexflint/go-scalar v1.1.0 // indirect
+	github.com/alexflint/go-arg v1.6.0 // indirect
+	github.com/alexflint/go-scalar v1.2.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.6 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alfatraining/structtag v1.0.0 // indirect
@@ -200,7 +200,7 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.2.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
+	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/tdakkota/asciicheck v0.4.1 // indirect
 	github.com/tetafro/godot v1.5.1 // indirect
