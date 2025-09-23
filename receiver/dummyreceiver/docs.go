@@ -1,4 +1,4 @@
 //go:generate mdatagen metadata.yaml
 
-// Package dummyReceiver generates dummy gauges.
+// Package dummyreceiver generates dummy gauges.
 package dummyreceiver
