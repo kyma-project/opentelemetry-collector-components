@@ -1,4 +1,4 @@
 //go:generate mdatagen metadata.yaml
 
-// Package kymastatsreceiver.
+// Package kymastatsreceiver .
 package kymastatsreceiver

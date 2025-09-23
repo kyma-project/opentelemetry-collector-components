@@ -1,4 +1,4 @@
 //go:generate mdatagen metadata.yaml
 
-// Package for istio enrichment processor
+// Package istioenrichmentprocessor for istio enrichment processor
 package istioenrichmentprocessor
