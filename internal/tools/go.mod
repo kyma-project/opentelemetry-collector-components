@@ -5,9 +5,9 @@ go 1.25.1
 require (
 	github.com/golangci/golangci-lint/v2 v2.5.0
 	github.com/vladopajic/go-test-coverage/v2 v2.17.0
-	go.opentelemetry.io/build-tools/crosslink v0.26.2
-	go.opentelemetry.io/collector/cmd/builder v0.135.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.135.0
+	go.opentelemetry.io/build-tools/crosslink v0.28.0
+	go.opentelemetry.io/collector/cmd/builder v0.136.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.136.0
 	golang.org/x/tools v0.37.0
 )
 
@@ -131,7 +131,7 @@ require (
 	github.com/knadh/koanf/providers/env/v2 v2.0.0 // indirect
 	github.com/knadh/koanf/providers/file v1.2.0 // indirect
 	github.com/knadh/koanf/providers/fs v1.0.0 // indirect
-	github.com/knadh/koanf/v2 v2.2.2 // indirect
+	github.com/knadh/koanf/v2 v2.3.0 // indirect
 	github.com/kulti/thelper v0.7.1 // indirect
 	github.com/kunwardeep/paralleltest v1.0.14 // indirect
 	github.com/lasiar/canonicalheader v1.1.2 // indirect
@@ -226,14 +226,14 @@ require (
 	go.augendre.info/arangolint v0.2.0 // indirect
 	go.augendre.info/fatcontext v0.8.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/build-tools v0.26.2 // indirect
-	go.opentelemetry.io/collector/component v1.41.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.41.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.41.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.41.0 // indirect
-	go.opentelemetry.io/collector/filter v0.135.0 // indirect
-	go.opentelemetry.io/collector/internal/telemetry v0.135.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.41.0 // indirect
+	go.opentelemetry.io/build-tools v0.28.0 // indirect
+	go.opentelemetry.io/collector/component v1.42.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.42.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.42.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.42.0 // indirect
+	go.opentelemetry.io/collector/filter v0.136.0 // indirect
+	go.opentelemetry.io/collector/internal/telemetry v0.136.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.42.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otelzap v0.12.0 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect
 	go.opentelemetry.io/otel/log v0.14.0 // indirect
@@ -253,8 +253,8 @@ require (
 	golang.org/x/telemetry v0.0.0-20250908211612-aef8a434d053 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250728155136-f173205681a0 // indirect
-	google.golang.org/grpc v1.75.0 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
+	google.golang.org/grpc v1.75.1 // indirect
+	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
