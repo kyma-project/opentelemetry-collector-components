@@ -19,6 +19,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory with correct type",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				factory := NewFactory()
 				ft := factory.Type()
 				require.Equal(t, metadata.Type, ft)
@@ -27,6 +28,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreateMetricsReceiver returns no error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := createDefaultConfig().(Config)
 				_, err := NewFactory().CreateMetrics(
 					t.Context(),
@@ -40,6 +42,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreateMetricsReceiver with wrong config and returns error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := []string{}
 				_, err := NewFactory().CreateMetrics(
 					t.Context(),
@@ -53,6 +56,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreatesTracerReceiver returns no error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := createDefaultConfig().(Config)
 				_, err := NewFactory().CreateTraces(
 					t.Context(),
@@ -67,6 +71,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreatesTracerReceiver with wrong config and returns error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := []string{}
 				_, err := NewFactory().CreateTraces(
 					t.Context(),
@@ -81,6 +86,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreatesLogReceiver returns no error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := createDefaultConfig().(Config)
 				_, err := NewFactory().CreateLogs(
 					t.Context(),
@@ -95,6 +101,7 @@ func TestNewFactory(t *testing.T) {
 			desc: "creates a new factory and CreatesLogReceiver with wrong config and returns error",
 			testFunc: func(t *testing.T) {
 				t.Helper()
+
 				cfg := []string{}
 				_, err := NewFactory().CreateLogs(
 					t.Context(),
