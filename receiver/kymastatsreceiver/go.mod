@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver
 
-go 1.25.1
+go 1.25.2
 
 require (
 	github.com/google/go-cmp v0.7.0
