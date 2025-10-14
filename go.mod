@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components
 
-go 1.25.2
+go 1.25.3
 
 require (
 	github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
