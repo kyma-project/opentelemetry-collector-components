@@ -21,7 +21,7 @@ RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
-RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 builder --config=builder-config.yaml
 
 FROM scratch
 
@@ -29,5 +29,8 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifica
 COPY --from=build --chmod=755 /app/kyma-otelcol /
 
 USER 65532:65532
+
+# Enable FIPS only mode and disable TLS ML-KEM as it is not FIPS compliant (https://pkg.go.dev/crypto/tls#Config.CurvePreferences)
+ENV GODEBUG=fips140=only,tlsmlkem=0
 
 ENTRYPOINT ["/kyma-otelcol"]
