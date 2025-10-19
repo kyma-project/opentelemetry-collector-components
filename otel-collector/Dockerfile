@@ -30,7 +30,4 @@ COPY --from=build --chmod=755 /app/kyma-otelcol /
 
 USER 65532:65532
 
-# Enable FIPS only mode and disable TLS ML-KEM as it is not FIPS compliant (https://pkg.go.dev/crypto/tls#Config.CurvePreferences)
-ENV GODEBUG=fips140=only,tlsmlkem=0
-
 ENTRYPOINT ["/kyma-otelcol"]
