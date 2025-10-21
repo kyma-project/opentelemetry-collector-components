@@ -21,7 +21,7 @@ RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
-RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 builder --config=builder-config.yaml
 
 FROM scratch
 
