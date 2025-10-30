@@ -47,10 +47,10 @@ func TestScrape(t *testing.T) {
 	scheme := runtime.NewScheme()
 
 	telemetry := newUnstructuredObject("Telemetry", "telemetry", "default")
-	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+	unstructured.SetNestedMap(telemetry, map[string]any{
 		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
+		"conditions": []any{
+			map[string]any{
 				"type":   "TelemetryHealthy",
 				"status": "True",
 				"reason": "AllFine",
@@ -61,9 +61,9 @@ func TestScrape(t *testing.T) {
 	pipe1 := newUnstructuredObject("LogPipeline", "logpipeline", "pipe-1")
 	pipe2 := newUnstructuredObject("LogPipeline", "logpipeline", "pipe-2")
 
-	unstructured.SetNestedMap(pipe1, map[string]interface{}{
-		"conditions": []interface{}{
-			map[string]interface{}{
+	unstructured.SetNestedMap(pipe1, map[string]any{
+		"conditions": []any{
+			map[string]any{
 				"type":   "AgentHealthy",
 				"status": "True",
 				"reason": "AgentReady",
@@ -71,9 +71,9 @@ func TestScrape(t *testing.T) {
 		},
 	}, "status")
 
-	unstructured.SetNestedMap(pipe2, map[string]interface{}{
-		"conditions": []interface{}{
-			map[string]interface{}{
+	unstructured.SetNestedMap(pipe2, map[string]any{
+		"conditions": []any{
+			map[string]any{
 				"type":   "AgentHealthy",
 				"status": "False",
 				"reason": "AgentNotReady",
@@ -177,9 +177,9 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "no state",
-			status: map[string]interface{}{
-				"conditions": []interface{}{
-					map[string]interface{}{
+			status: map[string]any{
+				"conditions": []any{
+					map[string]any{
 						"type":   "FakeConditionType",
 						"status": "False",
 						"reason": "FakeReason",
@@ -190,20 +190,20 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "state not a string",
-			status: map[string]interface{}{
-				"state": map[string]interface{}{},
+			status: map[string]any{
+				"state": map[string]any{},
 			},
 		},
 		{
 			name: "no conditions",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
 			},
 			expectedDataPoints: 1,
 		},
 		{
 			name: "conditions not a list",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state":      "Ready",
 				"conditions": "not a list",
 			},
@@ -211,9 +211,9 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "condition not a map",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
+				"conditions": []any{
 					"not a map",
 				},
 			},
@@ -221,10 +221,10 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "no condition type",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
+				"conditions": []any{
+					map[string]any{
 						"status": "False",
 						"reason": "FakeReason",
 					},
@@ -234,11 +234,11 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "condition type not a string",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
-						"type":   map[string]interface{}{},
+				"conditions": []any{
+					map[string]any{
+						"type":   map[string]any{},
 						"status": "False",
 						"reason": "FakeReason",
 					},
@@ -248,10 +248,10 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "no condition status",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
+				"conditions": []any{
+					map[string]any{
 						"type":   "FakeConditionType",
 						"reason": "FakeReason",
 					},
@@ -261,12 +261,12 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "condition status not a string",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
+				"conditions": []any{
+					map[string]any{
 						"type":   "FakeConditionType",
-						"status": map[string]interface{}{},
+						"status": map[string]any{},
 						"reason": "FakeReason",
 					},
 				},
@@ -275,10 +275,10 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "no condition reason",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
+				"conditions": []any{
+					map[string]any{
 						"type":   "FakeConditionType",
 						"status": "False",
 					},
@@ -288,13 +288,13 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 		},
 		{
 			name: "condition reason not a string",
-			status: map[string]interface{}{
+			status: map[string]any{
 				"state": "Ready",
-				"conditions": []interface{}{
-					map[string]interface{}{
+				"conditions": []any{
+					map[string]any{
 						"type":   "FakeConditionType",
 						"status": "False",
-						"reason": map[string]interface{}{},
+						"reason": map[string]any{},
 					},
 				},
 			},
@@ -359,10 +359,10 @@ func TestScrapeWithLeaderElection(t *testing.T) {
 	scheme := runtime.NewScheme()
 
 	telemetry := newUnstructuredObject("Telemetry", "telemetry", "default")
-	unstructured.SetNestedMap(telemetry, map[string]interface{}{
+	unstructured.SetNestedMap(telemetry, map[string]any{
 		"state": "Ready",
-		"conditions": []interface{}{
-			map[string]interface{}{
+		"conditions": []any{
+			map[string]any{
 				"type":   "TelemetryHealthy",
 				"status": "True",
 				"reason": "AllFine",
@@ -411,12 +411,12 @@ func TestScrapeWithLeaderElection(t *testing.T) {
 	require.Zero(t, md.DataPointCount())
 }
 
-func newUnstructuredObject(kind, resourceType, name string) map[string]interface{} {
+func newUnstructuredObject(kind, resourceType, name string) map[string]any {
 	if resourceType == "telemetry" {
-		return map[string]interface{}{
+		return map[string]any{
 			"apiVersion": telemetryResourceGroup + "/" + telemetryResourceVersion,
 			"kind":       kind,
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"namespace": telemetryResourceNamespace,
 				"name":      name,
 			},
@@ -424,10 +424,10 @@ func newUnstructuredObject(kind, resourceType, name string) map[string]interface
 	}
 
 	if resourceType == "logpipeline" {
-		return map[string]interface{}{
+		return map[string]any{
 			"apiVersion": logPipelineResourceGroup + "/" + logPipelineResourceVersion,
 			"kind":       kind,
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": name,
 			},
 		}

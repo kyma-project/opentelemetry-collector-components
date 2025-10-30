@@ -99,7 +99,7 @@ func (r *dummyReceiver) generateMetric() (pmetric.Metrics, error) {
 	metric.SetDescription("a dummy gauge")
 
 	gauge := metric.SetEmptyGauge()
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		dp := gauge.DataPoints().AppendEmpty()
 		dp.SetIntValue(int64(i))
 		dp.Attributes().PutStr("host", host)
