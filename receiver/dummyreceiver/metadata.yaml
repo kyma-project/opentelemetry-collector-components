@@ -12,7 +12,7 @@ resource_attributes:
   k8s.cluster.name:
     description: "static value: test-cluster"
     type: string
-    enabled: true
+    enabled: false
 
 attributes:
   host:

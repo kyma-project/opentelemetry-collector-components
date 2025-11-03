@@ -30,4 +30,4 @@ a dummy gauge
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
-| k8s.cluster.name | static value: test-cluster | Any Str | true |
+| k8s.cluster.name | static value: test-cluster | Any Str | false |
