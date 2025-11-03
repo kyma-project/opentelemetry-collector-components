@@ -3,10 +3,10 @@ type: kymastats
 status:
   class: receiver
   stability:
-    alpha: [metrics]
-  distributions: [kyma]
+    alpha: [ metrics ]
+  distributions: [ kyma ]
   codeowners:
-    active: [kyma-project/observability]
+    active: [ kyma-project/observability ]
 # Skip life cycle and shutdown tests as we need a real kubeconfig to run the lifecycle tests, as the test needs to generate a kubeconfig client. Enable them once we have a proper solution for this
 tests:
   config:
@@ -18,16 +18,16 @@ resource_attributes:
     description: "The name of the namespace that the resource is running in"
     enabled: true
     type: string
-  k8s.resource.name:
-    description: "The resource name"
+  k8s.resource.group:
+    description: "The resource group"
     enabled: true
     type: string
   k8s.resource.kind:
     description: "The resource kind"
     enabled: true
     type: string
-  k8s.resource.group:
-    description: "The resource group"
+  k8s.resource.name:
+    description: "The resource name"
     enabled: true
     type: string
   k8s.resource.version:
@@ -35,11 +35,11 @@ resource_attributes:
     enabled: true
     type: string
 attributes:
-  state:
-    description: The state of the resource status.
-    type: string
   reason:
     description: The reason of the resource condition status.
+    type: string
+  state:
+    description: The state of the resource status.
     type: string
   status:
     description: The status of the resource condition.
@@ -48,18 +48,17 @@ attributes:
     description: The type of the resource condition.
     type: string
 metrics:
-  kyma.resource.status.state:
-    enabled: true
-    description: "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute."
-    unit: "1"
-    gauge:
-      value_type: int
-    attributes: ["state"]
-
   kyma.resource.status.conditions:
     enabled: true
     description: "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values."
     unit: "1"
     gauge:
       value_type: int
-    attributes: ["reason", "status", "type"]
+    attributes: [ "reason", "status", "type" ]
+  kyma.resource.status.state:
+    enabled: true
+    description: "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute."
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: [ "state" ]

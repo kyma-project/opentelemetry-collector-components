@@ -1,4 +1,4 @@
 //go:generate mdatagen metadata.yaml
 
-// Package for service enrichment processor
+// Package istionoisefilter for service enrichment processor
 package istionoisefilter

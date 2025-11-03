@@ -1,5 +1,5 @@
 
-FROM --platform=$BUILDPLATFORM golang:1.25.1-alpine3.22 AS build
+FROM --platform=$BUILDPLATFORM golang:1.25.3-alpine3.22 AS build
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -21,7 +21,7 @@ RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
 RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
 
-RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} builder --config=builder-config.yaml
+RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 builder --config=builder-config.yaml
 
 FROM scratch
 
