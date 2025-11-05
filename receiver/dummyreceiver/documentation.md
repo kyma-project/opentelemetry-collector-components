@@ -16,15 +16,15 @@ metrics:
 
 a dummy gauge
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| { event } | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| { event } | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values | Optional |
+| Name | Description | Values | Requirement Level |
 | ---- | ----------- | ------ | -------- |
-| host | the current hostname | Any Str | false |
+| host | the current hostname | Any Str | Recommended |
 
 ## Resource Attributes
 
