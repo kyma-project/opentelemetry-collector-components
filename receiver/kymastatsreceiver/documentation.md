@@ -16,31 +16,31 @@ metrics:
 
 The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Alpha |
 
 #### Attributes
 
-| Name | Description | Values | Optional |
+| Name | Description | Values | Requirement Level |
 | ---- | ----------- | ------ | -------- |
-| reason | The reason of the resource condition status. | Any Str | false |
-| status | The status of the resource condition. | Any Str | false |
-| type | The type of the resource condition. | Any Str | false |
+| reason | The reason of the resource condition status. | Any Str | Recommended |
+| status | The status of the resource condition. | Any Str | Recommended |
+| type | The type of the resource condition. | Any Str | Recommended |
 
 ### kyma.resource.status.state
 
 The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Alpha |
 
 #### Attributes
 
-| Name | Description | Values | Optional |
+| Name | Description | Values | Requirement Level |
 | ---- | ----------- | ------ | -------- |
-| state | The state of the resource status. | Any Str | false |
+| state | The state of the resource status. | Any Str | Recommended |
 
 ## Resource Attributes
 

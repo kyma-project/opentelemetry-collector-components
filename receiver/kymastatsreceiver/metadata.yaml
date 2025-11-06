@@ -55,6 +55,8 @@ metrics:
     gauge:
       value_type: int
     attributes: [ "reason", "status", "type" ]
+    stability:
+      level: alpha
   kyma.resource.status.state:
     enabled: true
     description: "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute."
@@ -62,3 +64,5 @@ metrics:
     gauge:
       value_type: int
     attributes: [ "state" ]
+    stability:
+      level: alpha
