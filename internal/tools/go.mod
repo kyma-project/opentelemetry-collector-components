@@ -3,7 +3,7 @@ module github.com/kyma-project/opentelemetry-collector-components/internal/tools
 go 1.25.4
 
 require (
-	github.com/golangci/golangci-lint/v2 v2.6.1
+	github.com/golangci/golangci-lint/v2 v2.6.2
 	github.com/vladopajic/go-test-coverage/v2 v2.18.0
 	go.opentelemetry.io/build-tools/crosslink v0.29.0
 	go.opentelemetry.io/collector/cmd/builder v0.139.0
@@ -142,8 +142,8 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/manuelarte/embeddedstructfieldcheck v0.4.0 // indirect
 	github.com/manuelarte/funcorder v0.5.0 // indirect
-	github.com/maratori/testableexamples v1.0.0 // indirect
-	github.com/maratori/testpackage v1.1.1 // indirect
+	github.com/maratori/testableexamples v1.0.1 // indirect
+	github.com/maratori/testpackage v1.1.2 // indirect
 	github.com/matoous/godox v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
