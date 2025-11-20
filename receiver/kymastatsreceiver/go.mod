@@ -23,7 +23,7 @@ require (
 	go.opentelemetry.io/collector/scraper v0.139.0
 	go.opentelemetry.io/collector/scraper/scraperhelper v0.139.0
 	go.uber.org/goleak v1.3.0
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 	k8s.io/apimachinery v0.34.2
 	k8s.io/client-go v0.34.2
 )
