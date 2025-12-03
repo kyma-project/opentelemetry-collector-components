@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.6.2
 	github.com/vladopajic/go-test-coverage/v2 v2.18.0
 	go.opentelemetry.io/build-tools/crosslink v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.139.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.139.0
+	go.opentelemetry.io/collector/cmd/builder v0.141.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.141.0
 	golang.org/x/tools v0.39.0
 )
 
@@ -222,18 +222,18 @@ require (
 	go.augendre.info/arangolint v0.3.1 // indirect
 	go.augendre.info/fatcontext v0.9.0 // indirect
 	go.opentelemetry.io/build-tools v0.29.0 // indirect
-	go.opentelemetry.io/collector/component v1.45.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.45.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.45.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.45.0 // indirect
-	go.opentelemetry.io/collector/filter v0.139.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.45.0 // indirect
+	go.opentelemetry.io/collector/component v1.47.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.47.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.47.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.47.0 // indirect
+	go.opentelemetry.io/collector/filter v0.141.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.47.0 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect
 	go.opentelemetry.io/otel/metric v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
+	go.uber.org/zap v1.27.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/image v0.18.0 // indirect
