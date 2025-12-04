@@ -29,7 +29,6 @@ processors:
   - gomod: go.opentelemetry.io/collector/processor/batchprocessor vOTEL_VERSION
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor vOTEL_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor vOTEL_CONTRIB_VERSION
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourceprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/kyma-project/opentelemetry-collector-components/processor/serviceenrichmentprocessor v0.0.1
