@@ -95,7 +95,7 @@ func TestProcessMetrics(t *testing.T) {
 		{
 			name: "metrics with empty service name set and k8s-io-app-name set",
 			metrics: metricsWithResourceAttrs(map[string]string{
-				"service.name": "",
+				"service.name":                "",
 				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
 			}),
 			expectedServiceName: "foo-k8s-io-app-name",
