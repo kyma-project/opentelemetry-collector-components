@@ -84,6 +84,21 @@ func TestProcessLogs(t *testing.T) {
 			}),
 			expectedServiceName: "unknown_service:java",
 		},
+		{
+			name: "logs with empty service name set and k8s-io-app-name set",
+			logs: logsWithResourceAttrs(map[string]string{
+				"service.name":                "",
+				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
+			}),
+			expectedServiceName: "foo-k8s-io-app-name",
+		},
+		{
+			name: "logs with empty service name set",
+			logs: logsWithResourceAttrs(map[string]string{
+				"service.name": "",
+			}),
+			expectedServiceName: "unknown_service",
+		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
