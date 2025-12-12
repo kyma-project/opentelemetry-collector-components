@@ -85,6 +85,21 @@ func TestFetchFirstAvailableServiceName(t *testing.T) {
 			}),
 			expected: "foo-pod-name",
 		},
+		{
+			name: "empty service.name and kyma.kubernetes_app_io_name are set",
+			attr: setAttributes(map[string]string{
+				"service.name":                "",
+				"kyma.kubernetes_io_app_name": "foo-k8s-io-app-name",
+			}),
+			expected: "foo-k8s-io-app-name",
+		},
+		{
+			name: "empty service.name is set",
+			attr: setAttributes(map[string]string{
+				"service.name": "",
+			}),
+			expected: "unknown_service",
+		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
