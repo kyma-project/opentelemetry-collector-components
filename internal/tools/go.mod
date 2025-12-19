@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.7.2
 	github.com/vladopajic/go-test-coverage/v2 v2.18.2
 	go.opentelemetry.io/build-tools/crosslink v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.141.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.141.0
+	go.opentelemetry.io/collector/cmd/builder v0.142.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.142.0
 	golang.org/x/tools v0.40.0
 )
 
@@ -222,15 +222,15 @@ require (
 	go.augendre.info/arangolint v0.3.1 // indirect
 	go.augendre.info/fatcontext v0.9.0 // indirect
 	go.opentelemetry.io/build-tools v0.29.0 // indirect
-	go.opentelemetry.io/collector/component v1.47.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.47.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.47.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.47.0 // indirect
-	go.opentelemetry.io/collector/filter v0.141.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.47.0 // indirect
-	go.opentelemetry.io/otel v1.38.0 // indirect
-	go.opentelemetry.io/otel/metric v1.38.0 // indirect
-	go.opentelemetry.io/otel/trace v1.38.0 // indirect
+	go.opentelemetry.io/collector/component v1.48.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.48.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.48.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.48.0 // indirect
+	go.opentelemetry.io/collector/filter v0.142.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.48.0 // indirect
+	go.opentelemetry.io/otel v1.39.0 // indirect
+	go.opentelemetry.io/otel/metric v1.39.0 // indirect
+	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
@@ -241,7 +241,7 @@ require (
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/telemetry v0.0.0-20251203150158-8fff8a5912fc // indirect
-	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
