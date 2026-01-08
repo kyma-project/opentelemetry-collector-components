@@ -5,23 +5,23 @@ go 1.25.5
 require (
 	github.com/google/go-cmp v0.7.0
 	github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig v0.0.0-20250324081004-2c1b3b613557
-	github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.141.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.141.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.141.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.143.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.143.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.143.0
 	github.com/stretchr/testify v1.11.1
-	go.opentelemetry.io/collector/component v1.47.0
-	go.opentelemetry.io/collector/component/componenttest v0.141.0
-	go.opentelemetry.io/collector/confmap v1.47.0
-	go.opentelemetry.io/collector/confmap/xconfmap v0.141.0
-	go.opentelemetry.io/collector/consumer v1.47.0
-	go.opentelemetry.io/collector/consumer/consumertest v0.141.0
-	go.opentelemetry.io/collector/filter v0.141.0
-	go.opentelemetry.io/collector/pdata v1.47.0
-	go.opentelemetry.io/collector/pipeline v1.47.0
-	go.opentelemetry.io/collector/receiver v1.47.0
-	go.opentelemetry.io/collector/receiver/receivertest v0.141.0
-	go.opentelemetry.io/collector/scraper v0.141.0
-	go.opentelemetry.io/collector/scraper/scraperhelper v0.141.0
+	go.opentelemetry.io/collector/component v1.49.0
+	go.opentelemetry.io/collector/component/componenttest v0.143.0
+	go.opentelemetry.io/collector/confmap v1.49.0
+	go.opentelemetry.io/collector/confmap/xconfmap v0.143.0
+	go.opentelemetry.io/collector/consumer v1.49.0
+	go.opentelemetry.io/collector/consumer/consumertest v0.143.0
+	go.opentelemetry.io/collector/filter v0.143.0
+	go.opentelemetry.io/collector/pdata v1.49.0
+	go.opentelemetry.io/collector/pipeline v1.49.0
+	go.opentelemetry.io/collector/receiver v1.49.0
+	go.opentelemetry.io/collector/receiver/receivertest v0.143.0
+	go.opentelemetry.io/collector/scraper v0.143.0
+	go.opentelemetry.io/collector/scraper/scraperhelper v0.143.0
 	go.uber.org/goleak v1.3.0
 	go.uber.org/zap v1.27.1
 	k8s.io/apimachinery v0.35.0
