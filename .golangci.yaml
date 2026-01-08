@@ -36,6 +36,7 @@ linters:
     - protogetter
     - tagliatelle
     - testpackage
+    - unqueryvet
     - varnamelen
     - whitespace
     - wrapcheck
