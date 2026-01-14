@@ -10,10 +10,9 @@ package k8sleaderelectortest
 import (
 	"context"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pipeline"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector"
 )
 
 type FakeHost struct {
@@ -22,6 +21,7 @@ type FakeHost struct {
 
 func (fh *FakeHost) GetExtensions() map[component.ID]component.Component {
 	extID := component.MustNewID("k8s_leader_elector")
+
 	return map[component.ID]component.Component{
 		extID: fh.FakeLeaderElection,
 	}
