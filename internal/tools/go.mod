@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.8.0
 	github.com/vladopajic/go-test-coverage/v2 v2.18.3
 	go.opentelemetry.io/build-tools/crosslink v0.29.0
-	go.opentelemetry.io/collector/cmd/builder v0.143.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.143.0
+	go.opentelemetry.io/collector/cmd/builder v0.144.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.144.0
 	golang.org/x/tools v0.41.0
 )
 
@@ -83,7 +83,7 @@ require (
 	github.com/go-toolsmith/astp v1.1.0 // indirect
 	github.com/go-toolsmith/strparse v1.1.0 // indirect
 	github.com/go-toolsmith/typep v1.1.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/go-xmlfmt/xmlfmt v1.1.3 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/godoc-lint/godoc-lint v0.11.1 // indirect
@@ -223,12 +223,12 @@ require (
 	go.augendre.info/arangolint v0.3.1 // indirect
 	go.augendre.info/fatcontext v0.9.0 // indirect
 	go.opentelemetry.io/build-tools v0.29.0 // indirect
-	go.opentelemetry.io/collector/component v1.49.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.49.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.49.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.49.0 // indirect
-	go.opentelemetry.io/collector/filter v0.143.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.49.0 // indirect
+	go.opentelemetry.io/collector/component v1.50.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.50.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.50.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.50.0 // indirect
+	go.opentelemetry.io/collector/filter v0.144.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.50.0 // indirect
 	go.opentelemetry.io/otel v1.39.0 // indirect
 	go.opentelemetry.io/otel/metric v1.39.0 // indirect
 	go.opentelemetry.io/otel/trace v1.39.0 // indirect
@@ -242,7 +242,7 @@ require (
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260109210033-bd525da824e2 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
