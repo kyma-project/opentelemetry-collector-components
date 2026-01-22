@@ -76,6 +76,7 @@ func (m *metricKymaResourceStatusConditions) emit(metrics pmetric.MetricSlice) {
 
 func newMetricKymaResourceStatusConditions(cfg MetricConfig) metricKymaResourceStatusConditions {
 	m := metricKymaResourceStatusConditions{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -127,6 +128,7 @@ func (m *metricKymaResourceStatusState) emit(metrics pmetric.MetricSlice) {
 
 func newMetricKymaResourceStatusState(cfg MetricConfig) metricKymaResourceStatusState {
 	m := metricKymaResourceStatusState{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()

@@ -70,6 +70,7 @@ func (m *metricDummy) emit(metrics pmetric.MetricSlice) {
 
 func newMetricDummy(cfg MetricConfig) metricDummy {
 	m := metricDummy{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
