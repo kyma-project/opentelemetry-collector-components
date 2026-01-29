@@ -28,7 +28,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
@@ -53,7 +53,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
@@ -66,7 +66,7 @@ jobs:
         if: steps.go-cache.outputs.cache-hit != 'true'
         run: make install-tools
       - name: Cache Lint Build
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.cache/go-build
           key: go-lint-build-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
@@ -85,7 +85,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
@@ -122,7 +122,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
@@ -135,7 +135,7 @@ jobs:
         if: steps.go-cache.outputs.cache-hit != 'true'
         run: make install-tools
       - name: Cache Test Build
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.cache/go-build
           key: go-test-build-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
@@ -155,7 +155,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
@@ -171,7 +171,7 @@ jobs:
         run: make install-tools
 
       - name: Cache Coverage Build
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.cache/go-build
           key: go-test-coverage-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
@@ -193,7 +193,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Cache Go
         id: go-cache
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             ~/go/bin
