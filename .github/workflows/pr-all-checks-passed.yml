@@ -22,7 +22,7 @@ jobs:
       checks: read # Required for checking the status of actions
       contents: read
     steps:
-      - uses: wechuli/allcheckspassed@b0eaef5be76003932c9520e2b3dd03c85cc43d87 # v2.2.0
+      - uses: wechuli/allcheckspassed@1d00cf0c34c4b0805db8866d8913f22e7125301e # v2.3.0
         with:
           retries: "30"
           polling_interval: "1"
