@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/processor/istioenrichmentprocessor
 
-go 1.25.6
+go 1.25.7
 
 require (
 	github.com/stretchr/testify v1.11.1
