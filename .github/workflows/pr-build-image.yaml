@@ -32,8 +32,6 @@ jobs:
       tags: ${{ steps.create-tags.outputs.tags }}
       otel-version: ${{ steps.load-envs.outputs.OTEL_VERSION }}
       otel-contrib-version: ${{ steps.load-envs.outputs.OTEL_CONTRIB_VERSION }}
-      pr-tag: ${{ steps.create-tags.outputs.PR_TAG }}
-      push-tag: ${{ steps.create-tags.outputs.PUSH_TAG }}
 
     steps:
       - name: Checkout code
@@ -63,14 +61,22 @@ jobs:
       - name: create tags
         id: create-tags
         run: |
-          if [[ $GITHUB_EVENT_NAME == 'push' ]]; then
-            echo 'TAGS="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
+          if [[ $GITHUB_EVENT_NAME == 'push' || $GITHUB_EVENT_NAME == 'merge_group' ]]; then
+            {
+              echo "tags<<EOTAGS"
+              echo "${{ github.ref_name }}"
+              echo "${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"
+              echo "${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}-${{ steps.get-short-sha.outputs.short-sha }}"
+              echo "EOTAGS"
+            } >> "$GITHUB_OUTPUT"
           else
-            echo 'TAGS="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
+            {
+              echo "tags<<EOTAGS"
+              echo "PR-${{ github.event.pull_request.number }}"
+              echo "${{ github.event.pull_request.head.sha }}"
+              echo "EOTAGS"
+            } >> "$GITHUB_OUTPUT"
           fi
-
-          echo 'PUSH_TAG="${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"' >> "$GITHUB_OUTPUT"
-          echo 'PR_TAG="PR-${{ github.event.pull_request.number }}"' >> "$GITHUB_OUTPUT"
 
   build-image:
     permissions:
