@@ -1,4 +1,4 @@
-module github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig
+	module github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig
 
 go 1.25.7
 
