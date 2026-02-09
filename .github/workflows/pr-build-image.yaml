@@ -66,7 +66,6 @@ jobs:
               echo "tags<<EOTAGS"
               echo "${{ github.ref_name }}"
               echo "${{ steps.load-envs.outputs.OTEL_VERSION }}-${{ github.ref_name }}"
-              echo "${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}-${{ steps.get-short-sha.outputs.short-sha }}"
               echo "EOTAGS"
             } >> "$GITHUB_OUTPUT"
           else
