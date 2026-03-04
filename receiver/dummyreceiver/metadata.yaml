@@ -21,8 +21,7 @@ attributes:
 
 metrics:
   dummy:
-    stability:
-      level: development
+    stability: development
     description: a dummy gauge
     attributes: [host]
     enabled: true
