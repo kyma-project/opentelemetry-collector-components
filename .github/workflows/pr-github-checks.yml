@@ -28,6 +28,9 @@ env:
 
 jobs:
   pr-milestone-project-check:
+    permissions:
+      pull-requests: write # Required for setting the milestone
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Set milestone
