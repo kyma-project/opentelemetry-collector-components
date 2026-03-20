@@ -1,0 +1,91 @@
+version: 2
+updates:
+  # Root Go module
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # internal/tools Go module
+  - package-ecosystem: gomod
+    directory: /internal/tools
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # internal/k8sconfig Go module
+  - package-ecosystem: gomod
+    directory: /internal/k8sconfig
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # processor/istionoisefilter Go module
+  - package-ecosystem: gomod
+    directory: /processor/istionoisefilter
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # processor/serviceenrichmentprocessor Go module
+  - package-ecosystem: gomod
+    directory: /processor/serviceenrichmentprocessor
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # processor/istioenrichmentprocessor Go module
+  - package-ecosystem: gomod
+    directory: /processor/istioenrichmentprocessor
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # receiver/dummyreceiver Go module
+  - package-ecosystem: gomod
+    directory: /receiver/dummyreceiver
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # receiver/kymastatsreceiver Go module
+  - package-ecosystem: gomod
+    directory: /receiver/kymastatsreceiver
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
+
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    labels:
+      - area/dependency
+      - kind/chore
