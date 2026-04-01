@@ -178,6 +178,21 @@ func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
 	})
 }
 func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
+	if mbc.ResourceAttributes.K8sNamespaceName.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.namespace.name` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.")
+	}
+	if mbc.ResourceAttributes.K8sResourceGroup.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.resource.group` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.")
+	}
+	if mbc.ResourceAttributes.K8sResourceKind.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.resource.kind` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.")
+	}
+	if mbc.ResourceAttributes.K8sResourceName.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.resource.name` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.")
+	}
+	if mbc.ResourceAttributes.K8sResourceVersion.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.resource.version` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.")
+	}
 	mb := &MetricsBuilder{
 		config:                             mbc,
 		startTime:                          pcommon.NewTimestampFromTime(time.Now()),
