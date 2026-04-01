@@ -4,18 +4,18 @@ resourceMetrics:
         - key: k8s.namespace.name
           value:
             stringValue: kyma-system
-        - key: k8s.resource.name
-          value:
-            stringValue: default
         - key: k8s.resource.group
           value:
             stringValue: operator.kyma-project.io
-        - key: k8s.resource.version
-          value:
-            stringValue: v1
         - key: k8s.resource.kind
           value:
             stringValue: telemetries
+        - key: k8s.resource.name
+          value:
+            stringValue: default
+        - key: k8s.resource.version
+          value:
+            stringValue: v1
 
     scopeMetrics:
       - metrics:
@@ -24,6 +24,18 @@ resourceMetrics:
               dataPoints:
                 - asInt: "1"
                   attributes:
+                    - key: group
+                      value:
+                        stringValue: operator.kyma-project.io
+                    - key: kind
+                      value:
+                        stringValue: telemetries
+                    - key: name
+                      value:
+                        stringValue: default
+                    - key: namespace
+                      value:
+                        stringValue: kyma-system
                     - key: reason
                       value:
                         stringValue: AllFine
@@ -33,6 +45,9 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: TelemetryHealthy
+                    - key: version
+                      value:
+                        stringValue: v1
             name: kyma.resource.status.conditions
             unit: "1"
           - description: The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.
@@ -40,9 +55,24 @@ resourceMetrics:
               dataPoints:
                 - asInt: "1"
                   attributes:
+                    - key: group
+                      value:
+                        stringValue: operator.kyma-project.io
+                    - key: kind
+                      value:
+                        stringValue: telemetries
+                    - key: name
+                      value:
+                        stringValue: default
+                    - key: namespace
+                      value:
+                        stringValue: kyma-system
                     - key: state
                       value:
                         stringValue: Ready
+                    - key: version
+                      value:
+                        stringValue: v1
             name: kyma.resource.status.state
             unit: "1"
         scope:
@@ -50,18 +80,18 @@ resourceMetrics:
           version: latest
   - resource:
       attributes:
-        - key: k8s.resource.name
-          value:
-            stringValue: pipe-1
         - key: k8s.resource.group
           value:
             stringValue: telemetry.kyma-project.io
-        - key: k8s.resource.version
-          value:
-            stringValue: v1alpha1
         - key: k8s.resource.kind
           value:
             stringValue: logpipelines
+        - key: k8s.resource.name
+          value:
+            stringValue: pipe-1
+        - key: k8s.resource.version
+          value:
+            stringValue: v1alpha1
 
     scopeMetrics:
       - metrics:
@@ -70,6 +100,18 @@ resourceMetrics:
               dataPoints:
                 - asInt: "1"
                   attributes:
+                    - key: group
+                      value:
+                        stringValue: telemetry.kyma-project.io
+                    - key: kind
+                      value:
+                        stringValue: logpipelines
+                    - key: name
+                      value:
+                        stringValue: pipe-1
+                    - key: namespace
+                      value:
+                        stringValue: ""
                     - key: reason
                       value:
                         stringValue: AgentReady
@@ -79,6 +121,9 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: AgentHealthy
+                    - key: version
+                      value:
+                        stringValue: v1alpha1
             name: kyma.resource.status.conditions
             unit: "1"
         scope:
@@ -89,15 +134,15 @@ resourceMetrics:
         - key: k8s.resource.group
           value:
             stringValue: telemetry.kyma-project.io
-        - key: k8s.resource.version
-          value:
-            stringValue: v1alpha1
         - key: k8s.resource.kind
           value:
             stringValue: logpipelines
         - key: k8s.resource.name
           value:
             stringValue: pipe-2
+        - key: k8s.resource.version
+          value:
+            stringValue: v1alpha1
     scopeMetrics:
       - metrics:
           - description: The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.
@@ -105,6 +150,18 @@ resourceMetrics:
               dataPoints:
                 - asInt: "0"
                   attributes:
+                    - key: group
+                      value:
+                        stringValue: telemetry.kyma-project.io
+                    - key: kind
+                      value:
+                        stringValue: logpipelines
+                    - key: name
+                      value:
+                        stringValue: pipe-2
+                    - key: namespace
+                      value:
+                        stringValue: ""
                     - key: reason
                       value:
                         stringValue: AgentNotReady
@@ -114,6 +171,9 @@ resourceMetrics:
                     - key: type
                       value:
                         stringValue: AgentHealthy
+                    - key: version
+                      value:
+                        stringValue: v1alpha1
             name: kyma.resource.status.conditions
             unit: "1"
         scope:

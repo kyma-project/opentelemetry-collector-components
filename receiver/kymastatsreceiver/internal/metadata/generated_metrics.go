@@ -45,7 +45,7 @@ func (m *metricKymaResourceStatusConditions) init() {
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricKymaResourceStatusConditions) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
+func (m *metricKymaResourceStatusConditions) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, groupAttributeValue string, kindAttributeValue string, nameAttributeValue string, namespaceAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string, versionAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -53,9 +53,14 @@ func (m *metricKymaResourceStatusConditions) recordDataPoint(start pcommon.Times
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("group", groupAttributeValue)
+	dp.Attributes().PutStr("kind", kindAttributeValue)
+	dp.Attributes().PutStr("name", nameAttributeValue)
+	dp.Attributes().PutStr("namespace", namespaceAttributeValue)
 	dp.Attributes().PutStr("reason", reasonAttributeValue)
 	dp.Attributes().PutStr("status", statusAttributeValue)
 	dp.Attributes().PutStr("type", typeAttributeValue)
+	dp.Attributes().PutStr("version", versionAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -99,7 +104,7 @@ func (m *metricKymaResourceStatusState) init() {
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricKymaResourceStatusState) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, stateAttributeValue string) {
+func (m *metricKymaResourceStatusState) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, groupAttributeValue string, kindAttributeValue string, nameAttributeValue string, namespaceAttributeValue string, stateAttributeValue string, versionAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -107,7 +112,12 @@ func (m *metricKymaResourceStatusState) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("group", groupAttributeValue)
+	dp.Attributes().PutStr("kind", kindAttributeValue)
+	dp.Attributes().PutStr("name", nameAttributeValue)
+	dp.Attributes().PutStr("namespace", namespaceAttributeValue)
 	dp.Attributes().PutStr("state", stateAttributeValue)
+	dp.Attributes().PutStr("version", versionAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -311,13 +321,13 @@ func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics
 }
 
 // RecordKymaResourceStatusConditionsDataPoint adds a data point to kyma.resource.status.conditions metric.
-func (mb *MetricsBuilder) RecordKymaResourceStatusConditionsDataPoint(ts pcommon.Timestamp, val int64, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string) {
-	mb.metricKymaResourceStatusConditions.recordDataPoint(mb.startTime, ts, val, reasonAttributeValue, statusAttributeValue, typeAttributeValue)
+func (mb *MetricsBuilder) RecordKymaResourceStatusConditionsDataPoint(ts pcommon.Timestamp, val int64, groupAttributeValue string, kindAttributeValue string, nameAttributeValue string, namespaceAttributeValue string, reasonAttributeValue string, statusAttributeValue string, typeAttributeValue string, versionAttributeValue string) {
+	mb.metricKymaResourceStatusConditions.recordDataPoint(mb.startTime, ts, val, groupAttributeValue, kindAttributeValue, nameAttributeValue, namespaceAttributeValue, reasonAttributeValue, statusAttributeValue, typeAttributeValue, versionAttributeValue)
 }
 
 // RecordKymaResourceStatusStateDataPoint adds a data point to kyma.resource.status.state metric.
-func (mb *MetricsBuilder) RecordKymaResourceStatusStateDataPoint(ts pcommon.Timestamp, val int64, stateAttributeValue string) {
-	mb.metricKymaResourceStatusState.recordDataPoint(mb.startTime, ts, val, stateAttributeValue)
+func (mb *MetricsBuilder) RecordKymaResourceStatusStateDataPoint(ts pcommon.Timestamp, val int64, groupAttributeValue string, kindAttributeValue string, nameAttributeValue string, namespaceAttributeValue string, stateAttributeValue string, versionAttributeValue string) {
+	mb.metricKymaResourceStatusState.recordDataPoint(mb.startTime, ts, val, groupAttributeValue, kindAttributeValue, nameAttributeValue, namespaceAttributeValue, stateAttributeValue, versionAttributeValue)
 }
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,

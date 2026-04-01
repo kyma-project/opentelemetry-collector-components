@@ -34,3 +34,4 @@ go.work*
 # generated files of local builder setup
 cmd/otelkymacol/*.go
 cmd/otelkymacol/go.*
+/.claude/
