@@ -62,26 +62,6 @@ func TestMetricsBuilder(t *testing.T) {
 			mb := NewMetricsBuilder(loadMetricsBuilderConfig(t, tt.name), settings, WithStartTime(start))
 
 			expectedWarnings := 0
-			if tt.resAttrsSet == testDataSetDefault || tt.resAttrsSet == testDataSetAll {
-				assert.Equal(t, "[WARNING] `k8s.namespace.name` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.", observedLogs.All()[expectedWarnings].Message)
-				expectedWarnings++
-			}
-			if tt.resAttrsSet == testDataSetDefault || tt.resAttrsSet == testDataSetAll {
-				assert.Equal(t, "[WARNING] `k8s.resource.group` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.", observedLogs.All()[expectedWarnings].Message)
-				expectedWarnings++
-			}
-			if tt.resAttrsSet == testDataSetDefault || tt.resAttrsSet == testDataSetAll {
-				assert.Equal(t, "[WARNING] `k8s.resource.kind` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.", observedLogs.All()[expectedWarnings].Message)
-				expectedWarnings++
-			}
-			if tt.resAttrsSet == testDataSetDefault || tt.resAttrsSet == testDataSetAll {
-				assert.Equal(t, "[WARNING] `k8s.resource.name` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.", observedLogs.All()[expectedWarnings].Message)
-				expectedWarnings++
-			}
-			if tt.resAttrsSet == testDataSetDefault || tt.resAttrsSet == testDataSetAll {
-				assert.Equal(t, "[WARNING] `k8s.resource.version` should not be enabled: This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute.", observedLogs.All()[expectedWarnings].Message)
-				expectedWarnings++
-			}
 			assert.Equal(t, expectedWarnings, observedLogs.Len())
 
 			defaultMetricsCount := 0
