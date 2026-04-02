@@ -35,17 +35,32 @@ resource_attributes:
     enabled: true
     type: string
 attributes:
+  group:
+    description: The API group of the Kubernetes resource
+    type: string
+  kind:
+    description: The kind of the Kubernetes resource
+    type: string
+  name:
+    description: The name of the Kubernetes resource instance
+    type: string
+  namespace:
+    description: The Kubernetes namespace where the resource is located
+    type: string
   reason:
-    description: The reason of the resource condition status.
+    description: The reason for the resource condition status.
     type: string
   state:
     description: The state of the resource status.
     type: string
   status:
-    description: The status of the resource condition.
+    description: The status value of the condition.
     type: string
   type:
-    description: The type of the resource condition.
+    description: The type of the condition being reported.
+    type: string
+  version:
+    description: The API version of the Kubernetes resource
     type: string
 metrics:
   kyma.resource.status.conditions:
@@ -54,7 +69,7 @@ metrics:
     unit: "1"
     gauge:
       value_type: int
-    attributes: [ "reason", "status", "type" ]
+    attributes: [ "group", "kind", "name", "namespace","reason", "status", "type", "version" ]
     stability: alpha
   kyma.resource.status.state:
     enabled: true
@@ -62,5 +77,5 @@ metrics:
     unit: "1"
     gauge:
       value_type: int
-    attributes: [ "state" ]
+    attributes: [ "group", "kind", "name", "namespace","state","version" ]
     stability: alpha

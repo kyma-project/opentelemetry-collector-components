@@ -69,11 +69,11 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaResourceStatusConditionsDataPoint(ts, 1, "reason-val", "status-val", "type-val")
+			mb.RecordKymaResourceStatusConditionsDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "reason-val", "status-val", "type-val", "version-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordKymaResourceStatusStateDataPoint(ts, 1, "state-val")
+			mb.RecordKymaResourceStatusStateDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "state-val", "version-val")
 
 			rb := mb.NewResourceBuilder()
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
@@ -115,7 +115,19 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("reason")
+					attrVal, ok := dp.Attributes().Get("group")
+					assert.True(t, ok)
+					assert.Equal(t, "group-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("kind")
+					assert.True(t, ok)
+					assert.Equal(t, "kind-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("name")
+					assert.True(t, ok)
+					assert.Equal(t, "name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("namespace")
+					assert.True(t, ok)
+					assert.Equal(t, "namespace-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("reason")
 					assert.True(t, ok)
 					assert.Equal(t, "reason-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("status")
@@ -124,6 +136,9 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("type")
 					assert.True(t, ok)
 					assert.Equal(t, "type-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("version")
+					assert.True(t, ok)
+					assert.Equal(t, "version-val", attrVal.Str())
 				case "kyma.resource.status.state":
 					assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
 					validatedMetrics["kyma.resource.status.state"] = true
@@ -136,9 +151,24 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("state")
+					attrVal, ok := dp.Attributes().Get("group")
+					assert.True(t, ok)
+					assert.Equal(t, "group-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("kind")
+					assert.True(t, ok)
+					assert.Equal(t, "kind-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("name")
+					assert.True(t, ok)
+					assert.Equal(t, "name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("namespace")
+					assert.True(t, ok)
+					assert.Equal(t, "namespace-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("state")
 					assert.True(t, ok)
 					assert.Equal(t, "state-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("version")
+					assert.True(t, ok)
+					assert.Equal(t, "version-val", attrVal.Str())
 				}
 			}
 		})
