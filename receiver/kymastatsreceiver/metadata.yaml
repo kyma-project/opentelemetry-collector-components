@@ -18,32 +18,22 @@ resource_attributes:
     description: "The name of the namespace that the resource is running in"
     enabled: true
     type: string
-    warnings:
-      if_enabled: "This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute."
   k8s.resource.group:
     description: "The resource group"
     enabled: true
     type: string
-    warnings:
-      if_enabled: "This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute."
   k8s.resource.kind:
     description: "The resource kind"
     enabled: true
     type: string
-    warnings:
-      if_enabled: "This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute."
   k8s.resource.name:
     description: "The resource name"
     enabled: true
     type: string
-    warnings:
-      if_enabled: "This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute."
   k8s.resource.version:
     description: "The resource version"
     enabled: true
     type: string
-    warnings:
-      if_enabled: "This resource attribute is deprecated and will be removed in a future release. The information is now available as a metric attribute."
 attributes:
   group:
     description: The API group of the Kubernetes resource
