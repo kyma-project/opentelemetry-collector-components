@@ -88,7 +88,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 
 	for _, s := range stats {
 		if s.hasState {
-			ks.mb.RecordKymaResourceStatusStateDataPoint(now, int64(1), s.state)
+			ks.mb.RecordKymaResourceStatusStateDataPoint(now, int64(1), s.group, s.kind, s.name, s.namespace, s.state, s.version)
 		}
 
 		rb := ks.mb.NewResourceBuilder()
@@ -104,7 +104,7 @@ func (ks *kymaScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 
 		for _, c := range s.conditions {
 			val := conditionStatusToValue(c.status)
-			ks.mb.RecordKymaResourceStatusConditionsDataPoint(now, val, c.reason, c.status, c.condType)
+			ks.mb.RecordKymaResourceStatusConditionsDataPoint(now, val, s.group, s.kind, s.name, s.namespace, c.reason, c.status, c.condType, s.version)
 		}
 
 		ks.mb.EmitForResource(metadata.WithResource(rb.Emit()))
