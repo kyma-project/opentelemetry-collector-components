@@ -27,7 +27,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					Dummy: MetricConfig{Enabled: true},
+					Dummy: MetricConfig{
+						Enabled: true,
+					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
 					K8sClusterName: ResourceAttributeConfig{Enabled: true},
@@ -38,7 +40,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					Dummy: MetricConfig{Enabled: false},
+					Dummy: MetricConfig{
+						Enabled: false,
+					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
 					K8sClusterName: ResourceAttributeConfig{Enabled: false},

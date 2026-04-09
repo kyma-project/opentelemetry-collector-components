@@ -22,16 +22,16 @@ The resource status conditions. Possible metric values for condition status are 
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| group | The API group of the Kubernetes resource | Any Str | Recommended |
-| kind | The kind of the Kubernetes resource | Any Str | Recommended |
-| name | The name of the Kubernetes resource instance | Any Str | Recommended |
-| namespace | The Kubernetes namespace where the resource is located | Any Str | Recommended |
-| reason | The reason for the resource condition status. | Any Str | Recommended |
-| status | The status value of the condition. | Any Str | Recommended |
-| type | The type of the condition being reported. | Any Str | Recommended |
-| version | The API version of the Kubernetes resource | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| group | The API group of the Kubernetes resource | Any Str | Recommended | - |
+| kind | The kind of the Kubernetes resource | Any Str | Recommended | - |
+| name | The name of the Kubernetes resource instance | Any Str | Recommended | - |
+| namespace | The Kubernetes namespace where the resource is located | Any Str | Recommended | - |
+| reason | The reason for the resource condition status. | Any Str | Recommended | - |
+| status | The status value of the condition. | Any Str | Recommended | - |
+| type | The type of the condition being reported. | Any Str | Recommended | - |
+| version | The API version of the Kubernetes resource | Any Str | Recommended | - |
 
 ### kyma.resource.status.state
 
@@ -43,21 +43,21 @@ The resource status state, metric value is 1 for the last scraped resource statu
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| group | The API group of the Kubernetes resource | Any Str | Recommended |
-| kind | The kind of the Kubernetes resource | Any Str | Recommended |
-| name | The name of the Kubernetes resource instance | Any Str | Recommended |
-| namespace | The Kubernetes namespace where the resource is located | Any Str | Recommended |
-| state | The state of the resource status. | Any Str | Recommended |
-| version | The API version of the Kubernetes resource | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| group | The API group of the Kubernetes resource | Any Str | Recommended | - |
+| kind | The kind of the Kubernetes resource | Any Str | Recommended | - |
+| name | The name of the Kubernetes resource instance | Any Str | Recommended | - |
+| namespace | The Kubernetes namespace where the resource is located | Any Str | Recommended | - |
+| state | The state of the resource status. | Any Str | Recommended | - |
+| version | The API version of the Kubernetes resource | Any Str | Recommended | - |
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled |
-| ---- | ----------- | ------ | ------- |
-| k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true |
-| k8s.resource.group | The resource group | Any Str | true |
-| k8s.resource.kind | The resource kind | Any Str | true |
-| k8s.resource.name | The resource name | Any Str | true |
-| k8s.resource.version | The resource version | Any Str | true |
+| Name | Description | Values | Enabled | Semantic Convention |
+| ---- | ----------- | ------ | ------- | ------------------- |
+| k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true | - |
+| k8s.resource.group | The resource group | Any Str | true | - |
+| k8s.resource.kind | The resource kind | Any Str | true | - |
+| k8s.resource.name | The resource name | Any Str | true | - |
+| k8s.resource.version | The resource version | Any Str | true | - |
