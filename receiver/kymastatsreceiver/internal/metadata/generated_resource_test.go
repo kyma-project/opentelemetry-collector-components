@@ -33,31 +33,30 @@ func TestResourceBuilder(t *testing.T) {
 			default:
 				assert.Failf(t, "unexpected test case: %s", tt)
 			}
-
-			val, ok := res.Attributes().Get("k8s.namespace.name")
+			k8sNamespaceNameAttrVal, ok := res.Attributes().Get("k8s.namespace.name")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.namespace.name-val", val.Str())
+				assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.resource.group")
+			k8sResourceGroupAttrVal, ok := res.Attributes().Get("k8s.resource.group")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.resource.group-val", val.Str())
+				assert.Equal(t, "k8s.resource.group-val", k8sResourceGroupAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.resource.kind")
+			k8sResourceKindAttrVal, ok := res.Attributes().Get("k8s.resource.kind")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.resource.kind-val", val.Str())
+				assert.Equal(t, "k8s.resource.kind-val", k8sResourceKindAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.resource.name")
+			k8sResourceNameAttrVal, ok := res.Attributes().Get("k8s.resource.name")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.resource.name-val", val.Str())
+				assert.Equal(t, "k8s.resource.name-val", k8sResourceNameAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.resource.version")
+			k8sResourceVersionAttrVal, ok := res.Attributes().Get("k8s.resource.version")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.resource.version-val", val.Str())
+				assert.Equal(t, "k8s.resource.version-val", k8sResourceVersionAttrVal.Str())
 			}
 		})
 	}
