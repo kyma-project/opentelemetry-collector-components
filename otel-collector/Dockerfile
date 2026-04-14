@@ -19,11 +19,10 @@ ENV OTEL_CONTRIB_VERSION=${OTEL_CONTRIB_VERSION}
 RUN sed -i s/OTEL_VERSION/${OTEL_VERSION}/g builder-config.yaml
 RUN sed -i s/OTEL_CONTRIB_VERSION/${OTEL_CONTRIB_VERSION}/g builder-config.yaml
 
-RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION}
-
-RUN go clean -cache
-
-RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 builder --config=builder-config.yaml
+RUN go install go.opentelemetry.io/collector/cmd/builder@v${OTEL_VERSION} \
+    && go clean -cache \
+    && GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 builder --config=builder-config.yaml \
+    && go clean -cache
 
 FROM scratch
 
