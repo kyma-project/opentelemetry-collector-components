@@ -197,8 +197,8 @@ go.opentelemetry.io/collector/extension/zpagesextension v0.150.0 h1:Rx0Po8gv3VhJ
 go.opentelemetry.io/collector/extension/zpagesextension v0.150.0/go.mod h1:/0wG9/qqthZqe2CUdYuvV+KhEd1pbd22BLoppx2XKdU=
 go.opentelemetry.io/collector/featuregate v1.56.0 h1:NjcbOZkdCSXddAJmFLdO+pv1gmAgrU6sC5PBga2KlKI=
 go.opentelemetry.io/collector/featuregate v1.56.0/go.mod h1:4ga1QBMPEejXXmpyJS8lmaRpknJ3Lb9Bvk6e420bUFU=
-go.opentelemetry.io/collector/filter v0.149.0 h1:Vc8spMswopK7a5xAu9vvUfr4gEehZ/0IK0riyZ9kB2k=
-go.opentelemetry.io/collector/filter v0.149.0/go.mod h1:s3HKU8FSUe6PVT9v/BimNUPqR2RTJBxDZXBMTcW+6f4=
+go.opentelemetry.io/collector/filter v0.150.0 h1:37gbAL1u7bCHGOKn7J4e12zCPnB5faj+XOj52ngS5Sc=
+go.opentelemetry.io/collector/filter v0.150.0/go.mod h1:/bqhkcErvJym5iLjkGWasZ2TYh4Yh5U0He0A6WI/CK0=
 go.opentelemetry.io/collector/internal/componentalias v0.150.0 h1:qvcJr0m/fFgsc3x6Oya3RNDOZp/WyfmOKIv9jtvoLYw=
 go.opentelemetry.io/collector/internal/componentalias v0.150.0/go.mod h1:abuQP8ELgPpCSq6xbHM1b2hPOGqaKxUeLgHHdU/XGP0=
 go.opentelemetry.io/collector/internal/fanoutconsumer v0.150.0 h1:Q21K+3QD4izrbRNAzvbLh9YI5kNJcW6fxtEfe44dna0=
