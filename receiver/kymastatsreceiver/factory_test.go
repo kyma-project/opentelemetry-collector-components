@@ -41,7 +41,7 @@ func TestCreateMetricsReceiver(t *testing.T) {
 					CollectionInterval: 10 * time.Second,
 					InitialDelay:       time.Second,
 				},
-				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				makeDynamicClient: func() (dynamic.Interface, error) {
 					return dynamicfake.NewSimpleDynamicClient(runtime.NewScheme()), nil
 				},
