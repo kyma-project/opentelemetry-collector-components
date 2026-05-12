@@ -1,0 +1,44 @@
+name: Extract Versions
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+    branches:
+      - "main"
+      - "release-*"
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "OWNERS"
+      - "CODEOWNERS"
+
+jobs:
+  extract-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      - name: Validate and extract versions
+        run: |
+          # Only allow lines matching KEY=x.y.z to prevent GITHUB_OUTPUT injection
+          if ! grep -qE '^OTEL_VERSION=[0-9]+\.[0-9]+\.[0-9]+$' otel-collector/envs; then
+            echo "Invalid or missing OTEL_VERSION in otel-collector/envs"
+            exit 1
+          fi
+          if ! grep -qE '^OTEL_CONTRIB_VERSION=[0-9]+\.[0-9]+\.[0-9]+$' otel-collector/envs; then
+            echo "Invalid or missing OTEL_CONTRIB_VERSION in otel-collector/envs"
+            exit 1
+          fi
+          grep -E '^OTEL_(CONTRIB_)?VERSION=[0-9]+\.[0-9]+\.[0-9]+$' otel-collector/envs > /tmp/versions.env
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> /tmp/versions.env
+
+      - name: Upload versions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-versions
+          path: /tmp/versions.env
+          retention-days: 1

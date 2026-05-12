@@ -4,16 +4,9 @@ permissions:
   contents: read
 
 on:
-  pull_request_target:
-    types: [opened, edited, synchronize, reopened, ready_for_review]
-    branches:
-      - "main"
-      - "release-*"
-    paths-ignore:
-      - "docs/**"
-      - "**/*.md"
-      - "OWNERS"
-      - "CODEOWNERS"
+  workflow_run:
+    workflows: ["Extract Versions"]
+    types: [completed]
   push:
     branches:
       - "main"
@@ -27,6 +20,7 @@ on:
 jobs:
   envs:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       tags: ${{ steps.create-tags.outputs.tags }}
@@ -35,28 +29,46 @@ jobs:
 
     steps:
       - name: Checkout code
-        if: github.event_name == 'pull_request_target'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Checkout code
         if: github.event_name == 'push'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download versions artifact
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-versions
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          path: /tmp
+
+      - name: Load envs from artifact (PR)
+        if: github.event_name == 'workflow_run'
+        id: load-artifact-envs
+        run: |
+          # Re-validate after download — defense in depth
+          grep -E '^OTEL_(CONTRIB_)?VERSION=[0-9]+\.[0-9]+\.[0-9]+$' /tmp/versions.env > /tmp/validated.env
+          grep -E '^PR_NUMBER=[0-9]+$' /tmp/versions.env >> /tmp/validated.env
+          cp /tmp/validated.env otel-collector/envs
 
       - name: prepare envs
         id: prepare-envs
         run: |
           {
           echo 'build-args<<BUILD_ARGS'
-          cat otel-collector/envs
+          grep -E '^OTEL_(CONTRIB_)?VERSION=' otel-collector/envs
           echo BUILD_ARGS
           } >> "$GITHUB_OUTPUT"
 
       - name: load envs into output
         id: load-envs
         run: |
-          cat otel-collector/envs >> "$GITHUB_OUTPUT"
+          grep -E '^OTEL_(CONTRIB_)?VERSION=' otel-collector/envs >> "$GITHUB_OUTPUT"
+
+      - name: load PR number
+        id: load-pr-number
+        if: github.event_name == 'workflow_run'
+        run: |
+          echo "PR_NUMBER=$(grep -E '^PR_NUMBER=' /tmp/validated.env | cut -d= -f2)" >> "$GITHUB_OUTPUT"
 
       - name: create tags
         id: create-tags
@@ -71,8 +83,7 @@ jobs:
           else
             {
               echo "tags<<EOTAGS"
-              echo "PR-${{ github.event.pull_request.number }}"
-              echo "${{ github.event.pull_request.head.sha }}"
+              echo "PR-${{ steps.load-pr-number.outputs.PR_NUMBER }}"
               echo "EOTAGS"
             } >> "$GITHUB_OUTPUT"
           fi
