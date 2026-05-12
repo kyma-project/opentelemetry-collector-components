@@ -98,7 +98,7 @@ func TestScrape(t *testing.T) {
 
 	r, err := newKymaScraper(
 		Config{
-			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
 		dynamic,
@@ -146,7 +146,7 @@ func TestScrape_CantPullResource(t *testing.T) {
 
 	r, err := newKymaScraper(
 		Config{
-			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 			Resources:            resources,
 		},
 		dynamic,
@@ -324,7 +324,7 @@ func TestScrape_HandlesInvalidResourceGracefully(t *testing.T) {
 
 			r, err := newKymaScraper(
 				Config{
-					MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+					MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 					Resources:            resources,
 				},
 				dynamic,
@@ -380,7 +380,7 @@ func TestScrapeWithLeaderElection(t *testing.T) {
 
 	r, err := newKymaScraper(
 		Config{
-			MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+			MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 			Resources:            resources,
 			K8sLeaderElector:     &leaderElectorID,
 		},
