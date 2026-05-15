@@ -12,6 +12,7 @@ var (
 		"telemetry-log-gateway":    {},
 		"telemetry-metric-gateway": {},
 		"telemetry-trace-gateway":  {},
+		"telemetry-otlp-gateway":   {},
 	}
 
 	telemetryModuleAgents = map[string]struct{}{
@@ -25,8 +26,8 @@ var (
 		telemetryModuleAgents,
 	)
 
-	regexTelemetryGatewayURL  = regexp.MustCompile(`^https?://telemetry-otlp-(logs|metrics|traces)\.kyma-system(\..*)?:(4317|4318).*`)
-	regexTelemetryGatewayHost = regexp.MustCompile(`^telemetry-otlp-(logs|metrics|traces)\.kyma-system.*`)
+	regexTelemetryGatewayURL  = regexp.MustCompile(`^https?://telemetry-otlp(-(logs|metrics|traces))?\.kyma-system(\..*)?:(4317|4318).*`)
+	regexTelemetryGatewayHost = regexp.MustCompile(`^telemetry-otlp(-(logs|metrics|traces))?\.kyma-system.*`)
 
 	healthzHostPrefix = "healthz."
 	healthzPath       = "/healthz/ready"
