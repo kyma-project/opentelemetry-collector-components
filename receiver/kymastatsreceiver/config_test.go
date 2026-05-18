@@ -37,7 +37,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
-				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
@@ -55,7 +55,7 @@ func TestLoadConfig(t *testing.T) {
 					Context:  "k8s-context",
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
-				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
@@ -72,7 +72,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "serviceAccount",
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
-				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",
@@ -97,7 +97,7 @@ func TestLoadConfig(t *testing.T) {
 					AuthType: "none",
 				},
 				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
-				MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
 						Group:    "operator.kyma-project.io",

@@ -99,6 +99,27 @@ func TestIstioNoiseFilter_Spans(t *testing.T) {
 			expectedSpanCount: 0,
 		},
 		{
+			name: "drops unified OTLP gateway span",
+			spanAttrs: []map[string]any{
+				{
+					"component":             "proxy",
+					"http.method":           "POST",
+					"http.url":              "https://telemetry-otlp.kyma-system.svc:4317/v1/traces",
+					"upstream_cluster.name": "outbound|4317|svc|telemetry-otlp.kyma-system.svc.cluster.local",
+				},
+			},
+			resourceAttrs:     map[string]any{},
+			expectedSpanCount: 0,
+		},
+		{
+			name: "drops OTLP gateway component span",
+			spanAttrs: []map[string]any{
+				{"component": "proxy", "istio.canonical_service": "telemetry-otlp-gateway"},
+			},
+			resourceAttrs:     map[string]any{"k8s.namespace.name": "kyma-system"},
+			expectedSpanCount: 0,
+		},
+		{
 			name: "drops if user agent is vm_promscrape",
 			spanAttrs: []map[string]any{
 				{
@@ -227,6 +248,30 @@ func TestIstioNoiseFilter_Logs(t *testing.T) {
 				},
 			},
 			resourceAttrs:    map[string]any{},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if server address is unified OTLP gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module":    "istio",
+					"server.address": "telemetry-otlp.kyma-system.svc:4317",
+				},
+			},
+			resourceAttrs:    map[string]any{},
+			expectedLogCount: 0,
+		},
+		{
+			name: "drops log if emitted by OTLP gateway",
+			logAttrs: []map[string]any{
+				{
+					"kyma.module": "istio",
+				},
+			},
+			resourceAttrs: map[string]any{
+				"k8s.namespace.name":  "kyma-system",
+				"k8s.deployment.name": "telemetry-otlp-gateway",
+			},
 			expectedLogCount: 0,
 		},
 		{
@@ -456,6 +501,13 @@ func TestIstioNoiseFilter_Metrics(t *testing.T) {
 			metricName:             "istio_summary",
 			dataPointAttrs:         []map[string]any{{"destination_workload": "telemetry-trace-gateway"}},
 			metricType:             pmetric.MetricTypeSummary,
+			expectedDataPointCount: 0,
+		},
+		{
+			name:                   "drops istio metric with destination_workload telemetry-otlp-gateway (Sum)",
+			metricName:             "istio_requests_total",
+			dataPointAttrs:         []map[string]any{{"destination_workload": "telemetry-otlp-gateway"}},
+			metricType:             pmetric.MetricTypeSum,
 			expectedDataPointCount: 0,
 		},
 		{
