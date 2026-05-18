@@ -1,6 +1,6 @@
 module github.com/kyma-project/opentelemetry-collector-components/internal/tools
 
-go 1.26.2
+go 1.26.3
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.12.1
