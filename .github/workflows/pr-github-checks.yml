@@ -20,7 +20,6 @@ on:
 
 env:
   PROJECT_NAME: "Huskies"
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GH_REPO: ${{ github.repository }}
   NUMBER: ${{ github.event.number }}
   TITLE: ${{ github.event.pull_request.title }}
@@ -28,6 +27,8 @@ env:
 
 jobs:
   pr-milestone-project-check:
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     permissions:
       pull-requests: write # Required for setting the milestone
       contents: read
@@ -49,6 +50,8 @@ jobs:
           gh pr edit ${{ github.event.number }} --milestone "${latest_milestone}"
 
   pr-label-check:
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     permissions:
       pull-requests: write # Required for setting the labels
       contents: read
