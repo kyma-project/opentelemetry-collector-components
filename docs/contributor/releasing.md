@@ -4,6 +4,9 @@
 
 This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with Kyma-specific customizations.
 
+> [!IMPORTANT]
+> Release OCC **before** creating the telemetry-manager pre-release (D-1). The same OCC image version must be used for both the pre-release and the final release of telemetry-manager. Do not release a new OCC version on release day.
+
 1. Verify that all issues in the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the version are closed.
 2. Close the milestone.
 
