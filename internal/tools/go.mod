@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.12.2
-	github.com/vladopajic/go-test-coverage/v2 v2.18.6
+	github.com/vladopajic/go-test-coverage/v2 v2.18.7
 	go.opentelemetry.io/build-tools/crosslink v0.30.0
 	go.opentelemetry.io/collector/cmd/builder v0.153.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.152.1
@@ -184,7 +184,7 @@ require (
 	github.com/raeperd/recvcheck v0.2.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	github.com/rs/zerolog v1.35.0 // indirect
+	github.com/rs/zerolog v1.35.1 // indirect
 	github.com/ryancurrah/gomodguard v1.4.1 // indirect
 	github.com/ryancurrah/gomodguard/v2 v2.1.3 // indirect
 	github.com/ryanrolds/sqlclosecheck v0.6.0 // indirect
