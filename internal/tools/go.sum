@@ -284,8 +284,8 @@ github.com/knadh/koanf/providers/file v1.2.1 h1:bEWbtQwYrA+W2DtdBrQWyXqJaJSG3KrP
 github.com/knadh/koanf/providers/file v1.2.1/go.mod h1:bp1PM5f83Q+TOUu10J/0ApLBd9uIzg+n9UgthfY+nRA=
 github.com/knadh/koanf/providers/fs v1.0.0 h1:tvn4MrduLgdOSUqqEHULUuIcELXf6xDOpH8GUErpYaY=
 github.com/knadh/koanf/providers/fs v1.0.0/go.mod h1:FksHET+xXFNDozvj8ZCdom54OnZ6eGKJtC5FhZJKx/8=
-github.com/knadh/koanf/v2 v2.3.4 h1:fnynNSDlujWE+v83hAp8wKr/cdoxHLO0629SN+U8Urc=
-github.com/knadh/koanf/v2 v2.3.4/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
+github.com/knadh/koanf/v2 v2.3.5 h1:2dXJUYaKGm4SGYeoAtBviq9+02JZo/pxQ2ssOd60rJg=
+github.com/knadh/koanf/v2 v2.3.5/go.mod h1:gRb40VRAbd4iJMYYD5IxZ6hfuopFcXBpc9bbQpZwo28=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
@@ -528,8 +528,8 @@ go.opentelemetry.io/build-tools v0.30.0 h1:rzIeZciImFTlEaqUHR1FCbK/34hLSSUgjsFzE
 go.opentelemetry.io/build-tools v0.30.0/go.mod h1:9eyHUXmLmD9euXP2BQ4oeqzzd57rLMkqqnXSrnlPY2g=
 go.opentelemetry.io/build-tools/crosslink v0.30.0 h1:aNk0ENhJEoeVYBPUD3nIGlkVphsIoN8LTC/MASc6xb8=
 go.opentelemetry.io/build-tools/crosslink v0.30.0/go.mod h1:4bR5pDaAwGYR0wBeVh+HdtnMyJHT4L9xsxOL4E3idzg=
-go.opentelemetry.io/collector/cmd/builder v0.153.0 h1:5d8/u55wxeoF6GW+Mt3Na3WCZiSHhmWx35tFVS5T4h8=
-go.opentelemetry.io/collector/cmd/builder v0.153.0/go.mod h1:CVbuNiRlvlKwnMZVg+HhQIJPXG6XlF+FijrEItGk4QI=
+go.opentelemetry.io/collector/cmd/builder v0.155.0 h1:YtnuJjozO9wh84gVd9W/e5C6NsLLqbnBYavGBsCgZyw=
+go.opentelemetry.io/collector/cmd/builder v0.155.0/go.mod h1:GjITmlw2PboZmOi5kJ4q++hZHu2tZWNTxFb3kl8vzO8=
 go.opentelemetry.io/collector/cmd/mdatagen v0.152.1 h1:LrwBjR4CdrEKKibeqoo/i8a6z8mnoawIrJfbHffT7fo=
 go.opentelemetry.io/collector/cmd/mdatagen v0.152.1/go.mod h1:Zj5+s3hAfOYC04u5nSQiH7T2Z9JlmeXmDZE6reLqF+k=
 go.opentelemetry.io/collector/component v1.58.0 h1:GLHxFfw8jw3lRVX/h09Cc3inoR+2+XY93VxnrwHxY8Q=
