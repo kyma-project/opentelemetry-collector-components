@@ -1,14 +1,14 @@
 module github.com/kyma-project/opentelemetry-collector-components/internal/tools
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/golangci/golangci-lint/v2 v2.12.2
 	github.com/vladopajic/go-test-coverage/v2 v2.18.6
 	go.opentelemetry.io/build-tools/crosslink v0.30.0
-	go.opentelemetry.io/collector/cmd/builder v0.152.1
+	go.opentelemetry.io/collector/cmd/builder v0.153.0
 	go.opentelemetry.io/collector/cmd/mdatagen v0.152.1
-	golang.org/x/tools v0.45.0
+	golang.org/x/tools v0.48.0
 )
 
 require (
@@ -242,12 +242,12 @@ require (
 	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20260209203927-2842357ff358 // indirect
-	golang.org/x/image v0.38.0 // indirect
-	golang.org/x/mod v0.36.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
-	golang.org/x/telemetry v0.0.0-20260508192327-42602be52be6 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/image v0.41.0 // indirect
+	golang.org/x/mod v0.38.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/telemetry v0.0.0-20260708182218-49f421fb7959 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
