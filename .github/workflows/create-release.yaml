@@ -218,6 +218,30 @@ jobs:
         run: |
           echo "${{ needs.build-image.outputs.images }}"
 
+  upload-release-report:
+    needs:
+      - build-image
+    if: always() && !cancelled() && inputs.dry-run == false && needs.build-image.result == 'success'
+    permissions:
+      id-token: write
+      contents: read
+    uses: kyma-project/compliancy/.github/workflows/notify-release-report.yml@main
+    with:
+      release_version: ${{ inputs.name }}
+    secrets: inherit
+
+  notify-sbom:
+    needs: upload-release-report
+    if: always() && !cancelled() && inputs.dry-run == false && needs.upload-release-report.result == 'success'
+    permissions:
+      id-token: write
+      contents: read
+    uses: kyma-project/compliancy/.github/workflows/notify-component-sbom.yml@main
+    secrets: inherit
+    with:
+      component: kyma-project.io/module/opentelemetry-collector-components
+      version: ${{ inputs.name }}
+
   publish-release:
     permissions:
       contents: write # Required for creating the release
@@ -225,7 +249,9 @@ jobs:
     needs:
       - build-image
       - create-draft
-    if: inputs.dry-run == false
+      - upload-release-report
+      - notify-sbom
+    if: always() && !cancelled() && inputs.dry-run == false && needs.build-image.result == 'success' && needs.create-draft.result == 'success' && needs.upload-release-report.result == 'success' && needs.notify-sbom.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
