@@ -3,17 +3,29 @@
 package metadata
 
 import (
+	"fmt"
+
 	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/filter"
 )
 
-// MetricConfig provides common config for a particular metric.
-type MetricConfig struct {
+// DummyMetricAttributeKey specifies the key of an attribute for the dummy metric.
+type DummyMetricAttributeKey string
+
+const (
+	DummyMetricAttributeKeyHost DummyMetricAttributeKey = "host"
+)
+
+// DummyMetricConfig provides config for the dummy metric.
+type DummyMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
 	enabledSetByUser bool
+
+	AggregationStrategy string                    `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []DummyMetricAttributeKey `mapstructure:"attributes"`
 }
 
-func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
+func (ms *DummyMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -27,15 +39,35 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+func (ms *DummyMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case DummyMetricAttributeKeyHost:
+		default:
+			return fmt.Errorf("metric dummy doesn't have an attribute %v, valid attributes: [host]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
 // MetricsConfig provides config for dummy metrics.
 type MetricsConfig struct {
-	Dummy MetricConfig `mapstructure:"dummy"`
+	Dummy DummyMetricConfig `mapstructure:"dummy"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
-		Dummy: MetricConfig{
-			Enabled: true,
+		Dummy: DummyMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []DummyMetricAttributeKey{DummyMetricAttributeKeyHost},
 		},
 	}
 }

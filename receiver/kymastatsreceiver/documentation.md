@@ -54,10 +54,10 @@ The resource status state, metric value is 1 for the last scraped resource statu
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- | ------------------- |
-| k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true | - |
-| k8s.resource.group | The resource group | Any Str | true | - |
-| k8s.resource.kind | The resource kind | Any Str | true | - |
-| k8s.resource.name | The resource name | Any Str | true | - |
-| k8s.resource.version | The resource version | Any Str | true | - |
+| Name | Description | Values | Enabled | Semantic Convention | Stability |
+| ---- | ----------- | ------ | ------- | ------------------- | --------- |
+| k8s.namespace.name | The name of the namespace that the resource is running in | Any Str | true | - | - |
+| k8s.resource.group | The resource group | Any Str | true | - | - |
+| k8s.resource.kind | The resource kind | Any Str | true | - | - |
+| k8s.resource.name | The resource name | Any Str | true | - | - |
+| k8s.resource.version | The resource version | Any Str | true | - | - |

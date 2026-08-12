@@ -28,6 +28,6 @@ a dummy gauge
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- | ------------------- |
-| k8s.cluster.name | static value: test-cluster | Any Str | true | - |
+| Name | Description | Values | Enabled | Semantic Convention | Stability |
+| ---- | ----------- | ------ | ------- | ------------------- | --------- |
+| k8s.cluster.name | static value: test-cluster | Any Str | true | - | - |
