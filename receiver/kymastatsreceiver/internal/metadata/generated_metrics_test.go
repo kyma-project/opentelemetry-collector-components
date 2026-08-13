@@ -19,6 +19,7 @@ const (
 	testDataSetDefault testDataSet = iota
 	testDataSetAll
 	testDataSetNone
+	testDataSetReag
 )
 
 func TestMetricsBuilder(t *testing.T) {
@@ -35,6 +36,11 @@ func TestMetricsBuilder(t *testing.T) {
 			name:        "all_set",
 			metricsSet:  testDataSetAll,
 			resAttrsSet: testDataSetAll,
+		},
+		{
+			name:        "reaggregate_set",
+			metricsSet:  testDataSetReag,
+			resAttrsSet: testDataSetReag,
 		},
 		{
 			name:        "none_set",
@@ -60,20 +66,29 @@ func TestMetricsBuilder(t *testing.T) {
 			settings := receivertest.NewNopSettings(receivertest.NopType)
 			settings.Logger = zap.New(observedZapCore)
 			mb := NewMetricsBuilder(loadMetricsBuilderConfig(t, tt.name), settings, WithStartTime(start))
+			aggMap := make(map[string]string) // contains the aggregation strategies for each metric name
+			aggMap["kyma.resource.status.conditions"] = mb.metricKymaResourceStatusConditions.config.AggregationStrategy
+			aggMap["kyma.resource.status.state"] = mb.metricKymaResourceStatusState.config.AggregationStrategy
 
 			expectedWarnings := 0
-			assert.Equal(t, expectedWarnings, observedLogs.Len())
+			if tt.metricsSet != testDataSetReag {
+				assert.Equal(t, expectedWarnings, observedLogs.Len())
+			}
 
 			defaultMetricsCount := 0
 			allMetricsCount := 0
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordKymaResourceStatusConditionsDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "reason-val", "status-val", "type-val", "version-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordKymaResourceStatusConditionsDataPoint(ts, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "reason-val-2", "status-val-2", "type-val-2", "version-val-2")
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordKymaResourceStatusStateDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "state-val", "version-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordKymaResourceStatusStateDataPoint(ts, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "state-val-2", "version-val-2")
+			}
 
 			rb := mb.NewResourceBuilder()
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
@@ -83,6 +98,10 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sResourceVersion("k8s.resource.version-val")
 			res := rb.Emit()
 			metrics := mb.Emit(WithResource(res))
+			if tt.name == "reaggregate_set" {
+				assert.Empty(t, mb.metricKymaResourceStatusConditions.aggDataPoints)
+				assert.Empty(t, mb.metricKymaResourceStatusState.aggDataPoints)
+			}
 
 			if tt.expectEmpty {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
@@ -110,71 +129,145 @@ func TestMetricsBuilder(t *testing.T) {
 			for _, mi := range allMetricsList {
 				switch mi.Name() {
 				case "kyma.resource.status.conditions":
-					assert.False(t, validatedMetrics["kyma.resource.status.conditions"], "Found a duplicate in the metrics slice: kyma.resource.status.conditions")
-					validatedMetrics["kyma.resource.status.conditions"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					groupAttrVal, ok := dp.Attributes().Get("group")
-					assert.True(t, ok)
-					assert.Equal(t, "group-val", groupAttrVal.Str())
-					kindAttrVal, ok := dp.Attributes().Get("kind")
-					assert.True(t, ok)
-					assert.Equal(t, "kind-val", kindAttrVal.Str())
-					nameAttrVal, ok := dp.Attributes().Get("name")
-					assert.True(t, ok)
-					assert.Equal(t, "name-val", nameAttrVal.Str())
-					namespaceAttrVal, ok := dp.Attributes().Get("namespace")
-					assert.True(t, ok)
-					assert.Equal(t, "namespace-val", namespaceAttrVal.Str())
-					reasonAttrVal, ok := dp.Attributes().Get("reason")
-					assert.True(t, ok)
-					assert.Equal(t, "reason-val", reasonAttrVal.Str())
-					statusAttrVal, ok := dp.Attributes().Get("status")
-					assert.True(t, ok)
-					assert.Equal(t, "status-val", statusAttrVal.Str())
-					typeAttrVal, ok := dp.Attributes().Get("type")
-					assert.True(t, ok)
-					assert.Equal(t, "type-val", typeAttrVal.Str())
-					versionAttrVal, ok := dp.Attributes().Get("version")
-					assert.True(t, ok)
-					assert.Equal(t, "version-val", versionAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["kyma.resource.status.conditions"], "Found a duplicate in the metrics slice: kyma.resource.status.conditions")
+						validatedMetrics["kyma.resource.status.conditions"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						groupAttrVal, ok := dp.Attributes().Get("group")
+						assert.True(t, ok)
+						assert.Equal(t, "group-val", groupAttrVal.Str())
+						kindAttrVal, ok := dp.Attributes().Get("kind")
+						assert.True(t, ok)
+						assert.Equal(t, "kind-val", kindAttrVal.Str())
+						nameAttrVal, ok := dp.Attributes().Get("name")
+						assert.True(t, ok)
+						assert.Equal(t, "name-val", nameAttrVal.Str())
+						namespaceAttrVal, ok := dp.Attributes().Get("namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "namespace-val", namespaceAttrVal.Str())
+						reasonAttrVal, ok := dp.Attributes().Get("reason")
+						assert.True(t, ok)
+						assert.Equal(t, "reason-val", reasonAttrVal.Str())
+						statusAttrVal, ok := dp.Attributes().Get("status")
+						assert.True(t, ok)
+						assert.Equal(t, "status-val", statusAttrVal.Str())
+						typeAttrVal, ok := dp.Attributes().Get("type")
+						assert.True(t, ok)
+						assert.Equal(t, "type-val", typeAttrVal.Str())
+						versionAttrVal, ok := dp.Attributes().Get("version")
+						assert.True(t, ok)
+						assert.Equal(t, "version-val", versionAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["kyma.resource.status.conditions"], "Found a duplicate in the metrics slice: kyma.resource.status.conditions")
+						validatedMetrics["kyma.resource.status.conditions"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["kyma.resource.status.conditions"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("group")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("kind")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("reason")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("status")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("type")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("version")
+						assert.False(t, ok)
+					}
 				case "kyma.resource.status.state":
-					assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
-					validatedMetrics["kyma.resource.status.state"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					groupAttrVal, ok := dp.Attributes().Get("group")
-					assert.True(t, ok)
-					assert.Equal(t, "group-val", groupAttrVal.Str())
-					kindAttrVal, ok := dp.Attributes().Get("kind")
-					assert.True(t, ok)
-					assert.Equal(t, "kind-val", kindAttrVal.Str())
-					nameAttrVal, ok := dp.Attributes().Get("name")
-					assert.True(t, ok)
-					assert.Equal(t, "name-val", nameAttrVal.Str())
-					namespaceAttrVal, ok := dp.Attributes().Get("namespace")
-					assert.True(t, ok)
-					assert.Equal(t, "namespace-val", namespaceAttrVal.Str())
-					stateAttrVal, ok := dp.Attributes().Get("state")
-					assert.True(t, ok)
-					assert.Equal(t, "state-val", stateAttrVal.Str())
-					versionAttrVal, ok := dp.Attributes().Get("version")
-					assert.True(t, ok)
-					assert.Equal(t, "version-val", versionAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
+						validatedMetrics["kyma.resource.status.state"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						groupAttrVal, ok := dp.Attributes().Get("group")
+						assert.True(t, ok)
+						assert.Equal(t, "group-val", groupAttrVal.Str())
+						kindAttrVal, ok := dp.Attributes().Get("kind")
+						assert.True(t, ok)
+						assert.Equal(t, "kind-val", kindAttrVal.Str())
+						nameAttrVal, ok := dp.Attributes().Get("name")
+						assert.True(t, ok)
+						assert.Equal(t, "name-val", nameAttrVal.Str())
+						namespaceAttrVal, ok := dp.Attributes().Get("namespace")
+						assert.True(t, ok)
+						assert.Equal(t, "namespace-val", namespaceAttrVal.Str())
+						stateAttrVal, ok := dp.Attributes().Get("state")
+						assert.True(t, ok)
+						assert.Equal(t, "state-val", stateAttrVal.Str())
+						versionAttrVal, ok := dp.Attributes().Get("version")
+						assert.True(t, ok)
+						assert.Equal(t, "version-val", versionAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
+						validatedMetrics["kyma.resource.status.state"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["kyma.resource.status.state"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("group")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("kind")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("namespace")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("state")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("version")
+						assert.False(t, ok)
+					}
 				}
 			}
 		})

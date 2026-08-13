@@ -3,17 +3,36 @@
 package metadata
 
 import (
+	"fmt"
+
 	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/filter"
 )
 
-// MetricConfig provides common config for a particular metric.
-type MetricConfig struct {
+// KymaResourceStatusConditionsMetricAttributeKey specifies the key of an attribute for the kyma.resource.status.conditions metric.
+type KymaResourceStatusConditionsMetricAttributeKey string
+
+const (
+	KymaResourceStatusConditionsMetricAttributeKeyGroup     KymaResourceStatusConditionsMetricAttributeKey = "group"
+	KymaResourceStatusConditionsMetricAttributeKeyKind      KymaResourceStatusConditionsMetricAttributeKey = "kind"
+	KymaResourceStatusConditionsMetricAttributeKeyName      KymaResourceStatusConditionsMetricAttributeKey = "name"
+	KymaResourceStatusConditionsMetricAttributeKeyNamespace KymaResourceStatusConditionsMetricAttributeKey = "namespace"
+	KymaResourceStatusConditionsMetricAttributeKeyReason    KymaResourceStatusConditionsMetricAttributeKey = "reason"
+	KymaResourceStatusConditionsMetricAttributeKeyStatus    KymaResourceStatusConditionsMetricAttributeKey = "status"
+	KymaResourceStatusConditionsMetricAttributeKeyType      KymaResourceStatusConditionsMetricAttributeKey = "type"
+	KymaResourceStatusConditionsMetricAttributeKeyVersion   KymaResourceStatusConditionsMetricAttributeKey = "version"
+)
+
+// KymaResourceStatusConditionsMetricConfig provides config for the kyma.resource.status.conditions metric.
+type KymaResourceStatusConditionsMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
 	enabledSetByUser bool
+
+	AggregationStrategy string                                           `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []KymaResourceStatusConditionsMetricAttributeKey `mapstructure:"attributes"`
 }
 
-func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
+func (ms *KymaResourceStatusConditionsMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -27,19 +46,94 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+func (ms *KymaResourceStatusConditionsMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case KymaResourceStatusConditionsMetricAttributeKeyGroup, KymaResourceStatusConditionsMetricAttributeKeyKind, KymaResourceStatusConditionsMetricAttributeKeyName, KymaResourceStatusConditionsMetricAttributeKeyNamespace, KymaResourceStatusConditionsMetricAttributeKeyReason, KymaResourceStatusConditionsMetricAttributeKeyStatus, KymaResourceStatusConditionsMetricAttributeKeyType, KymaResourceStatusConditionsMetricAttributeKeyVersion:
+		default:
+			return fmt.Errorf("metric kyma.resource.status.conditions doesn't have an attribute %v, valid attributes: [group, kind, name, namespace, reason, status, type, version]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// KymaResourceStatusStateMetricAttributeKey specifies the key of an attribute for the kyma.resource.status.state metric.
+type KymaResourceStatusStateMetricAttributeKey string
+
+const (
+	KymaResourceStatusStateMetricAttributeKeyGroup     KymaResourceStatusStateMetricAttributeKey = "group"
+	KymaResourceStatusStateMetricAttributeKeyKind      KymaResourceStatusStateMetricAttributeKey = "kind"
+	KymaResourceStatusStateMetricAttributeKeyName      KymaResourceStatusStateMetricAttributeKey = "name"
+	KymaResourceStatusStateMetricAttributeKeyNamespace KymaResourceStatusStateMetricAttributeKey = "namespace"
+	KymaResourceStatusStateMetricAttributeKeyState     KymaResourceStatusStateMetricAttributeKey = "state"
+	KymaResourceStatusStateMetricAttributeKeyVersion   KymaResourceStatusStateMetricAttributeKey = "version"
+)
+
+// KymaResourceStatusStateMetricConfig provides config for the kyma.resource.status.state metric.
+type KymaResourceStatusStateMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                      `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []KymaResourceStatusStateMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *KymaResourceStatusStateMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *KymaResourceStatusStateMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case KymaResourceStatusStateMetricAttributeKeyGroup, KymaResourceStatusStateMetricAttributeKeyKind, KymaResourceStatusStateMetricAttributeKeyName, KymaResourceStatusStateMetricAttributeKeyNamespace, KymaResourceStatusStateMetricAttributeKeyState, KymaResourceStatusStateMetricAttributeKeyVersion:
+		default:
+			return fmt.Errorf("metric kyma.resource.status.state doesn't have an attribute %v, valid attributes: [group, kind, name, namespace, state, version]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
 // MetricsConfig provides config for kymastats metrics.
 type MetricsConfig struct {
-	KymaResourceStatusConditions MetricConfig `mapstructure:"kyma.resource.status.conditions"`
-	KymaResourceStatusState      MetricConfig `mapstructure:"kyma.resource.status.state"`
+	KymaResourceStatusConditions KymaResourceStatusConditionsMetricConfig `mapstructure:"kyma.resource.status.conditions"`
+	KymaResourceStatusState      KymaResourceStatusStateMetricConfig      `mapstructure:"kyma.resource.status.state"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
-		KymaResourceStatusConditions: MetricConfig{
-			Enabled: true,
+		KymaResourceStatusConditions: KymaResourceStatusConditionsMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []KymaResourceStatusConditionsMetricAttributeKey{KymaResourceStatusConditionsMetricAttributeKeyGroup, KymaResourceStatusConditionsMetricAttributeKeyKind, KymaResourceStatusConditionsMetricAttributeKeyName, KymaResourceStatusConditionsMetricAttributeKeyNamespace, KymaResourceStatusConditionsMetricAttributeKeyReason, KymaResourceStatusConditionsMetricAttributeKeyStatus, KymaResourceStatusConditionsMetricAttributeKeyType, KymaResourceStatusConditionsMetricAttributeKeyVersion},
 		},
-		KymaResourceStatusState: MetricConfig{
-			Enabled: true,
+		KymaResourceStatusState: KymaResourceStatusStateMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []KymaResourceStatusStateMetricAttributeKey{KymaResourceStatusStateMetricAttributeKeyGroup, KymaResourceStatusStateMetricAttributeKeyKind, KymaResourceStatusStateMetricAttributeKeyName, KymaResourceStatusStateMetricAttributeKeyNamespace, KymaResourceStatusStateMetricAttributeKeyState, KymaResourceStatusStateMetricAttributeKeyVersion},
 		},
 	}
 }

@@ -3,8 +3,29 @@ all_set:
   metrics:
     kyma.resource.status.conditions:
       enabled: true
+      attributes: ["group","kind","name","namespace","reason","status","type","version"]
     kyma.resource.status.state:
       enabled: true
+      attributes: ["group","kind","name","namespace","state","version"]
+  resource_attributes:
+    k8s.namespace.name:
+      enabled: true
+    k8s.resource.group:
+      enabled: true
+    k8s.resource.kind:
+      enabled: true
+    k8s.resource.name:
+      enabled: true
+    k8s.resource.version:
+      enabled: true
+reaggregate_set:
+  metrics:
+    kyma.resource.status.conditions:
+      enabled: true
+      attributes: []
+    kyma.resource.status.state:
+      enabled: true
+      attributes: []
   resource_attributes:
     k8s.namespace.name:
       enabled: true
@@ -20,8 +41,10 @@ none_set:
   metrics:
     kyma.resource.status.conditions:
       enabled: false
+      attributes: ["group","kind","name","namespace","reason","status","type","version"]
     kyma.resource.status.state:
       enabled: false
+      attributes: ["group","kind","name","namespace","state","version"]
   resource_attributes:
     k8s.namespace.name:
       enabled: false
