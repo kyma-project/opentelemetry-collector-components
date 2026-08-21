@@ -10,9 +10,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
-	"go.opentelemetry.io/collector/scraper/scraperhelper"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -33,10 +31,8 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, ""),
 			expected: &Config{
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "serviceAccount",
-				},
-				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
+				AuthType:           "serviceAccount",
+				CollectionInterval: duration, InitialDelay: delay,
 				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
@@ -50,11 +46,9 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "kubeconfig"),
 			expected: &Config{
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "kubeConfig",
-					Context:  "k8s-context",
-				},
-				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 30 * time.Second, InitialDelay: delay},
+				AuthType:           "kubeConfig",
+				Context:            "k8s-context",
+				CollectionInterval: 30 * time.Second, InitialDelay: delay,
 				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
@@ -68,10 +62,8 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "sa"),
 			expected: &Config{
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "serviceAccount",
-				},
-				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: 10 * time.Second, InitialDelay: delay},
+				AuthType:           "serviceAccount",
+				CollectionInterval: 10 * time.Second, InitialDelay: delay,
 				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
@@ -93,10 +85,8 @@ func TestLoadConfig(t *testing.T) {
 		{
 			id: component.NewIDWithName(metadata.Type, "none"),
 			expected: &Config{
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "none",
-				},
-				ControllerConfig:     scraperhelper.ControllerConfig{CollectionInterval: duration, InitialDelay: delay},
+				AuthType:           "none",
+				CollectionInterval: duration, InitialDelay: delay,
 				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				Resources: []ResourceConfig{
 					{
