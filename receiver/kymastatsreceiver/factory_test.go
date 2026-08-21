@@ -10,12 +10,10 @@ import (
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pipeline"
 	"go.opentelemetry.io/collector/receiver/receivertest"
-	"go.opentelemetry.io/collector/scraper/scraperhelper"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/dynamic"
 	dynamicfake "k8s.io/client-go/dynamic/fake"
 
-	"github.com/kyma-project/opentelemetry-collector-components/internal/k8sconfig"
 	"github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver/internal/metadata"
 )
 
@@ -34,13 +32,9 @@ func TestCreateMetricsReceiver(t *testing.T) {
 		{
 			name: "valid",
 			cfg: &Config{
-				APIConfig: k8sconfig.APIConfig{
-					AuthType: "kubeConfig",
-				},
-				ControllerConfig: scraperhelper.ControllerConfig{
-					CollectionInterval: 10 * time.Second,
-					InitialDelay:       time.Second,
-				},
+				AuthType:             "kubeConfig",
+				CollectionInterval:   10 * time.Second,
+				InitialDelay:         time.Second,
 				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 				makeDynamicClient: func() (dynamic.Interface, error) {
 					return dynamicfake.NewSimpleDynamicClient(runtime.NewScheme()), nil
@@ -83,9 +77,7 @@ func TestCreateTraceReceiver(t *testing.T) {
 		t.Context(),
 		receivertest.NewNopSettings(metadata.Type),
 		&Config{
-			APIConfig: k8sconfig.APIConfig{
-				AuthType: "kubeConfig",
-			},
+			AuthType: "kubeConfig",
 		},
 		nil,
 	)
@@ -99,9 +91,7 @@ func TestCreateLogsReceiver(t *testing.T) {
 		t.Context(),
 		receivertest.NewNopSettings(metadata.Type),
 		&Config{
-			APIConfig: k8sconfig.APIConfig{
-				AuthType: "kubeConfig",
-			},
+			AuthType: "kubeConfig",
 		},
 		nil,
 	)
@@ -112,9 +102,7 @@ func TestCreateLogsReceiver(t *testing.T) {
 func TestFactoryBadAuthType(t *testing.T) {
 	factory := NewFactory()
 	cfg := &Config{
-		APIConfig: k8sconfig.APIConfig{
-			AuthType: "none",
-		},
+		AuthType: "none",
 	}
 	_, err := factory.CreateMetrics(
 		t.Context(),
@@ -131,12 +119,8 @@ func TestFactoryNoneAuthType(t *testing.T) {
 
 	factory := NewFactory()
 	cfg := &Config{
-		APIConfig: k8sconfig.APIConfig{
-			AuthType: "none",
-		},
-		ControllerConfig: scraperhelper.ControllerConfig{
-			CollectionInterval: 10 * time.Second,
-		},
+		AuthType:           "none",
+		CollectionInterval: 10 * time.Second,
 	}
 	_, err := factory.CreateMetrics(
 		t.Context(),
