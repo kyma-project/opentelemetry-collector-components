@@ -28,6 +28,9 @@ receivers:
 processors:
   - gomod: go.opentelemetry.io/collector/processor/batchprocessor vOTEL_VERSION
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor vOTEL_VERSION
+  # k8sattributesprocessor graduated to stable (v1.x), so it no longer follows vOTEL_CONTRIB_VERSION (0.x) and must be pinned separately.
+  # The annotation below lets Renovate track and bump this line automatically (datasource=go), so future v1.x releases are not missed.
+  # renovate: datasource=go depName=github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v1.0.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor vOTEL_CONTRIB_VERSION
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor vOTEL_CONTRIB_VERSION
