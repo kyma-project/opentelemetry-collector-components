@@ -26,11 +26,15 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaResourceStatusConditions: MetricConfig{
-						Enabled: true,
+					KymaResourceStatusConditions: KymaResourceStatusConditionsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []KymaResourceStatusConditionsMetricAttributeKey{KymaResourceStatusConditionsMetricAttributeKeyGroup, KymaResourceStatusConditionsMetricAttributeKeyKind, KymaResourceStatusConditionsMetricAttributeKeyName, KymaResourceStatusConditionsMetricAttributeKeyNamespace, KymaResourceStatusConditionsMetricAttributeKeyReason, KymaResourceStatusConditionsMetricAttributeKeyStatus, KymaResourceStatusConditionsMetricAttributeKeyType, KymaResourceStatusConditionsMetricAttributeKeyVersion},
 					},
-					KymaResourceStatusState: MetricConfig{
-						Enabled: true,
+					KymaResourceStatusState: KymaResourceStatusStateMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []KymaResourceStatusStateMetricAttributeKey{KymaResourceStatusStateMetricAttributeKeyGroup, KymaResourceStatusStateMetricAttributeKeyKind, KymaResourceStatusStateMetricAttributeKeyName, KymaResourceStatusStateMetricAttributeKeyNamespace, KymaResourceStatusStateMetricAttributeKeyState, KymaResourceStatusStateMetricAttributeKeyVersion},
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
@@ -46,11 +50,15 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					KymaResourceStatusConditions: MetricConfig{
-						Enabled: false,
+					KymaResourceStatusConditions: KymaResourceStatusConditionsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []KymaResourceStatusConditionsMetricAttributeKey{KymaResourceStatusConditionsMetricAttributeKeyGroup, KymaResourceStatusConditionsMetricAttributeKeyKind, KymaResourceStatusConditionsMetricAttributeKeyName, KymaResourceStatusConditionsMetricAttributeKeyNamespace, KymaResourceStatusConditionsMetricAttributeKeyReason, KymaResourceStatusConditionsMetricAttributeKeyStatus, KymaResourceStatusConditionsMetricAttributeKeyType, KymaResourceStatusConditionsMetricAttributeKeyVersion},
 					},
-					KymaResourceStatusState: MetricConfig{
-						Enabled: false,
+					KymaResourceStatusState: KymaResourceStatusStateMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []KymaResourceStatusStateMetricAttributeKey{KymaResourceStatusStateMetricAttributeKeyGroup, KymaResourceStatusStateMetricAttributeKeyKind, KymaResourceStatusStateMetricAttributeKeyName, KymaResourceStatusStateMetricAttributeKeyNamespace, KymaResourceStatusStateMetricAttributeKeyState, KymaResourceStatusStateMetricAttributeKeyVersion},
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
@@ -66,10 +74,33 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(KymaResourceStatusConditionsMetricConfig{}, KymaResourceStatusStateMetricConfig{}, ResourceAttributeConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
+}
+func TestKymaResourceStatusConditionsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().KymaResourceStatusConditions
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []KymaResourceStatusConditionsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric kyma.resource.status.conditions doesn't have an attribute invalid, valid attributes: [group, kind, name, namespace, reason, status, type, version]")
+
+	cfg = DefaultMetricsConfig().KymaResourceStatusConditions
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestKymaResourceStatusStateMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().KymaResourceStatusState
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []KymaResourceStatusStateMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric kyma.resource.status.state doesn't have an attribute invalid, valid attributes: [group, kind, name, namespace, state, version]")
+
+	cfg = DefaultMetricsConfig().KymaResourceStatusState
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
 }
 
 func loadMetricsBuilderConfig(t *testing.T, name string) MetricsBuilderConfig {

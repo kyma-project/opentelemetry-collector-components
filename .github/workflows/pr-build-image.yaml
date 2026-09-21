@@ -50,6 +50,16 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: validate envs
+        run: |
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" ]] && continue
+            if ! [[ "$line" =~ ^[A-Z_][A-Z0-9_]*=[A-Za-z0-9._:/@+\-]+$ ]]; then
+              echo "::error::Invalid line in otel-collector/envs: $line"
+              exit 1
+            fi
+          done < otel-collector/envs
+
       - name: prepare envs
         id: prepare-envs
         run: |

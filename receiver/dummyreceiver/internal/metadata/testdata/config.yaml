@@ -3,6 +3,15 @@ all_set:
   metrics:
     dummy:
       enabled: true
+      attributes: ["host"]
+  resource_attributes:
+    k8s.cluster.name:
+      enabled: true
+reaggregate_set:
+  metrics:
+    dummy:
+      enabled: true
+      attributes: []
   resource_attributes:
     k8s.cluster.name:
       enabled: true
@@ -10,6 +19,7 @@ none_set:
   metrics:
     dummy:
       enabled: false
+      attributes: ["host"]
   resource_attributes:
     k8s.cluster.name:
       enabled: false

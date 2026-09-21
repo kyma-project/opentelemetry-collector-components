@@ -26,8 +26,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					Dummy: MetricConfig{
-						Enabled: true,
+					Dummy: DummyMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []DummyMetricAttributeKey{DummyMetricAttributeKeyHost},
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
@@ -39,8 +41,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					Dummy: MetricConfig{
-						Enabled: false,
+					Dummy: DummyMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []DummyMetricAttributeKey{DummyMetricAttributeKeyHost},
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
@@ -52,10 +56,21 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(DummyMetricConfig{}, ResourceAttributeConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
+}
+func TestDummyMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().Dummy
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []DummyMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric dummy doesn't have an attribute invalid, valid attributes: [host]")
+
+	cfg = DefaultMetricsConfig().Dummy
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
 }
 
 func loadMetricsBuilderConfig(t *testing.T, name string) MetricsBuilderConfig {
