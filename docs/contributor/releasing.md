@@ -4,6 +4,9 @@
 
 This release process covers the steps to release new major and minor versions for the `opentelemetry-collector` with Kyma-specific customizations.
 
+> [!IMPORTANT]
+> Release OCC **one day before** creating the telemetry-manager pre-release. You must use the same OCC image version for both the pre-release and the final release of telemetry-manager. Do not release a new OCC version on release day.
+
 1. Verify that all issues in the [GitHub milestone](https://github.com/kyma-project/opentelemetry-collector-components/milestones) related to the version are closed.
 2. Close the milestone.
 
@@ -14,10 +17,10 @@ This release process covers the steps to release new major and minor versions fo
    - `release-x.y` for patch releases of version x.y.
 
 > [!NOTE]
-> - If you select `Do-Not-Publish`, the release will not be published. However, the action still creates an image and a draft release.
-> - If you select `Force`, it overwrites the existing release and any previously built images. It will never overwrite an already published release. For draft releases, the force option recreates the Git tag in the repository, recreates the release notes, and overwrites the previously built image
+> - If you select `Do-Not-Publish`, the release is not published. However, the action still creates an image and a draft release.
+> - If you select `Force`, it overwrites the existing release and any previously built images. It never overwrites an already published release. For draft releases, the force option recreates the Git tag in the repository, recreates the release notes, and overwrites the previously built image.
 
-5. If the previous release was a patch release that contains cherry-picked changes, these changes might appear again in the generated change log. If there are redundant entries, edit the release description and remove them.
+5. If the previous release was a patch release that contains cherry-picked changes, these changes might appear again in the generated changelog. If there are redundant entries, edit the release description and remove them.
 
 ## Changelog
 
@@ -25,7 +28,7 @@ Every PR's title must adhere to the [Conventional Commits](https://www.conventio
 
 ### Pull Request Title
 
-Because of the squash-and-merge GitHub workflow, each PR results in a single commit after merging into the main development branch. The PR's title becomes the commit message and must adhere to the template:
+Because of the squash-and-merge GitHub workflow, each PR results in a single commit after merging into the main development branch. The PR title becomes the commit message and must adhere to the following template:
 
 `type(scope?): subject`
 
@@ -38,7 +41,7 @@ Because of the squash-and-merge GitHub workflow, each PR results in a single com
 - **deps**: The changes in the external dependencies.
 - **chore**: Anything not covered by the above categories (such as refactoring or artefacts building alternations).
 
-Note that PRs of type `chore` do not appear in the change log for the release. Therefore, exclude maintenance changes that are not interesting to consumers of the project by marking them as "chore", for example:
+Note that PRs of type `chore` do not appear in the changelog for the release. Therefore, exclude maintenance changes that are not interesting to consumers of the project by marking them as "chore", for example:
 
 - Dotfile changes (.gitignore, .github, and so forth).
 - Changes to development-only dependencies.
@@ -51,5 +54,5 @@ The subject must describe the change and follow the recommendations:
 
 - Describe a change using the [imperative mood](https://en.wikipedia.org/wiki/Imperative_mood).
  It must start with a present-tense verb, for example (but not limited to) Add, Document, Fix, Deprecate.
-- Start with an uppercase, and not finish with a full stop.
+- Start with an uppercase, and don't finish with a full stop.
 - Apply Kyma [capitalization](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/04-style-and-terminology.md#capitalization) and [terminology](https://github.com/kyma-project/community/blob/main/docs/guidelines/content-guidelines/04-style-and-terminology.md#terminology) guides.
