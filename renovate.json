@@ -24,6 +24,16 @@
   "github-actions": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track versions pinned in builder-config.yaml that carry a `# renovate:` annotation (e.g. k8sattributesprocessor, which graduated to stable v1.x and no longer follows OTEL_CONTRIB_VERSION).",
+      "managerFilePatterns": ["/builder-config\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+- gomod: \\S+ (?<currentValue>v[\\d.]+)"
+      ]
+    }
+  ],
   "packageRules": [
     {
       "matchCategories": ["golang"],
