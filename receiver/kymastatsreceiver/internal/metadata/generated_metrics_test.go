@@ -82,12 +82,18 @@ func TestMetricsBuilder(t *testing.T) {
 			mb.RecordKymaResourceStatusConditionsDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "reason-val", "status-val", "type-val", "version-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordKymaResourceStatusConditionsDataPoint(ts, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "reason-val-2", "status-val-2", "type-val-2", "version-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordKymaResourceStatusConditionsDataPoint(ts+1, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "reason-val-2", "status-val-2", "type-val-2", "version-val-2")
+				assert.Equal(t, 2, mb.metricKymaResourceStatusConditions.data.Gauge().DataPoints().Len())
 			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordKymaResourceStatusStateDataPoint(ts, 1, "group-val", "kind-val", "name-val", "namespace-val", "state-val", "version-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordKymaResourceStatusStateDataPoint(ts, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "state-val-2", "version-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordKymaResourceStatusStateDataPoint(ts+1, 3, "group-val-2", "kind-val-2", "name-val-2", "namespace-val-2", "state-val-2", "version-val-2")
+				assert.Equal(t, 2, mb.metricKymaResourceStatusState.data.Gauge().DataPoints().Len())
 			}
 
 			rb := mb.NewResourceBuilder()
@@ -169,7 +175,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["kyma.resource.status.conditions"], "Found a duplicate in the metrics slice: kyma.resource.status.conditions")
 						validatedMetrics["kyma.resource.status.conditions"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The resource status conditions. Possible metric values for condition status are 'True' => 1, 'False' => 0, and -1 for other status values.", mi.Description())
 						assert.Equal(t, "1", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
@@ -238,7 +246,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["kyma.resource.status.state"], "Found a duplicate in the metrics slice: kyma.resource.status.state")
 						validatedMetrics["kyma.resource.status.state"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The resource status state, metric value is 1 for the last scraped resource status state, including state as metric attribute.", mi.Description())
 						assert.Equal(t, "1", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
