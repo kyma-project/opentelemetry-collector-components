@@ -81,6 +81,9 @@ func TestMetricsBuilder(t *testing.T) {
 			mb.RecordDummyDataPoint(ts, 1, "host-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordDummyDataPoint(ts, 3, "host-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordDummyDataPoint(ts+1, 3, "host-val-2")
+				assert.Equal(t, 2, mb.metricDummy.data.Gauge().DataPoints().Len())
 			}
 
 			rb := mb.NewResourceBuilder()
@@ -136,7 +139,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["dummy"], "Found a duplicate in the metrics slice: dummy")
 						validatedMetrics["dummy"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "a dummy gauge", mi.Description())
 						assert.Equal(t, "{ event }", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
