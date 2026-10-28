@@ -520,8 +520,8 @@ github.com/uudashr/gocognit v1.3.0 h1:Xdw5JwAoYmX3WAB+wsXY3nxEwdw7+MWAnM0wCAAv7A
 github.com/uudashr/gocognit v1.3.0/go.mod h1:acaubQc6xYlXFEMb9nWX2dYBzJ/bIjEkc1zzvyIZg5Q=
 github.com/uudashr/iface v1.5.3 h1:N61bzr11L7BHP6Rct+C6zQePHjSTMeyVBq+s03uB/Ds=
 github.com/uudashr/iface v1.5.3/go.mod h1:5UWoT6SvTdTww/KToRj6clO+n4Kg3/NrAQvgOB+5Ggw=
-github.com/vladopajic/go-test-coverage/v2 v2.20.1 h1:9m251rfDKAoOoBDxUysWSS/kW6KgDyru6lWwMNTtAN4=
-github.com/vladopajic/go-test-coverage/v2 v2.20.1/go.mod h1:DnRj+vFMK+/LfRihUrjXFfIdSHVNmq8rIvHya7FB7eU=
+github.com/vladopajic/go-test-coverage/v2 v2.21.0 h1:FnzTOr5OzQFzRAeOK8roWT31LuI0ZG1c1GQgGFeUG74=
+github.com/vladopajic/go-test-coverage/v2 v2.21.0/go.mod h1:s+pQp0moQJa1rlvuIInmfHnY7HfL4uEUr6i/mX5x2G8=
 github.com/xen0n/gosmopolitan v1.3.0 h1:zAZI1zefvo7gcpbCOrPSHJZJYA9ZgLfJqtKzZ5pHqQM=
 github.com/xen0n/gosmopolitan v1.3.0/go.mod h1:rckfr5T6o4lBtM1ga7mLGKZmLxswUoH1zxHgNXOsEt4=
 github.com/xo/terminfo v1.0.0 h1:2ZpYzqWzyyytjk3TP6aJVDhkMAkc99/1xKQdA3TDTBY=
