@@ -119,8 +119,7 @@ run:
 
 .PHONY: generate
 generate: install-tools
-	cd ./internal/tools && go install go.opentelemetry.io/collector/cmd/mdatagen
-	$(MAKE) for-all CMD="$(GOCMD) generate ./..."
+	PATH="$(SRC_ROOT)/bin:$(PATH)" $(MAKE) for-all CMD="$(GOCMD) generate ./..."
 	$(MAKE) gofmt
 
 .PHONY: genotelkymacol
