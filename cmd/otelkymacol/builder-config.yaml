@@ -8,7 +8,7 @@ dist:
 #  In order to fix this explicitly add the default providers in otel builder config
 
 extensions:
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.165.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.165.1
 
 providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.71.0
@@ -21,7 +21,7 @@ receivers:
   - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.165.0
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver v0.0.1
   - gomod: github.com/kyma-project/opentelemetry-collector-components/receiver/kymastatsreceiver v0.0.1
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.165.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.165.1
 
 processors:
   - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.165.0
