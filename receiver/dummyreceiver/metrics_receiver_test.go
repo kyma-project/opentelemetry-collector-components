@@ -1,6 +1,7 @@
 package dummyreceiver
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -28,6 +29,32 @@ func TestReceiveMetrics(t *testing.T) {
 		allMetrics := sink.AllMetrics()
 		return len(allMetrics) > 0
 	}, 5*time.Second, 1*time.Second)
+	err = mr.Shutdown(t.Context())
+	require.NoError(t, err)
+}
+
+func TestStartInvalidInterval(t *testing.T) {
+	cfg := &Config{Interval: "not-a-duration"}
+	mr, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(metadata.Type), cfg, consumertest.NewNop())
+	require.NoError(t, err)
+
+	err = mr.Start(t.Context(), componenttest.NewNopHost())
+	require.ErrorContains(t, err, "failed to parse interval")
+}
+
+func TestConsumeMetricsError(t *testing.T) {
+	consumer := consumertest.NewErr(errors.New("consumer error"))
+
+	cfg := &Config{Interval: "100ms"}
+	mr, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(metadata.Type), cfg, consumer)
+	require.NoError(t, err)
+
+	err = mr.Start(t.Context(), componenttest.NewNopHost())
+	require.NoError(t, err)
+
+	// give the goroutine time to tick and hit the consumer error
+	time.Sleep(300 * time.Millisecond)
+
 	err = mr.Shutdown(t.Context())
 	require.NoError(t, err)
 }

@@ -15,15 +15,9 @@ threshold:
 # specific to more general rules.
 override:
   - path: ^receiver/dummyreceiver
-    threshold: 80
+    threshold: 89
   - path: ^processor/istioenrichmentprocessor
-    threshold: 90
-  - path: ^receiver/kymastatsreceiver/internal/k8sleaderelectortest
-    threshold: 72
-  - path: ^receiver/kymastatsreceiver/internal/metadata
-    threshold: 83
-  - path: ^internal/components
-    threshold: 79
+    threshold: 95
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics
 exclude:
@@ -31,6 +25,7 @@ exclude:
   paths:
     - test_log_builder\.go$
     - /internal/
+    - internal/components
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
