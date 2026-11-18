@@ -5,6 +5,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/consumer/consumertest"
+	"go.opentelemetry.io/collector/receiver/receivertest"
+
+	"github.com/kyma-project/opentelemetry-collector-components/receiver/dummyreceiver/internal/metadata"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -37,4 +41,9 @@ func TestLoadConfig(t *testing.T) {
 			require.ErrorIs(t, err, tt.err)
 		})
 	}
+}
+
+func TestCreateMetricsReceiverInvalidConfig(t *testing.T) {
+	_, err := createMetricsReceiver(t.Context(), receivertest.NewNopSettings(metadata.Type), "not-a-config", consumertest.NewNop())
+	require.Error(t, err)
 }

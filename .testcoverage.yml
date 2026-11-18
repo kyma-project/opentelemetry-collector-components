@@ -2,10 +2,6 @@
 # Path to coverprofile file (output of `go test -coverprofile` command)
 profile: all-coverage.txt
 
-# (optional)
-# When specified reported file paths will not contain local prefix in the output
-local-prefix: "github.com/kyma-project/opentelemetry-collector-components"
-
 # Holds coverage thresholds percentages, values should be in range [0-100]
 threshold:
   # (optional; default 0)
@@ -18,13 +14,18 @@ threshold:
 # If project has multiple rules that match same path, override rules should be listed in order from
 # specific to more general rules.
 override:
-  - ^receiver/dummyreceiver: 89
-  - ^processor/istioenrichmentprocessor: 95
+  - path: ^receiver/dummyreceiver
+    threshold: 89
+  - path: ^processor/istioenrichmentprocessor
+    threshold: 95
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics
 exclude:
   # Exclude files or packages matching their paths
-  paths: []
+  paths:
+    - test_log_builder\.go$
+    - /internal/
+    - internal/components
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
