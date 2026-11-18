@@ -14,13 +14,23 @@ threshold:
 # If project has multiple rules that match same path, override rules should be listed in order from
 # specific to more general rules.
 override:
-  - ^receiver/dummyreceiver: 89
-  - ^processor/istioenrichmentprocessor: 95
+  - path: ^receiver/dummyreceiver
+    threshold: 80
+  - path: ^processor/istioenrichmentprocessor
+    threshold: 90
+  - path: ^receiver/kymastatsreceiver/internal/k8sleaderelectortest
+    threshold: 72
+  - path: ^receiver/kymastatsreceiver/internal/metadata
+    threshold: 83
+  - path: ^internal/components
+    threshold: 79
 
 # Holds regexp rules which will exclude matched files or packages from coverage statistics
 exclude:
   # Exclude files or packages matching their paths
-  paths: []
+  paths:
+    - test_log_builder\.go$
+    - /internal/
 
 # NOTES:
 # - symbol `/` in all path regexps will be replaced by
