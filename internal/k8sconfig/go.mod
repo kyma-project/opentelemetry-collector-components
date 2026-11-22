@@ -2,7 +2,7 @@ module github.com/kyma-project/opentelemetry-collector-components/internal/k8sco
 
 go 1.27.4
 
-require k8s.io/client-go v0.37.2
+require k8s.io/client-go v11.0.0+incompatible
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
