@@ -6,8 +6,8 @@ require (
 	github.com/golangci/golangci-lint/v2 v2.15.0
 	github.com/vladopajic/go-test-coverage/v2 v2.23.0
 	go.opentelemetry.io/build-tools/crosslink v0.31.0
-	go.opentelemetry.io/collector/cmd/builder v0.165.0
-	go.opentelemetry.io/collector/cmd/mdatagen v0.165.0
+	go.opentelemetry.io/collector/cmd/builder v0.166.0
+	go.opentelemetry.io/collector/cmd/mdatagen v0.166.0
 	golang.org/x/tools v0.53.0
 )
 
@@ -240,28 +240,29 @@ require (
 	go.augendre.info/arangolint v0.4.0 // indirect
 	go.augendre.info/fatcontext v0.10.1 // indirect
 	go.opentelemetry.io/build-tools v0.31.0 // indirect
-	go.opentelemetry.io/collector/client v1.71.0 // indirect
-	go.opentelemetry.io/collector/component v1.71.0 // indirect
-	go.opentelemetry.io/collector/config/configoptional v1.71.0 // indirect
-	go.opentelemetry.io/collector/config/configretry v1.71.0 // indirect
-	go.opentelemetry.io/collector/confmap v1.71.0 // indirect
-	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.71.0 // indirect
-	go.opentelemetry.io/collector/consumer v1.71.0 // indirect
-	go.opentelemetry.io/collector/consumer/consumererror v0.165.0 // indirect
-	go.opentelemetry.io/collector/exporter v1.71.0 // indirect
-	go.opentelemetry.io/collector/exporter/exporterhelper v0.165.0 // indirect
-	go.opentelemetry.io/collector/extension v1.71.0 // indirect
-	go.opentelemetry.io/collector/extension/xextension v0.165.0 // indirect
-	go.opentelemetry.io/collector/featuregate v1.71.0 // indirect
-	go.opentelemetry.io/collector/filter v0.165.0 // indirect
-	go.opentelemetry.io/collector/internal/componentalias v0.165.0 // indirect
-	go.opentelemetry.io/collector/internal/schemagen v0.165.0 // indirect
-	go.opentelemetry.io/collector/internal/telemetry v0.165.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.71.0 // indirect
-	go.opentelemetry.io/collector/pdata/pprofile v0.165.0 // indirect
-	go.opentelemetry.io/collector/pdata/xpdata v0.165.0 // indirect
-	go.opentelemetry.io/collector/pipeline v1.71.0 // indirect
-	go.opentelemetry.io/collector/pipeline/xpipeline v0.165.0 // indirect
+	go.opentelemetry.io/collector/client v1.72.0 // indirect
+	go.opentelemetry.io/collector/component v1.72.0 // indirect
+	go.opentelemetry.io/collector/config/configoptional v1.72.0 // indirect
+	go.opentelemetry.io/collector/config/configretry v1.72.0 // indirect
+	go.opentelemetry.io/collector/config/configstorage v0.166.0 // indirect
+	go.opentelemetry.io/collector/confmap v1.72.0 // indirect
+	go.opentelemetry.io/collector/confmap/provider/fileprovider v1.72.0 // indirect
+	go.opentelemetry.io/collector/consumer v1.72.0 // indirect
+	go.opentelemetry.io/collector/consumer/consumererror v0.166.0 // indirect
+	go.opentelemetry.io/collector/exporter v1.72.0 // indirect
+	go.opentelemetry.io/collector/exporter/exporterhelper v0.166.0 // indirect
+	go.opentelemetry.io/collector/extension v1.72.0 // indirect
+	go.opentelemetry.io/collector/extension/xextension v0.166.0 // indirect
+	go.opentelemetry.io/collector/featuregate v1.72.0 // indirect
+	go.opentelemetry.io/collector/filter v0.166.0 // indirect
+	go.opentelemetry.io/collector/internal/componentalias v0.166.0 // indirect
+	go.opentelemetry.io/collector/internal/schemagen v0.166.0 // indirect
+	go.opentelemetry.io/collector/internal/telemetry v0.166.0 // indirect
+	go.opentelemetry.io/collector/pdata v1.72.0 // indirect
+	go.opentelemetry.io/collector/pdata/pprofile v0.166.0 // indirect
+	go.opentelemetry.io/collector/pdata/xpdata v0.166.0 // indirect
+	go.opentelemetry.io/collector/pipeline v1.72.0 // indirect
+	go.opentelemetry.io/collector/pipeline/xpipeline v0.166.0 // indirect
 	go.opentelemetry.io/otel v1.47.0 // indirect
 	go.opentelemetry.io/otel/metric v1.47.0 // indirect
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
@@ -274,7 +275,7 @@ require (
 	golang.org/x/sync v0.25.0 // indirect
 	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/telemetry v0.0.0-20261116191925-e77a43154acb // indirect
-	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20261005182115-fad411399dd8 // indirect
 	google.golang.org/grpc v1.85.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
